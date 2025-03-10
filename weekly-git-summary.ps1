@@ -8,8 +8,18 @@ $RED = [System.ConsoleColor]::Red
 
 # 默认值
 $SEARCH_DIR = "."
-$MONDAY = (Get-Date).AddDays(-((Get-Date).DayOfWeek.value__ + 6) % 7).ToString("yyyy-MM-dd")
+$DEBUG_MODE = $false
+# 获取本周一的日期
+# 先获取当前是周几（0=周日，1=周一，等等）
+$CURRENT_WEEKDAY = [int](Get-Date).DayOfWeek.value__
+if ($DEBUG_MODE) { Write-Host "Debug: Current weekday is $CURRENT_WEEKDAY (0=Sunday, 1=Monday, etc.)" }
+# 计算到本周一的天数
+$DAYS_TO_MONDAY = (($CURRENT_WEEKDAY + 6) % 7)
+if ($DEBUG_MODE) { Write-Host "Debug: Days to subtract to get to Monday: $DAYS_TO_MONDAY" }
+$MONDAY = (Get-Date).AddDays(-$DAYS_TO_MONDAY).ToString("yyyy-MM-dd")
+if ($DEBUG_MODE) { Write-Host "Debug: Calculated Monday as: $MONDAY" }
 $TODAY = (Get-Date).ToString("yyyy-MM-dd")
+if ($DEBUG_MODE) { Write-Host "Debug: Today is: $TODAY" }
 $AUTHOR = ""
 $JSON_OUTPUT = $false
 
@@ -25,11 +35,13 @@ function Show-Help {
     Write-Host "  -u, -until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
     Write-Host "  -a, -author NAME  只显示指定作者的提交"
     Write-Host "  -j, -json         以JSON格式输出结果"
+    Write-Host "  --debug           启用调试输出"
     Write-Host ""
     Write-Host "示例:" -ForegroundColor $YELLOW
     Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
     Write-Host "  .\weekly-git-summary.ps1 -author '张三' -since 2023-01-01"
     Write-Host "  .\weekly-git-summary.ps1 -json -since 2023-01-01"
+    Write-Host "  .\weekly-git-summary.ps1 --debug"
     exit
 }
 
@@ -42,27 +54,32 @@ while ($i -lt $args.Count) {
             break
         }
         { $_ -in ("-d", "-dir") } {
-            $SEARCH_DIR = $args[$i+1]
+            $SEARCH_DIR = $args[$i + 1]
             $i += 2
             continue
         }
         { $_ -in ("-s", "-since") } {
-            $MONDAY = $args[$i+1]
+            $MONDAY = $args[$i + 1]
             $i += 2
             continue
         }
         { $_ -in ("-u", "-until") } {
-            $TODAY = $args[$i+1]
+            $TODAY = $args[$i + 1]
             $i += 2
             continue
         }
         { $_ -in ("-a", "-author") } {
-            $AUTHOR = $args[$i+1]
+            $AUTHOR = $args[$i + 1]
             $i += 2
             continue
         }
         { $_ -in ("-j", "-json") } {
             $JSON_OUTPUT = $true
+            $i += 1
+            continue
+        }
+        "--debug" {
+            $DEBUG_MODE = $true
             $i += 1
             continue
         }
@@ -72,7 +89,6 @@ while ($i -lt $args.Count) {
             exit 1
         }
     }
-    # 这里不需要再增加索引了，因为已经在每个 case 中处理过了
 }
 
 # 检查搜索目录是否存在
@@ -84,18 +100,19 @@ if (-not (Test-Path $SEARCH_DIR -PathType Container)) {
 # 如果是JSON输出，开始输出JSON对象
 if ($JSON_OUTPUT) {
     $jsonOutput = [ordered]@{
-        timeRange = @{
+        timeRange    = @{
             since = $MONDAY
             until = $TODAY
         }
-        searchDir = $SEARCH_DIR
+        searchDir    = $SEARCH_DIR
         repositories = @()
     }
     
     if ($AUTHOR -ne "") {
         $jsonOutput.Add("author", $AUTHOR)
     }
-} else {
+}
+else {
     Write-Host "===== 工作内容Git提交记录汇总 =====" -ForegroundColor $BLUE
     Write-Host "统计时间范围: " -NoNewline -ForegroundColor $GREEN
     Write-Host "$MONDAY 到 $TODAY"
@@ -110,7 +127,7 @@ if ($JSON_OUTPUT) {
 
 # 查找所有Git仓库
 $gitDirs = Get-ChildItem -Path $SEARCH_DIR -Recurse -Force -Directory -ErrorAction SilentlyContinue | 
-    Where-Object { $_.Name -eq ".git" }
+Where-Object { $_.Name -eq ".git" }
 
 foreach ($gitDir in $gitDirs) {
     # 进入仓库所在目录
@@ -122,7 +139,7 @@ foreach ($gitDir in $gitDirs) {
     $REPO_NAME = Split-Path -Leaf $repoPath
     
     # 获取提交日志，添加作者过滤条件
-    $gitLogArgs = @('log', "--since=$MONDAY", "--until=$TODAY", '--pretty=format:%ad|%an|%s', '--date=short')
+    $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s', '--date=short')
     if ($AUTHOR -ne "") {
         $gitLogArgs += "--author=$AUTHOR"
     }
@@ -133,7 +150,7 @@ foreach ($gitDir in $gitDirs) {
     if ($COMMITS) {
         if ($JSON_OUTPUT) {
             $repoData = @{
-                name = $REPO_NAME
+                name    = $REPO_NAME
                 commits = @()
             }
             
@@ -156,7 +173,7 @@ foreach ($gitDir in $gitDirs) {
                     # 创建新的日期组
                     $CURRENT_DATE = $date
                     $dateCommits = @{
-                        date = $date
+                        date    = $date
                         commits = @()
                     }
                 }
@@ -164,7 +181,7 @@ foreach ($gitDir in $gitDirs) {
                 # 添加当前提交
                 $dateCommits.commits += @{
                     message = $message
-                    author = $author
+                    author  = $author
                 }
             }
             
@@ -175,7 +192,8 @@ foreach ($gitDir in $gitDirs) {
             
             # 添加仓库数据到输出
             $jsonOutput.repositories += $repoData
-        } else {
+        }
+        else {
             Write-Host "项目: $REPO_NAME" -ForegroundColor $YELLOW
             Write-Host ""
             
@@ -207,6 +225,7 @@ foreach ($gitDir in $gitDirs) {
 if ($JSON_OUTPUT) {
     $jsonOutput | ConvertTo-Json -Depth 10
     # 不再显示常规总结
-} else {
+}
+else {
     Write-Host "===== 工作内容汇总完成 =====" -ForegroundColor $BLUE
 }
