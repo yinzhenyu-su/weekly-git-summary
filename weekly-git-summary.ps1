@@ -29,12 +29,12 @@ function Show-Help {
     Write-Host "  .\weekly-git-summary.ps1 [选项]"
     Write-Host ""
     Write-Host "选项:" -ForegroundColor $GREEN
-    Write-Host "  -h, -help         显示此帮助信息"
-    Write-Host "  -d, -dir DIR      指定搜索目录 (默认: 当前目录)"
-    Write-Host "  -s, -since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
-    Write-Host "  -u, -until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
-    Write-Host "  -a, -author NAME  只显示指定作者的提交"
-    Write-Host "  -j, -json         以JSON格式输出结果"
+    Write-Host "  -h, --help         显示此帮助信息"
+    Write-Host "  -d, --dir DIR      指定搜索目录 (默认: 当前目录)"
+    Write-Host "  -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
+    Write-Host "  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
+    Write-Host "  -a, --author NAME  只显示指定作者的提交"
+    Write-Host "  -j, --json         以JSON格式输出结果"
     Write-Host "  --debug           启用调试输出"
     Write-Host ""
     Write-Host "示例:" -ForegroundColor $YELLOW
@@ -49,31 +49,31 @@ function Show-Help {
 $i = 0
 while ($i -lt $args.Count) {
     switch ($args[$i]) {
-        { $_ -in ("-h", "-help") } {
+        { $_ -in ("-h", "--help") } {
             Show-Help
             break
         }
-        { $_ -in ("-d", "-dir") } {
+        { $_ -in ("-d", "--dir") } {
             $SEARCH_DIR = $args[$i + 1]
             $i += 2
             continue
         }
-        { $_ -in ("-s", "-since") } {
+        { $_ -in ("-s", "--since") } {
             $MONDAY = $args[$i + 1]
             $i += 2
             continue
         }
-        { $_ -in ("-u", "-until") } {
+        { $_ -in ("-u", "--until") } {
             $TODAY = $args[$i + 1]
             $i += 2
             continue
         }
-        { $_ -in ("-a", "-author") } {
+        { $_ -in ("-a", "--author") } {
             $AUTHOR = $args[$i + 1]
             $i += 2
             continue
         }
-        { $_ -in ("-j", "-json") } {
+        { $_ -in ("-j", "--json") } {
             $JSON_OUTPUT = $true
             $i += 1
             continue
