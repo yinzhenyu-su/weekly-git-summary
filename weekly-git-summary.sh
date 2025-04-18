@@ -38,7 +38,6 @@ show_help() {
     echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
     echo "  $0 --author '张三' --since 2023-01-01"
     echo "  $0 --json --since 2023-01-01"
-    echo "  $0 --debug"
     exit 0
 }
 

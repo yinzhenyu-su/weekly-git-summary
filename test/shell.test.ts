@@ -29,7 +29,6 @@ test('shell --help', () => {
       ../weekly-git-summary.sh --dir ~/projects --since 2023-01-01 --until 2023-01-31
       ../weekly-git-summary.sh --author '张三' --since 2023-01-01
       ../weekly-git-summary.sh --json --since 2023-01-01
-      ../weekly-git-summary.sh --debug
     "
   `)
 })

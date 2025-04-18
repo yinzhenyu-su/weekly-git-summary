@@ -38,7 +38,6 @@ function Show-Help {
     Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
     Write-Host "  .\weekly-git-summary.ps1 -author '张三' -since 2023-01-01"
     Write-Host "  .\weekly-git-summary.ps1 -json -since 2023-01-01"
-    Write-Host "  .\weekly-git-summary.ps1 --debug"
     exit
 }
 
