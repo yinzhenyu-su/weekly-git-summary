@@ -9,18 +9,13 @@ NC='\033[0m' # No Color
 
 # 默认值
 SEARCH_DIR="."
-DEBUG_MODE=false
 # 获取本周一的日期
 # 先获取当前是周几（0-6，0 表示周日）
 # 然后计算到本周一的偏移天数
 CURRENT_WEEKDAY=$(date +%w)
 DAYS_TO_MONDAY=$(( (($CURRENT_WEEKDAY + 6) % 7) ))
-$DEBUG_MODE && echo "Debug: Current weekday is $CURRENT_WEEKDAY (0=Sunday, 1=Monday, etc.)"
-$DEBUG_MODE && echo "Debug: Days to subtract to get to Monday: $DAYS_TO_MONDAY"
 MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
-$DEBUG_MODE && echo "Debug: Calculated Monday as: $MONDAY"
 TODAY=$(date +%Y-%m-%d)
-$DEBUG_MODE && echo "Debug: Today is: $TODAY"
 AUTHOR=""
 JSON_OUTPUT=false
 MD_OUTPUT=false
@@ -38,7 +33,6 @@ show_help() {
     echo "  -a, --author NAME  只显示指定作者的提交"
     echo "  -j, --json         以JSON格式输出结果"
     echo "  -m, --md           以Markdown格式输出结果"
-    echo "  --debug           启用调试输出"
     echo ""
     echo -e "${YELLOW}示例:${NC}"
     echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
@@ -76,10 +70,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -m|--md)
             MD_OUTPUT=true
-            shift
-            ;;
-        --debug)
-            DEBUG_MODE=true
             shift
             ;;
         *)

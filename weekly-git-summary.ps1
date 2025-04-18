@@ -8,18 +8,13 @@ $RED = [System.ConsoleColor]::Red
 
 # 默认值
 $SEARCH_DIR = "."
-$DEBUG_MODE = $false
 # 获取本周一的日期
 # 先获取当前是周几（0=周日，1=周一，等等）
 $CURRENT_WEEKDAY = [int](Get-Date).DayOfWeek.value__
-if ($DEBUG_MODE) { Write-Host "Debug: Current weekday is $CURRENT_WEEKDAY (0=Sunday, 1=Monday, etc.)" }
 # 计算到本周一的天数
 $DAYS_TO_MONDAY = (($CURRENT_WEEKDAY + 6) % 7)
-if ($DEBUG_MODE) { Write-Host "Debug: Days to subtract to get to Monday: $DAYS_TO_MONDAY" }
 $MONDAY = (Get-Date).AddDays(-$DAYS_TO_MONDAY).ToString("yyyy-MM-dd")
-if ($DEBUG_MODE) { Write-Host "Debug: Calculated Monday as: $MONDAY" }
 $TODAY = (Get-Date).ToString("yyyy-MM-dd")
-if ($DEBUG_MODE) { Write-Host "Debug: Today is: $TODAY" }
 $AUTHOR = ""
 $JSON_OUTPUT = $false
 $MD_OUTPUT = $false
@@ -37,7 +32,6 @@ function Show-Help {
     Write-Host "  -a, --author NAME  只显示指定作者的提交"
     Write-Host "  -j, --json         以JSON格式输出结果"
     Write-Host "  -m, --md           以Markdown格式输出结果"
-    Write-Host "  --debug           启用调试输出"
     Write-Host ""
     Write-Host "示例:" -ForegroundColor $YELLOW
     Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
@@ -82,11 +76,6 @@ while ($i -lt $args.Count) {
         }
         { $_ -in ("-m", "--md") } {
             $MD_OUTPUT = $true
-            $i += 1
-            continue
-        }
-        "--debug" {
-            $DEBUG_MODE = $true
             $i += 1
             continue
         }
