@@ -148,45 +148,59 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
             echo "      \"name\": \"$REPO_NAME\","
             echo "      \"commits\": ["
             
+
             # 按日期分组处理提交
             COMMIT_COUNT=0
             CURRENT_DATE=""
-            COMMIT_DATA=$(echo "$COMMITS" | while IFS="|" read -r date author message hash; do
+            # 初始化JSON字符串
+            COMMIT_DATA=""
+            CURRENT_DATE=""
+            FIRST_DATE=true
+            
+            # 处理每个提交
+            while IFS="|" read -r date author message hash; do
+                # 新日期组开始
                 if [ "$date" != "$CURRENT_DATE" ]; then
-                    if [ ! -z "$CURRENT_DATE" ]; then
-                        echo "          ]"
-                        echo "        },"
+                    # 关闭前一个日期组
+                    if [ "$FIRST_DATE" = false ]; then
+                        COMMIT_DATA="${COMMIT_DATA}\n          ]\n        },"
                     fi
+                    
+                    # 开始新日期组
                     CURRENT_DATE="$date"
-                    echo "        {"
-                    echo "          \"date\": \"$date\","
-                    echo "          \"commits\": ["
+                    COMMIT_DATA="${COMMIT_DATA}\n        {\n          \"date\": \"$date\",\n          \"commits\": ["
+                    FIRST_DATE=false
+                    FIRST_COMMIT=true
                 fi
                 
-                if [ $COMMIT_COUNT -gt 0 ]; then
-                    echo ","
+                # 添加提交分隔符
+                if [ "$FIRST_COMMIT" = false ]; then
+                    COMMIT_DATA="${COMMIT_DATA},"
                 fi
-                COMMIT_COUNT=$((COMMIT_COUNT + 1))
+                FIRST_COMMIT=false
                 
-                # 转义JSON中的特殊字符
+                # 添加提交内容
                 MESSAGE=$(echo "$message" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-                echo "            {"
-                echo "              \"message\": \"$MESSAGE\","
-                echo "              \"author\": \"$author\","
-                echo "              \"hash\": \"$hash\""
-                echo -n "            }"
-            done)
+                COMMIT_DATA="${COMMIT_DATA}\n            {\n              \"message\": \"$MESSAGE\",\n              \"author\": \"$author\",\n              \"hash\": \"$hash\"\n            }"
+            done <<< "$COMMITS"
+            
+            # 关闭最后一个日期组
+            if [ "$FIRST_DATE" = false ]; then
+                COMMIT_DATA="${COMMIT_DATA}\n          ]\n        }"
+            fi
             
             # 处理最后一个日期组
             if [ ! -z "$COMMIT_DATA" ]; then
-                echo "$COMMIT_DATA"
-                echo ""
-                echo "          ]"
+                echo -e "$COMMIT_DATA"
+            else
+                echo "        {"
+                echo "          \"date\": \"$TODAY\","
+                echo "          \"commits\": []"
                 echo "        }"
             fi
             
             echo "      ]"
-            echo -n "    }"
+            echo "    }"
         elif [ "$MD_OUTPUT" = true ]; then
             echo ""
             echo "## $REPO_NAME"

@@ -27,13 +27,17 @@
 - `-u, --until` 指定结束日期，格式为 `YYYY-MM-DD`，默认为今天。
 - `-a, --author` 指定作者，默认为所有作者。
 - `-j, --json` 以 JSON 格式输出结果。
-- `--debug` 启用调试输出。
+- `-m --md` 以 Markdown 格式输出结果。
 
 ### 示例
+
+- **linux/macOS**
 
 ```bash
 ./weekly-git-summary.sh -d ~/projects -s 2023-01-01 -u 2023-01-31
 ```
+
+- **windows**
 
 ```powershell
 .\weekly-git-summary.ps1 -d ~/projects -s 2023-01-01 -u 2023-01-31

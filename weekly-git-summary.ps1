@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # Windows PowerShell 版本的 Git 提交记录汇总工具
 
 # 设置颜色
