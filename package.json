@@ -1,0 +1,46 @@
+{
+  "name": "weekly-git-summary",
+  "version": "1.0.0",
+  "description": "A CLI tool to generate weekly git commit summaries",
+  "main": "build/index.js",
+  "type": "module",
+  "license": "MIT",
+  "author": "yinzhenyu.su@gmail.com",
+  "bin": {
+    "weekly-git-summary": "./build/index.js"
+  },
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "require": "./build/index.js",
+      "types": "./build/index.d.ts"
+    }
+  },
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "bun run ./build.ts",
+    "build:declaration": "tsc -p tsconfig.json --outDir build --rootDir src",
+    "start": "bun run ./src/index.ts",
+    "test": "bun test ./src/tests",
+    "test:update": "bun test ./src/tests --update-snapshots"
+  },
+  "dependencies": {
+    "@types/node": "^22.14.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "volta": {
+    "node": "22.14.0"
+  }
+}

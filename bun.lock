@@ -3,8 +3,12 @@
   "workspaces": {
     "": {
       "name": "test",
+      "dependencies": {
+        "@types/node": "^22.14.1",
+      },
       "devDependencies": {
         "@types/bun": "latest",
+        "typescript": "^5.8.3",
       },
       "peerDependencies": {
         "typescript": "^5",
