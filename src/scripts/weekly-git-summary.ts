@@ -17,12 +17,13 @@ const colors = {
 
 // 命令行参数接口
 interface Options {
-  dir: string;
-  since: string;
-  until: string;
+  dir?: string;
+  since?: string;
+  until?: string;
   author?: string;
-  json: boolean;
-  md: boolean;
+  json?: boolean;
+  md?: boolean;
+  help?: boolean;
 }
 
 // 获取本周一日期
@@ -46,24 +47,24 @@ function formatDate(date: Date): string {
 }
 
 // 显示帮助信息
-function showHelp(): void {
-  console.log(`${colors.blue}使用方法:${colors.reset}`);
-  console.log('  weekly-git-summary.ts [选项]');
-  console.log('');
-  console.log(`${colors.green}选项:${colors.reset}`);
-  console.log('  -h, --help         显示此帮助信息');
-  console.log('  -d, --dir DIR      指定搜索目录 (默认: 当前目录)');
-  console.log('  -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)');
-  console.log('  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)');
-  console.log('  -a, --author NAME  只显示指定作者的提交');
-  console.log('  -j, --json         以JSON格式输出结果');
-  console.log('  -m, --md           以Markdown格式输出结果');
-  console.log('');
-  console.log(`${colors.yellow}示例:${colors.reset}`);
-  console.log('  weekly-git-summary.ts --dir ~/projects --since 2023-01-01 --until 2023-01-31');
-  console.log('  weekly-git-summary.ts --author "张三" --since 2023-01-01');
-  console.log('  weekly-git-summary.ts --json --since 2023-01-01');
-  process.exit(0);
+function showHelp(): string {
+  const helpText = `${colors.blue}使用方法:${colors.reset}
+  weekly-git-summary.ts [选项]
+
+${colors.green}选项:${colors.reset}
+  -h, --help         显示此帮助信息
+  -d, --dir DIR      指定搜索目录 (默认: 当前目录)
+  -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)
+  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)
+  -a, --author NAME  只显示指定作者的提交
+  -j, --json         以JSON格式输出结果
+  -m, --md           以Markdown格式输出结果
+
+${colors.yellow}示例:${colors.reset}
+  weekly-git-summary.ts --dir ~/projects --since 2023-01-01 --until 2023-01-31
+  weekly-git-summary.ts --author "张三" --since 2023-01-01
+  weekly-git-summary.ts --json --since 2023-01-01`;
+  return helpText;
 }
 
 // 解析命令行参数
@@ -73,22 +74,25 @@ function parseArgs(): Options {
     since: getMonday(),
     until: formatDate(new Date()),
     json: false,
-    md: false
+    md: false,
+    help: false
   };
 
   const args = process.argv.slice(2);
+  console.log(process.argv)
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
+    console.log(arg)
     switch (arg) {
       case '-h':
       case '--help':
-        showHelp();
+        options.help = true;
         break;
       case '-d':
       case '--dir':
         if (i + 1 >= args.length) {
           console.error(`${colors.red}错误: 缺少目录参数${colors.reset}`);
-          showHelp();
+          options.help = true;
         }
         options.dir = args[++i]!;
         break;
@@ -96,7 +100,6 @@ function parseArgs(): Options {
       case '--since':
         if (i + 1 >= args.length) {
           console.error(`${colors.red}错误: 缺少开始日期参数${colors.reset}`);
-          showHelp();
         }
         options.since = args[++i]!;
         break;
@@ -104,7 +107,7 @@ function parseArgs(): Options {
       case '--until':
         if (i + 1 >= args.length) {
           console.error(`${colors.red}错误: 缺少结束日期参数${colors.reset}`);
-          showHelp();
+          options.help = true;
         }
         options.until = args[++i]!;
         break;
@@ -122,9 +125,10 @@ function parseArgs(): Options {
         break;
       default:
         console.error(`${colors.red}错误: 未知参数 ${arg}${colors.reset}`);
-        showHelp();
+        options.help = true;
     }
   }
+  console.log(options)
 
   return options;
 }
@@ -180,7 +184,10 @@ function getGitCommits(repoPath: string, options: Options): string {
 
 // 处理并输出结果
 function processAndOutput(repos: string[], options: Options): string {
-  if (options.json) {
+  console.log(options)
+  if (options.help) {
+    return showHelp();
+  } else if (options.json) {
     return outputJson(repos, options);
   } else if (options.md) {
     return outputMarkdown(repos, options);
@@ -356,12 +363,20 @@ function outputPlainText(repos: string[], options: Options): string {
   output += `${colors.blue}===== 工作内容汇总完成 =====${colors.reset}\n`;
   return output;
 }
-
+const defaultOptions = (options: Options) => ({
+  ...options,
+  dir: '.',
+  since: getMonday(),
+  until: formatDate(new Date()),
+  json: false,
+  md: false,
+  help: false
+})
 // 主函数
-function main(): string {
-  const options = parseArgs();
-  checkDir(options.dir);
-  const gitRepos = findGitRepos(options.dir);
+function main(options: Options): string {
+  const defaultedOptions = defaultOptions(options)
+  checkDir(defaultedOptions.dir);
+  const gitRepos = findGitRepos(defaultedOptions.dir);
   return processAndOutput(gitRepos, options);
 }
 

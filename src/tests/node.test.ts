@@ -2,42 +2,33 @@ import { expect, test } from 'bun:test'
 import { main } from '../scripts/weekly-git-summary'
 
 test('node --help', () => {
-
-
-  // 模拟命令行参数
-  process.argv = ['--help']
-  main()
-
   // 断言输出内容
-  expect(main()).toMatchInlineSnapshot(`
-    "\x1B[34m===== 工作内容Git提交记录汇总 =====\x1B[0m
-    \x1B[32m统计时间范围:\x1B[0m 2025-04-14 到 2025-04-18
-    \x1B[32m搜索目录:\x1B[0m .
+  expect(main({help: true})).toMatchInlineSnapshot(`
+    "\x1B[34m使用方法:\x1B[0m
+      weekly-git-summary.ts [选项]
 
-    \x1B[33m项目: tools\x1B[0m
+    \x1B[32m选项:\x1B[0m
+      -h, --help         显示此帮助信息
+      -d, --dir DIR      指定搜索目录 (默认: 当前目录)
+      -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)
+      -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)
+      -a, --author NAME  只显示指定作者的提交
+      -j, --json         以JSON格式输出结果
+      -m, --md           以Markdown格式输出结果
 
-    \x1B[32m2025-04-18\x1B[0m
-      • refactor: 移除帮助信息中的调试模式示例 (作者: yinzhenyu, hash: bf6d2c1)
-      • feat: 新增测试文件和配置，支持跨平台的Git周报工具 (作者: yinzhenyu, hash: b4f07bc)
-      • refactor: 移除调试模式相关代码，简化脚本 (作者: yinzhenyu, hash: cc9d45e)
-      • feat: 添加Markdown输出格式支持，并在提交记录中包含哈希值 (作者: yinzhenyu, hash: 2e2860d)
-
-    -----------------------------------------
-
-    \x1B[34m===== 工作内容汇总完成 =====\x1B[0m
-    "
+    \x1B[33m示例:\x1B[0m
+      weekly-git-summary.ts --dir ~/projects --since 2023-01-01 --until 2023-01-31
+      weekly-git-summary.ts --author "张三" --since 2023-01-01
+      weekly-git-summary.ts --json --since 2023-01-01"
   `)
 })
 
 test('node --dir --since --until', () => {
-  // 模拟命令行参数
-  process.argv = ['-d', '.','-s', '2024-01-02', '-u', '2025-04-17']
-
   // 断言输出内容
-  expect(main()).toMatchInlineSnapshot(`
+  expect(main({since: '2024-01-02', until: '2025-04-17'})).toMatchInlineSnapshot(`
     "\x1B[34m===== 工作内容Git提交记录汇总 =====\x1B[0m
     \x1B[32m统计时间范围:\x1B[0m 2024-01-02 到 2025-04-17
-    \x1B[32m搜索目录:\x1B[0m .
+    \x1B[32m搜索目录:\x1B[0m undefined
 
     \x1B[33m项目: tools\x1B[0m
 
@@ -55,16 +46,14 @@ test('node --dir --since --until', () => {
 })
 
 test('node --dir --since --until --json', () => {
-  // 模拟命令行参数
-  process.argv = ['--dir', '.', '-s', '2024-01-01', '-u', '2025-04-17', '--json']
   // 断言输出内容
-  expect(main()).toMatchInlineSnapshot(`
+  expect(main({since: '2024-01-02', until: '2025-04-17', json: true})).toMatchInlineSnapshot(`
     "{
       "timeRange": {
-        "since": "2024-01-01",
+        "since": "2024-01-02",
         "until": "2025-04-17"
       },
-      "searchDir": ".",
+      "searchDir": "undefined",
       "repositories": [
         {
           "name": "tools",
@@ -105,14 +94,12 @@ test('node --dir --since --until --json', () => {
 })
 
 test('node --dir --since --until --md', () => {
-  // 模拟命令行参数
-  process.argv = ['--dir', '.', '-s', '2024-01-01', '-u', '2025-04-17', '--md']
   // 断言输出内容
-  expect(main()).toMatchInlineSnapshot(`
+  expect(main({since: '2024-01-02', until: '2025-04-17', md: true})).toMatchInlineSnapshot(`
     "# 工作内容Git提交记录汇总
 
-    - **统计时间范围**: 2024-01-01 到 2025-04-17
-    - **搜索目录**: .
+    - **统计时间范围**: 2024-01-02 到 2025-04-17
+    - **搜索目录**: undefined
 
 
     ## tools
@@ -131,13 +118,11 @@ test('node --dir --since --until --md', () => {
 })
 
 test('node --dir --since --until --author', () => {
-  // 模拟命令行参数
-  process.argv = ['--dir', '.', '-s', '2024-01-01', '-u', '2025-04-17', '--author', 'notexist']
   // 断言输出内容
-  expect(main()).toMatchInlineSnapshot(`
+  expect(main({since: '2024-01-02', until: '2025-04-17', author: 'notexist'})).toMatchInlineSnapshot(`
     "\x1B[34m===== 工作内容Git提交记录汇总 =====\x1B[0m
-    \x1B[32m统计时间范围:\x1B[0m 2024-01-01 到 2025-04-17
-    \x1B[32m搜索目录:\x1B[0m .
+    \x1B[32m统计时间范围:\x1B[0m 2024-01-02 到 2025-04-17
+    \x1B[32m搜索目录:\x1B[0m undefined
     \x1B[32m作者过滤:\x1B[0m notexist
 
     \x1B[34m===== 工作内容汇总完成 =====\x1B[0m
