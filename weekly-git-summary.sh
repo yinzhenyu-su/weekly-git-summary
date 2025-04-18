@@ -23,6 +23,7 @@ TODAY=$(date +%Y-%m-%d)
 $DEBUG_MODE && echo "Debug: Today is: $TODAY"
 AUTHOR=""
 JSON_OUTPUT=false
+MD_OUTPUT=false
 
 # 显示帮助信息
 show_help() {
@@ -36,6 +37,7 @@ show_help() {
     echo "  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
     echo "  -a, --author NAME  只显示指定作者的提交"
     echo "  -j, --json         以JSON格式输出结果"
+    echo "  -m, --md           以Markdown格式输出结果"
     echo "  --debug           启用调试输出"
     echo ""
     echo -e "${YELLOW}示例:${NC}"
@@ -72,6 +74,10 @@ while [[ $# -gt 0 ]]; do
             JSON_OUTPUT=true
             shift
             ;;
+        -m|--md)
+            MD_OUTPUT=true
+            shift
+            ;;
         --debug)
             DEBUG_MODE=true
             shift
@@ -101,6 +107,15 @@ if [ "$JSON_OUTPUT" = true ]; then
         echo "  \"author\": \"$AUTHOR\","
     fi
     echo '  "repositories": ['
+elif [ "$MD_OUTPUT" = true ]; then
+    echo "# 工作内容Git提交记录汇总"
+    echo ""
+    echo "- **统计时间范围**: $MONDAY 到 $TODAY"
+    echo "- **搜索目录**: $SEARCH_DIR"
+    if [ ! -z "$AUTHOR" ]; then
+        echo "- **作者过滤**: $AUTHOR"
+    fi
+    echo ""
 else
     echo -e "${BLUE}===== 工作内容Git提交记录汇总 =====${NC}"
     echo -e "${GREEN}统计时间范围:${NC} $MONDAY 到 $TODAY"
@@ -128,7 +143,7 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
         AUTHOR_FILTER="--author=$AUTHOR"
     fi
     # 调整时间范围：从周一 00:00:00 到今天 23:59:59
-    COMMITS=$(git log $AUTHOR_FILTER --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s" --date=short)
+    COMMITS=$(git log $AUTHOR_FILTER --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)
     
     # 如果有提交，则显示仓库信息和提交
     if [ ! -z "$COMMITS" ]; then
@@ -146,7 +161,7 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
             # 按日期分组处理提交
             COMMIT_COUNT=0
             CURRENT_DATE=""
-            COMMIT_DATA=$(echo "$COMMITS" | while IFS="|" read -r date author message; do
+            COMMIT_DATA=$(echo "$COMMITS" | while IFS="|" read -r date author message hash; do
                 if [ "$date" != "$CURRENT_DATE" ]; then
                     if [ ! -z "$CURRENT_DATE" ]; then
                         echo "          ]"
@@ -167,7 +182,8 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
                 MESSAGE=$(echo "$message" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
                 echo "            {"
                 echo "              \"message\": \"$MESSAGE\","
-                echo "              \"author\": \"$author\""
+                echo "              \"author\": \"$author\","
+                echo "              \"hash\": \"$hash\""
                 echo -n "            }"
             done)
             
@@ -181,19 +197,35 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
             
             echo "      ]"
             echo -n "    }"
+        elif [ "$MD_OUTPUT" = true ]; then
+            echo ""
+            echo "## $REPO_NAME"
+            echo ""
+            
+            # 按日期分组显示提交
+            CURRENT_DATE=""
+            echo "$COMMITS" | while IFS="|" read -r date author message hash; do
+                if [ "$date" != "$CURRENT_DATE" ]; then
+                    echo "### $date"
+                    CURRENT_DATE="$date"
+                fi
+                echo "- $message (作者: $author, hash: $hash)"
+            done
+            echo ""
         else
             echo -e "${YELLOW}项目: $REPO_NAME${NC}"
             echo ""
             
             # 按日期分组显示提交
             CURRENT_DATE=""
-            echo "$COMMITS" | while IFS="|" read -r date author message; do
+            echo "$COMMITS" | while IFS="|" read -r date author message hash; do
                 if [ "$date" != "$CURRENT_DATE" ]; then
                     echo -e "${GREEN}$date${NC}"
                     CURRENT_DATE="$date"
                 fi
-                echo "  • $message (作者: $author)"
+                echo "  • $message (作者: $author, hash: $hash)"
             done
+            
             echo ""
             echo "-----------------------------------------"
             echo ""
@@ -210,5 +242,11 @@ if [ "$JSON_OUTPUT" = true ]; then
     echo "  ]"
     echo "}"
 else
-    echo -e "${BLUE}===== 工作内容汇总完成 =====${NC}"
+    if [ "$MD_OUTPUT" = true ]; then
+        echo ""
+        echo "---"
+        echo "*工作内容汇总完成*"
+    else
+        echo -e "${BLUE}===== 工作内容汇总完成 =====${NC}"
+    fi
 fi

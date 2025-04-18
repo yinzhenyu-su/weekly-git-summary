@@ -22,6 +22,7 @@ $TODAY = (Get-Date).ToString("yyyy-MM-dd")
 if ($DEBUG_MODE) { Write-Host "Debug: Today is: $TODAY" }
 $AUTHOR = ""
 $JSON_OUTPUT = $false
+$MD_OUTPUT = $false
 
 # 显示帮助信息
 function Show-Help {
@@ -35,6 +36,7 @@ function Show-Help {
     Write-Host "  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
     Write-Host "  -a, --author NAME  只显示指定作者的提交"
     Write-Host "  -j, --json         以JSON格式输出结果"
+    Write-Host "  -m, --md           以Markdown格式输出结果"
     Write-Host "  --debug           启用调试输出"
     Write-Host ""
     Write-Host "示例:" -ForegroundColor $YELLOW
@@ -78,6 +80,11 @@ while ($i -lt $args.Count) {
             $i += 1
             continue
         }
+        { $_ -in ("-m", "--md") } {
+            $MD_OUTPUT = $true
+            $i += 1
+            continue
+        }
         "--debug" {
             $DEBUG_MODE = $true
             $i += 1
@@ -112,6 +119,16 @@ if ($JSON_OUTPUT) {
         $jsonOutput.Add("author", $AUTHOR)
     }
 }
+elseif ($MD_OUTPUT) {
+    "# 工作内容Git提交记录汇总"
+    ""
+    "- **统计时间范围**: $MONDAY 到 $TODAY"
+    "- **搜索目录**: $SEARCH_DIR"
+    if ($AUTHOR -ne "") {
+        "- **作者过滤**: $AUTHOR"
+    }
+    ""
+}
 else {
     Write-Host "===== 工作内容Git提交记录汇总 =====" -ForegroundColor $BLUE
     Write-Host "统计时间范围: " -NoNewline -ForegroundColor $GREEN
@@ -139,7 +156,7 @@ foreach ($gitDir in $gitDirs) {
     $REPO_NAME = Split-Path -Leaf $repoPath
     
     # 获取提交日志，添加作者过滤条件
-    $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s', '--date=short')
+    $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s|%h', '--date=short')
     if ($AUTHOR -ne "") {
         $gitLogArgs += "--author=$AUTHOR"
     }
@@ -163,6 +180,7 @@ foreach ($gitDir in $gitDirs) {
                 $date = $parts[0]
                 $author = $parts[1]
                 $message = $parts[2]
+                $hash = $parts[3]
                 
                 if ($date -ne $CURRENT_DATE) {
                     # 保存之前的日期数据
@@ -182,6 +200,7 @@ foreach ($gitDir in $gitDirs) {
                 $dateCommits.commits += @{
                     message = $message
                     author  = $author
+                    hash    = $hash
                 }
             }
             
@@ -192,6 +211,28 @@ foreach ($gitDir in $gitDirs) {
             
             # 添加仓库数据到输出
             $jsonOutput.repositories += $repoData
+        }
+        elseif ($MD_OUTPUT) {
+            ""
+            "## $REPO_NAME"
+            ""
+            
+            # 按日期分组显示提交
+            $CURRENT_DATE = ""
+            foreach ($line in $COMMITS) {
+                $parts = $line -split '\|'
+                $date = $parts[0]
+                $author = $parts[1]
+                $message = $parts[2]
+                $hash = $parts[3]
+                
+                if ($date -ne $CURRENT_DATE) {
+                    "### $date"
+                    $CURRENT_DATE = $date
+                }
+                "- $message (作者: $author, hash: $hash)"
+            }
+            ""
         }
         else {
             Write-Host "项目: $REPO_NAME" -ForegroundColor $YELLOW
@@ -204,12 +245,13 @@ foreach ($gitDir in $gitDirs) {
                 $date = $parts[0]
                 $author = $parts[1]
                 $message = $parts[2]
+                $hash = $parts[3]
                 
                 if ($date -ne $CURRENT_DATE) {
                     Write-Host "$date" -ForegroundColor $GREEN
                     $CURRENT_DATE = $date
                 }
-                Write-Host "  • $message (作者: $author)"
+                Write-Host "  • $message (作者: $author, hash: $hash)"
             }
             Write-Host ""
             Write-Host "-----------------------------------------"
@@ -225,6 +267,11 @@ foreach ($gitDir in $gitDirs) {
 if ($JSON_OUTPUT) {
     $jsonOutput | ConvertTo-Json -Depth 10
     # 不再显示常规总结
+}
+elseif ($MD_OUTPUT) {
+    ""
+    "---"
+    "*工作内容汇总完成*"
 }
 else {
     Write-Host "===== 工作内容汇总完成 =====" -ForegroundColor $BLUE
