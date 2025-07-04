@@ -31,6 +31,50 @@ function Get-GitRemoteUrl {
     return Convert-GitRemoteToUrl $remoteInfo
 }
 
+# 生成 HTML 输出函数
+function New-HtmlOutput {
+    $scriptDir = Split-Path -Path $MyInvocation.ScriptName -Parent
+    $templateFile = Join-Path $scriptDir "..\git-log.html"
+    $outputFile = "git-log-$(Get-Date -Format 'yyyyMMdd-HHmmss').html"
+    
+    # 检查模板文件是否存在
+    if (-not (Test-Path $templateFile)) {
+        Write-Host "错误: 找不到 HTML 模板文件 $templateFile" -ForegroundColor $RED
+        exit 1
+    }
+    
+    # 重新运行脚本获取 JSON 数据
+    $scriptArgs = @()
+    if ($SEARCH_DIR -ne ".") {
+        $scriptArgs += "--dir", "`"$SEARCH_DIR`""
+    }
+    if ($MONDAY) {
+        $scriptArgs += "--since", "`"$MONDAY`""
+    }
+    if ($TODAY) {
+        $scriptArgs += "--until", "`"$TODAY`""
+    }
+    if ($AUTHOR) {
+        $scriptArgs += "--author", "`"$AUTHOR`""
+    }
+    $scriptArgs += "--json"
+    
+    $jsonData = & $MyInvocation.ScriptName @scriptArgs
+    
+    # 读取模板文件内容
+    $templateContent = Get-Content $templateFile -Raw
+    
+    # 替换模板中的 STATIC_DATA
+    $modifiedContent = $templateContent -replace 'const STATIC_DATA = ``;', "const STATIC_DATA = $jsonData;"
+    
+    $modifiedContent
+    # 写入输出文件
+    # $modifiedContent | Out-File -FilePath $outputFile -Encoding UTF8
+    
+    # Write-Host "HTML 文件已生成: $outputFile" -ForegroundColor $GREEN
+    # Write-Host "用浏览器打开查看: file://$(Resolve-Path $outputFile)" -ForegroundColor $BLUE
+}
+
 # 设置颜色
 $BLUE = [System.ConsoleColor]::Blue
 $GREEN = [System.ConsoleColor]::Green
@@ -49,6 +93,7 @@ $TODAY = (Get-Date).ToString("yyyy-MM-dd")
 $AUTHOR = ""
 $JSON_OUTPUT = $false
 $MD_OUTPUT = $false
+$HTML_OUTPUT = $false
 
 # 显示帮助信息
 function Show-Help {
@@ -63,6 +108,7 @@ function Show-Help {
     Write-Host "  -a, --author NAME  只显示指定作者的提交"
     Write-Host "  -j, --json         以JSON格式输出结果"
     Write-Host "  -m, --md           以Markdown格式输出结果"
+    Write-Host "  --html             生成HTML可视化文件"
     Write-Host ""
     Write-Host "示例:" -ForegroundColor $YELLOW
     Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
@@ -109,6 +155,11 @@ while ($i -lt $args.Count) {
             $i += 1
             continue
         }
+        "--html" {
+            $HTML_OUTPUT = $true
+            $i += 1
+            continue
+        }
         default {
             Write-Host "错误: 未知参数 $($args[$i])" -ForegroundColor $RED
             Show-Help
@@ -147,6 +198,10 @@ elseif ($MD_OUTPUT) {
         "- **作者过滤**: $AUTHOR"
     }
     ""
+}
+elseif ($HTML_OUTPUT) {
+    # do nothing, HTML output will be generated later
+    # 这里不需要输出任何内容，HTML 输出会在 New-HtmlOutput 函数中处理
 }
 else {
     Write-Host "===== 工作内容Git提交记录汇总 =====" -ForegroundColor $BLUE
@@ -256,6 +311,9 @@ foreach ($gitDir in $gitDirs) {
             }
             ""
         }
+        elseif ($HTML_OUTPUT) {
+            # do nothing, HTML output will be generated later
+        }
         else {
             Write-Host "项目: $REPO_NAME" -ForegroundColor $YELLOW
             Write-Host ""
@@ -289,6 +347,10 @@ foreach ($gitDir in $gitDirs) {
 if ($JSON_OUTPUT) {
     $jsonOutput | ConvertTo-Json -Depth 10
     # 不再显示常规总结
+}
+elseif ($HTML_OUTPUT) {
+    # 生成HTML文件
+    New-HtmlOutput
 }
 elseif ($MD_OUTPUT) {
     ""

@@ -66,6 +66,7 @@ node build/cli.js --md
 - `-u, --until <date>`: 结束日期 (YYYY-MM-DD 格式，默认: 今天)
 - `-a, --author <name>`: 按作者过滤 (默认: 所有作者)
 - `-j, --json`: 以 JSON 格式输出
+- `--html`: 以 HTML 格式输出
 - `-m, --md`: 以 Markdown 格式输出
 
 ## 开发说明

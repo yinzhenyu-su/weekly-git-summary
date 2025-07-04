@@ -22,6 +22,51 @@ TODAY=$(date +%Y-%m-%d)
 AUTHOR=""
 JSON_OUTPUT=false
 MD_OUTPUT=false
+HTML_OUTPUT=false
+
+# 生成 HTML 输出函数
+generate_html_output() {
+    local script_dir="$(dirname "$0")"
+    local template_file="$script_dir/../git-log.html"
+    local output_file="git-log-$(date +%Y%m%d-%H%M%S).html"
+    
+    # 检查模板文件是否存在
+    if [ ! -f "$template_file" ]; then
+        echo -e "${RED}错误: 找不到 HTML 模板文件 $template_file${NC}"
+        exit 1
+    fi
+    
+    # 重新运行脚本获取 JSON 数据
+    local args=""
+    if [ ! -z "$SEARCH_DIR" ] && [ "$SEARCH_DIR" != "." ]; then
+        args="$args --dir \"$SEARCH_DIR\""
+    fi
+    if [ ! -z "$MONDAY" ]; then
+        args="$args --since \"$MONDAY\""
+    fi
+    if [ ! -z "$TODAY" ]; then
+        args="$args --until \"$TODAY\""
+    fi
+    if [ ! -z "$AUTHOR" ]; then
+        args="$args --author \"$AUTHOR\""
+    fi
+    
+    # 转义`字符
+    local json_data=$(eval "$0 $args --json" | sed 's/`/\\`/g')
+    
+    # 读取模板文件内容
+    local template_content=$(cat "$template_file")
+    
+    # 替换模板中的 STATIC_DATA
+    local modified_content="${template_content//const STATIC_DATA = \`\`;/const STATIC_DATA = $json_data;}"
+    
+    echo "$modified_content"
+    # 写入输出文件
+    # echo "$modified_content" > "$output_file"
+    
+    # echo -e "${GREEN}HTML 文件已生成: $output_file${NC}"
+    # echo -e "${BLUE}用浏览器打开查看: file://$(realpath "$output_file")${NC}"
+}
 
 # 显示帮助信息
 show_help() {
@@ -36,6 +81,7 @@ show_help() {
     echo "  -a, --author NAME  只显示指定作者的提交"
     echo "  -j, --json         以JSON格式输出结果"
     echo "  -m, --md           以Markdown格式输出结果"
+    echo "  --html             生成HTML可视化文件"
     echo ""
     echo -e "${YELLOW}示例:${NC}"
     echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
@@ -74,6 +120,10 @@ while [[ $# -gt 0 ]]; do
             MD_OUTPUT=true
             shift
             ;;
+        --html)
+            HTML_OUTPUT=true
+            shift
+            ;;
         *)
             echo -e "${RED}错误: 未知参数 $1${NC}"
             show_help
@@ -107,6 +157,8 @@ elif [ "$MD_OUTPUT" = true ]; then
     if [ ! -z "$AUTHOR" ]; then
         echo "- **作者过滤**: $AUTHOR"
     fi
+    echo ""
+elif [ "$HTML_OUTPUT" = true ]; then
     echo ""
 else
     echo -e "${BLUE}===== 工作内容Git提交记录汇总 =====${NC}"
@@ -221,7 +273,7 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
                 echo "- $message (作者: $author, hash: $hash)"
             done
             echo ""
-        else
+        elif [ "$HTML_OUTPUT" = false ]; then
             echo -e "${YELLOW}项目: $REPO_NAME${NC}"
             echo ""
             
@@ -250,6 +302,9 @@ if [ "$JSON_OUTPUT" = true ]; then
     echo ""
     echo "  ]"
     echo "}"
+elif [ "$HTML_OUTPUT" = true ]; then
+    # 生成HTML文件
+    generate_html_output
 else
     if [ "$MD_OUTPUT" = true ]; then
         echo ""

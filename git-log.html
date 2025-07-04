@@ -325,6 +325,10 @@
         document.documentElement.classList.add("dark");
       }
 
+      const STATIC_DATA = ``;
+      if (!!STATIC_DATA) {
+        return renderCommitData(STATIC_DATA);
+      }
       // 加载JSON数据
       try {
         // 从 query 中获取 jsonFileName
@@ -691,9 +695,7 @@
 
     function createCommitCard(commit, repoUrl) {
       const card = document.createElement("a");
-      card.href = !!repoUrl
-        ? `${window.location.protocol}//${repoUrl}/-/commit/${commit.hash}`
-        : "";
+      card.href = !!repoUrl ? `http://${repoUrl}/-/commit/${commit.hash}` : "";
       card.target = "_blank";
       card.className =
         "commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block";
