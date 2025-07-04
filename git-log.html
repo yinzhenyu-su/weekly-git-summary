@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工作内容Git提交记录汇总 - yinzhenyu</title>
+    <!-- echarts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+
+    <!-- Custom Styles -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+      * {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .dark .gradient-bg {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      }
+
+      .glass-effect {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .commit-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .commit-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .dark .commit-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+          0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      }
+
+      .timeline-line {
+        background: linear-gradient(to bottom, #e2e8f0, transparent);
+      }
+
+      .dark .timeline-line {
+        background: linear-gradient(to bottom, #475569, transparent);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stagger-1 {
+        animation-delay: 0.1s;
+      }
+      .stagger-2 {
+        animation-delay: 0.2s;
+      }
+      .stagger-3 {
+        animation-delay: 0.3s;
+      }
+
+      .commit-type-feat {
+        @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+      }
+      .commit-type-fix {
+        @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+      }
+      .commit-type-docs {
+        @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300;
+      }
+      .commit-type-chore {
+        @apply bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300;
+      }
+      .commit-type-refactor {
+        @apply bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Theme Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+      <button
+        id="theme-toggle"
+        class="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+      >
+        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+        <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+      </button>
+    </div>
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 px-4">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center fade-in">
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">
+            <i class="fab fa-git-alt mr-4"></i>
+            工作内容提交记录
+          </h1>
+          <p class="text-xl md:text-2xl text-white/90 mb-8">
+            项目开发进度可视化看板
+          </p>
+
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+            <div
+              class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-1"
+            >
+              <div class="text-3xl font-bold" id="total-commits">--</div>
+              <div class="text-white/80">总提交数</div>
+            </div>
+            <div
+              class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-2"
+            >
+              <div class="text-3xl font-bold" id="active-days">--</div>
+              <div class="text-white/80">活跃天数</div>
+            </div>
+            <div
+              class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-3"
+            >
+              <div class="text-3xl font-bold" class="repo-name">--</div>
+              <div class="text-white/80">项目名称</div>
+            </div>
+            <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in">
+              <div class="text-3xl font-bold" id="dev-month">--</div>
+              <div class="text-white/80">开发月份</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto max-w-6xl px-4 py-12">
+      <!-- Project Info -->
+      <div
+        class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 mb-12 fade-in"
+      >
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="flex items-center space-x-4 mb-4 md:mb-0">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center"
+            >
+              <i class="fas fa-code text-white text-2xl"></i>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                项目: <span class="repo-name">--</span>
+              </h2>
+              <p class="text-gray-600 dark:text-gray-400">开发者: yinzhenyu</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              统计时间范围
+            </div>
+            <div class="text-lg font-semibold text-gray-900 dark:text-white">
+              <span id="startDate"></span> 至 <span id="endDate"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commit Type Distribution -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
+        <div
+          class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6 text-center fade-in"
+        >
+          <div
+            class="text-3xl font-bold text-green-600 dark:text-green-400"
+            id="feat-count"
+          >
+            --
+          </div>
+          <div class="text-green-800 dark:text-green-300 font-medium">feat</div>
+          <div class="text-xs text-green-600 dark:text-green-400">新功能</div>
+        </div>
+        <div
+          class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 text-center fade-in stagger-1"
+        >
+          <div
+            class="text-3xl font-bold text-red-600 dark:text-red-400"
+            id="fix-count"
+          >
+            --
+          </div>
+          <div class="text-red-800 dark:text-red-300 font-medium">fix</div>
+          <div class="text-xs text-red-600 dark:text-red-400">问题修复</div>
+        </div>
+        <div
+          class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 text-center fade-in stagger-2"
+        >
+          <div
+            class="text-3xl font-bold text-blue-600 dark:text-blue-400"
+            id="docs-count"
+          >
+            --
+          </div>
+          <div class="text-blue-800 dark:text-blue-300 font-medium">docs</div>
+          <div class="text-xs text-blue-600 dark:text-blue-400">文档更新</div>
+        </div>
+        <div
+          class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 text-center fade-in stagger-3"
+        >
+          <div
+            class="text-3xl font-bold text-gray-600 dark:text-gray-400"
+            id="chore-count"
+          >
+            --
+          </div>
+          <div class="text-gray-800 dark:text-gray-300 font-medium">chore</div>
+          <div class="text-xs text-gray-600 dark:text-gray-400">构建维护</div>
+        </div>
+        <div
+          class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6 text-center fade-in"
+        >
+          <div
+            class="text-3xl font-bold text-purple-600 dark:text-purple-400"
+            id="refactor-count"
+          >
+            --
+          </div>
+          <div class="text-purple-800 dark:text-purple-300 font-medium">
+            refactor
+          </div>
+          <div class="text-xs text-purple-600 dark:text-purple-400">
+            重构代码
+          </div>
+        </div>
+      </div>
+      <!-- 雷达图展示的 提交类型分布 -->
+      <div class="mb-12">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 fade-in">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            <i class="fas fa-chart-radar mr-2"></i>
+            提交类型分布
+          </h3>
+          <div id="commit-type-chart" style="width: 100%; height: 400px;"></div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="space-y-8">
+        <!-- 提交时间线将通过JavaScript动态渲染 -->
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-12 px-4 mt-16"
+    >
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center space-y-6">
+          <div class="flex justify-center space-x-6">
+            <a
+              href="https://github.com/yinzhenyu"
+              target="_blank"
+              class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <i class="fab fa-github text-xl"></i>
+              <span>GitHub</span>
+            </a>
+            <a
+              href="https://twitter.com/yinzhenyu"
+              target="_blank"
+              class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <i class="fab fa-twitter text-xl"></i>
+              <span>Twitter</span>
+            </a>
+            <a
+              href="https://linkedin.com/in/yinzhenyu"
+              target="_blank"
+              class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            ></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 切换主题功能
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          document.documentElement.classList.toggle('dark');
+        });
+      }
+
+      // 检查系统主题偏好
+      if (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      ) {
+        document.documentElement.classList.add('dark');
+      }
+
+      // 加载JSON数据
+      try {
+        // 从 query 中获取 jsonFileName
+        const jsonFileName = new URLSearchParams(window.location.search).get(
+          'jsonFileName'
+        );
+        // 如果没有提供 jsonFileName，则使用默认的 git-log.json
+        const response = await fetch(`./${jsonFileName || 'git-log.json'}`);
+        const data = await response.json();
+        renderCommitData(data);
+      } catch (error) {
+        console.error('加载或解析数据时出错:', error);
+      }
+    });
+
+    function renderCommitData(data) {
+      const { repositories, timeRange, author } = data;
+      document.getElementById('startDate').textContent = timeRange.since;
+      document.getElementById('endDate').textContent = timeRange.until;
+      document.querySelectorAll('.repo-name').forEach(el => el.textContent = repositories[0]?.name || '--');
+      if (!repositories || repositories.length === 0) return;
+
+      // 获取提交数据
+      const repo = repositories[0]; // 假设只渲染第一个仓库
+      const allCommits = repo.commits.flatMap(day => day.commits);
+      const activeDays = repo.commits.length;
+
+      // 更新统计卡片
+      updateStatCards(allCommits.length, activeDays, repo.name);
+
+      // 获取开发月份
+      updateDevMonth(repo.commits);
+
+      // 统计不同类型的提交
+      const commitTypes = countCommitTypes(allCommits);
+      updateCommitTypeStats(commitTypes);
+
+      // 渲染雷达图
+      renderCommitTypeChart(commitTypes);
+
+      // 渲染时间线
+      renderTimeline(repo.commits, repo.url);
+    }
+
+    function renderCommitTypeChart(types) {
+      // 使用 echarts 渲染雷达图
+      const chartDom = document.getElementById('commit-type-chart');
+      if (!chartDom) return;
+      
+      const myChart = echarts.init(chartDom);
+      
+      // 检查是否为暗色主题
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      // 准备雷达图数据
+      const commitTypeLabels = {
+        'feat': '新功能',
+        'fix': '问题修复', 
+        'docs': '文档更新',
+        'chore': '构建维护',
+        'refactor': '重构代码'
+      };
+      
+      const radarData = [];
+      const chartData = [];
+      
+      // 构建雷达图指标和数据
+      Object.keys(commitTypeLabels).forEach(type => {
+        radarData.push({
+          name: commitTypeLabels[type],
+          max: Math.max(10, Math.max(...Object.values(types)) * 1.2) // 动态设置最大值
+        });
+        chartData.push(types[type] || 0);
+      });
+      
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          backgroundColor: isDark ? '#374151' : '#ffffff',
+          borderColor: isDark ? '#4b5563' : '#e5e7eb',
+          textStyle: {
+            color: isDark ? '#f9fafb' : '#111827'
+          },
+          formatter: function(params) {
+            return `<strong>${params.name}</strong><br/>提交数: ${params.value}`;
+          }
+        },
+        radar: {
+          indicator: radarData,
+          center: ['50%', '50%'],
+          radius: '60%',
+          axisName: {
+            color: isDark ? '#9ca3af' : '#6b7280',
+            fontSize: 14,
+            fontWeight: 500
+          },
+          splitArea: {
+            areaStyle: {
+              color: isDark ? 
+                ['rgba(55, 65, 81, 0.1)', 'rgba(55, 65, 81, 0.2)'] :
+                ['rgba(250, 250, 250, 0.3)', 'rgba(200, 200, 200, 0.3)']
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: isDark ? '#4b5563' : '#d1d5db'
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              color: isDark ? '#4b5563' : '#d1d5db'
+            }
+          }
+        },
+        series: [{
+          name: '提交类型分布',
+          type: 'radar',
+          data: [{
+            value: chartData,
+            name: '提交数量',
+            areaStyle: {
+              color: isDark ? 
+                'rgba(59, 130, 246, 0.3)' : 
+                'rgba(59, 130, 246, 0.2)'
+            },
+            lineStyle: {
+              color: isDark ? '#60a5fa' : '#3b82f6',
+              width: 2
+            },
+            itemStyle: {
+              color: isDark ? '#60a5fa' : '#3b82f6',
+              borderColor: isDark ? '#1e40af' : '#1d4ed8',
+              borderWidth: 2
+            }
+          }]
+        }]
+      };
+      
+      myChart.setOption(option);
+      
+      // 响应式调整
+      window.addEventListener('resize', function() {
+        myChart.resize();
+      });
+      
+      // 主题切换时重新渲染图表
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        const originalClickHandler = themeToggle.onclick;
+        themeToggle.onclick = function() {
+          if (originalClickHandler) originalClickHandler.call(this);
+          // 延迟重新渲染以确保主题切换完成
+          setTimeout(() => {
+            renderCommitTypeChart(types);
+          }, 100);
+        };
+      }
+    }
+
+    function updateStatCards(totalCommits, activeDays, repoName) {
+      // 更新总提交数
+      const totalCommitsEl = document.querySelector(
+        '.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(1) .text-3xl'
+      );
+      if (totalCommitsEl) totalCommitsEl.textContent = totalCommits;
+
+      // 更新活跃天数
+      const activeDaysEl = document.querySelector(
+        '.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(2) .text-3xl'
+      );
+      if (activeDaysEl) activeDaysEl.textContent = activeDays;
+
+      // 更新项目名称
+      const repoNameEl = document.querySelector(
+        '.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(3) .text-3xl'
+      );
+      if (repoNameEl) repoNameEl.textContent = repoName;
+    }
+
+    // 添加新函数来更新开发月份
+    function updateDevMonth(commits) {
+      // 如果没有提交记录，返回
+      if (!commits || commits.length === 0) return;
+
+      // 获取第一个提交的日期
+      const firstCommitDate = new Date(commits[0].date);
+
+      // 获取月份（0-11，需要+1）
+      const month = firstCommitDate.getMonth() + 1;
+
+      // 更新显示
+      const devMonthEl = document.getElementById('dev-month');
+      if (devMonthEl) {
+        devMonthEl.textContent = `${month}月`;
+      }
+    }
+
+    function countCommitTypes(commits) {
+      const types = {};
+
+      commits.forEach(commit => {
+        const message = commit.message;
+        let type = 'other';
+
+        if (message.startsWith('feat:')) type = 'feat';
+        else if (message.startsWith('fix:')) type = 'fix';
+        else if (message.startsWith('docs:')) type = 'docs';
+        else if (message.startsWith('chore:')) type = 'chore';
+        else if (message.startsWith('refactor:')) type = 'refactor';
+
+        types[type] = (types[type] || 0) + 1;
+      });
+
+      return types;
+    }
+
+    function updateCommitTypeStats(types) {
+      // 更新各类型提交数量
+      const featCountEl = document.querySelector(
+        '.grid.md\\:grid-cols-5 > div:nth-child(1) .text-3xl'
+      );
+      if (featCountEl) featCountEl.textContent = types.feat || 0;
+
+      const fixCountEl = document.querySelector(
+        '.grid.md\\:grid-cols-5 > div:nth-child(2) .text-3xl'
+      );
+      if (fixCountEl) fixCountEl.textContent = types.fix || 0;
+
+      const docsCountEl = document.querySelector(
+        '.grid.md\\:grid-cols-5 > div:nth-child(3) .text-3xl'
+      );
+      if (docsCountEl) docsCountEl.textContent = types.docs || 0;
+
+      const choreCountEl = document.querySelector(
+        '.grid.md\\:grid-cols-5 > div:nth-child(4) .text-3xl'
+      );
+      if (choreCountEl) choreCountEl.textContent = types.chore || 0;
+
+      const refactorCountEl = document.querySelector(
+        '.grid.md\\:grid-cols-5 > div:nth-child(5) .text-3xl'
+      );
+      if (refactorCountEl) refactorCountEl.textContent = types.refactor || 0;
+    }
+
+    function renderTimeline(dayCommits, repoUrl) {
+      const timelineContainer = document.querySelector('.space-y-8');
+
+      // 清空现有内容
+      timelineContainer.innerHTML = '';
+
+      // 按日期渲染
+      dayCommits.forEach((day, index) => {
+        const { date, commits } = day;
+
+        // 创建日期区块
+        const daySection = document.createElement('div');
+        daySection.className = `fade-in ${
+          index > 0 ? `stagger-${(index % 3) + 1}` : ''
+        }`;
+
+        // 日期头部
+        const dateHeader = document.createElement('div');
+        dateHeader.className = 'flex items-center mb-6';
+        dateHeader.innerHTML = `
+          <div class="w-4 h-4 bg-${getRandomColor(
+            date
+          )}-500 rounded-full mr-4"></div>
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+            ${formatDate(date)}
+          </h3>
+          <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700 ml-4"></div>
+          <span
+            class="ml-4 bg-${getRandomColor(date)}-100 dark:bg-${getRandomColor(
+          date
+        )}-900/30 text-${getRandomColor(date)}-800 dark:text-${getRandomColor(
+          date
+        )}-300 px-3 py-1 rounded-full text-sm font-medium"
+            >${commits.length} commits</span>
+        `;
+
+        // 提交列表容器
+        const commitsContainer = document.createElement('div');
+        commitsContainer.className = 'ml-8 space-y-4';
+
+        // 是否需要折叠
+        const needCollapse = commits.length > 3;
+        const visibleCommits = needCollapse ? commits.slice(0, 3) : commits;
+
+        // 渲染可见的提交
+        visibleCommits.forEach(commit => {
+          commitsContainer.appendChild(createCommitCard(commit, repoUrl));
+        });
+
+        // 如果需要折叠，添加"显示更多"按钮和隐藏的提交
+        if (needCollapse) {
+          const toggleButton = document.createElement('div');
+          toggleButton.className = 'text-center';
+          toggleButton.innerHTML = `
+            <button
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm toggle-more-commits"
+              data-date="${date}"
+            >
+              <i class="fas fa-chevron-down mr-1"></i>
+              显示更多提交 (${commits.length - 3}个)
+            </button>
+          `;
+
+          const hiddenCommits = document.createElement('div');
+          hiddenCommits.id = `more-commits-${date}`;
+          hiddenCommits.className = 'hidden space-y-4';
+
+          // 渲染隐藏的提交
+          commits.slice(3).forEach(commit => {
+            hiddenCommits.appendChild(createCommitCard(commit, repoUrl));
+          });
+
+          commitsContainer.appendChild(toggleButton);
+          commitsContainer.appendChild(hiddenCommits);
+        }
+
+        // 组装日期区块
+        daySection.appendChild(dateHeader);
+        daySection.appendChild(commitsContainer);
+
+        // 添加到时间线
+        timelineContainer.appendChild(daySection);
+      });
+
+      // 添加事件监听器
+      document.querySelectorAll('.toggle-more-commits').forEach(button => {
+        button.addEventListener('click', function () {
+          const date = this.getAttribute('data-date');
+          const hiddenCommits = document.getElementById(`more-commits-${date}`);
+
+          if (hiddenCommits) {
+            hiddenCommits.classList.toggle('hidden');
+            const icon = this.querySelector('i');
+            if (hiddenCommits.classList.contains('hidden')) {
+              icon.classList.remove('fa-chevron-up');
+              icon.classList.add('fa-chevron-down');
+              this.innerHTML = this.innerHTML.replace(
+                '隐藏提交',
+                `显示更多提交 (${hiddenCommits.children.length}个)`
+              );
+            } else {
+              icon.classList.remove('fa-chevron-down');
+              icon.classList.add('fa-chevron-up');
+              this.innerHTML = this.innerHTML.replace(
+                /显示更多提交 \(\d+个\)/,
+                '隐藏提交'
+              );
+            }
+          }
+        });
+      });
+    }
+
+    function createCommitCard(commit, repoUrl) {
+      const card = document.createElement('a');
+      card.href = !!repoUrl ? `${window.location.protocol}//${repoUrl}/-/commit/${commit.hash}` : '';
+      card.target = '_blank';
+      card.className =
+        'commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block';
+
+      // 获取提交类型和图标
+      const { type, icon, bgColor, textColor } = getCommitTypeInfo(
+        commit.message
+      );
+
+      // 获取提交描述
+      const description = getCommitDescription(commit.message);
+
+      card.innerHTML = `
+        <div class="flex items-start space-x-4">
+          <div
+            class="w-10 h-10 bg-${bgColor}-100 dark:bg-${bgColor}-900/30 rounded-xl flex items-center justify-center"
+          >
+            <i class="${icon} text-${textColor}-600 dark:text-${textColor}-400"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center space-x-2 mb-2">
+              <span
+                class="commit-type-${type} px-2 py-1 rounded-lg text-xs font-medium"
+                >${type}</span
+              >
+              <span
+                class="text-xs text-gray-500 dark:text-gray-400 font-mono"
+                >${commit.hash}</span
+              >
+            </div>
+            <p class="text-gray-900 dark:text-white font-medium mb-1">
+              ${description}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              ${getCommitSummary(type, description)}
+            </p>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function getCommitTypeInfo(message) {
+      if (message.startsWith('feat:')) {
+        return {
+          type: 'feat',
+          icon: 'fas fa-plus',
+          bgColor: 'green',
+          textColor: 'green',
+        };
+      } else if (message.startsWith('fix:')) {
+        return {
+          type: 'fix',
+          icon: 'fas fa-bug',
+          bgColor: 'red',
+          textColor: 'red',
+        };
+      } else if (message.startsWith('docs:')) {
+        return {
+          type: 'docs',
+          icon: 'fas fa-file-alt',
+          bgColor: 'blue',
+          textColor: 'blue',
+        };
+      } else if (message.startsWith('chore:')) {
+        return {
+          type: 'chore',
+          icon: 'fas fa-cog',
+          bgColor: 'gray',
+          textColor: 'gray',
+        };
+      } else if (message.startsWith('refactor:')) {
+        return {
+          type: 'refactor',
+          icon: 'fas fa-sync-alt',
+          bgColor: 'purple',
+          textColor: 'purple',
+        };
+      } else {
+        return {
+          type: 'other',
+          icon: 'fas fa-code',
+          bgColor: 'gray',
+          textColor: 'gray',
+        };
+      }
+    }
+
+    function getCommitDescription(message) {
+      // 移除类型前缀
+      return message
+        .replace(/^(feat|fix|docs|chore|refactor|other):/, '')
+        .trim();
+    }
+
+    function getCommitSummary(type, description) {
+      // 根据提交类型生成简短总结
+      switch (type) {
+        case 'feat':
+          return description.includes('添加')
+            ? '新增了系统功能或组件'
+            : '增强了系统功能或用户体验';
+        case 'fix':
+          return '修复了系统问题或错误';
+        case 'docs':
+          return '更新了文档或注释';
+        case 'chore':
+          return '完成了依赖更新或构建任务';
+        case 'refactor':
+          return '优化了代码结构或性能';
+        default:
+          return '完成了代码更改';
+      }
+    }
+
+    function formatDate(dateStr) {
+      // 将 2025-04-29 格式转换为 2025年4月29日
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+      }
+      return dateStr;
+    }
+
+    function getRandomColor(seed) {
+      // 根据日期生成固定的颜色
+      const colors = [
+        'blue',
+        'green',
+        'orange',
+        'purple',
+        'indigo',
+        'pink',
+        'teal',
+      ];
+      const seedNum = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+      return colors[seedNum % colors.length];
+    }
+  </script>
+</html>

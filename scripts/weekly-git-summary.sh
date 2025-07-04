@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 导入 ./converter.sh 脚本
+source "$(dirname "$0")/converter.sh"
+
 # 设置颜色
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
@@ -119,14 +122,16 @@ fi
 REPO_COUNT=0
 
 # 查找所有Git仓库
-find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
+find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     # 进入仓库所在目录
     cd "$(dirname "$gitdir")"
     
     # 获取仓库名称
     REPO_NAME=$(basename "$(pwd)")
+    # 解析项目 url
+    REPO_URL=$(convert_git_remote_to_url)
     
-    # 获取本周提交日志，添加作者过滤条件
+    # 获取本周提交日志，添加作者过滤条件$
     AUTHOR_FILTER=""
     if [ ! -z "$AUTHOR" ]; then
         AUTHOR_FILTER="--author=$AUTHOR"
@@ -145,6 +150,7 @@ find "$SEARCH_DIR" -type d -name ".git" | while read gitdir; do
             
             echo "    {"
             echo "      \"name\": \"$REPO_NAME\","
+            echo "      \"url\": \"$REPO_URL\","
             echo "      \"commits\": ["
             
 

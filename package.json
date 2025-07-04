@@ -7,19 +7,8 @@
   "license": "MIT",
   "author": "yinzhenyu.su@gmail.com",
   "bin": {
-    "weekly-git-summary": "./build/index.js"
+    "weekly-git-summary": "./build/cli.js"
   },
-  "types": "./build/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./build/index.js",
-      "require": "./build/index.js",
-      "types": "./build/index.d.ts"
-    }
-  },
-  "files": [
-    "build"
-  ],
   "engines": {
     "node": ">=22.0.0"
   },
@@ -28,7 +17,10 @@
     "build:declaration": "tsc -p tsconfig.json --outDir build --rootDir src",
     "start": "bun run ./src/index.ts",
     "test": "bun test ./src/tests",
-    "test:update": "bun test ./src/tests --update-snapshots"
+    "test:update": "bun test ./src/tests --update-snapshots",
+    "prepublishOnly": "bun run build",
+    "package": "npm pack",
+    "install:global": "npm install -g ."
   },
   "dependencies": {
     "@types/node": "^22.14.1"

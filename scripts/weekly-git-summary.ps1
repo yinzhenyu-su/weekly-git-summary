@@ -1,6 +1,36 @@
 #!/usr/bin/env pwsh
 # Windows PowerShell 版本的 Git 提交记录汇总工具
 
+# 将 Git Remote URL 转换为 HTTP URL 格式
+function Convert-GitRemoteToUrl {
+    param(
+        [string]$RemoteInfo
+    )
+    
+    # 提取远程名称和 URL 部分
+    $parts = $RemoteInfo -split '\s+'
+    $remoteUrl = $parts[1]
+    
+    # 检查 URL 是否包含 "git@"，如果是，则转换为 URL 格式，去除 .git 后缀
+    if ($remoteUrl -match '^git@') {
+        # 提取主机名和路径
+        $hostPath = $remoteUrl -replace '^git@', '' -replace ':', '/' -replace '\.git$', ''
+        # 将主机名和路径组合成 URL 格式
+        $remoteUrl = $hostPath
+    }
+    
+    # 输出转换后的结果
+    return $remoteUrl
+}
+
+function Get-GitRemoteUrl {
+    # 获取 git remote -v 信息
+    $remoteInfo = git remote -v | Select-Object -First 1
+    
+    # 调用转换函数
+    return Convert-GitRemoteToUrl $remoteInfo
+}
+
 # 设置颜色
 $BLUE = [System.ConsoleColor]::Blue
 $GREEN = [System.ConsoleColor]::Green
@@ -131,8 +161,8 @@ else {
     Write-Host ""
 }
 
-# 查找所有Git仓库
-$gitDirs = Get-ChildItem -Path $SEARCH_DIR -Recurse -Force -Directory -ErrorAction SilentlyContinue | 
+# 查找所有Git仓库 (最大深度为2)
+$gitDirs = Get-ChildItem -Path $SEARCH_DIR -Recurse -Force -Directory -ErrorAction SilentlyContinue -Depth 2 | 
 Where-Object { $_.Name -eq ".git" }
 
 foreach ($gitDir in $gitDirs) {
@@ -143,6 +173,8 @@ foreach ($gitDir in $gitDirs) {
     
     # 获取仓库名称
     $REPO_NAME = Split-Path -Leaf $repoPath
+    # 解析项目 url
+    $REPO_URL = Get-GitRemoteUrl
     
     # 获取提交日志，添加作者过滤条件
     $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s|%h', '--date=short')
@@ -157,6 +189,7 @@ foreach ($gitDir in $gitDirs) {
         if ($JSON_OUTPUT) {
             $repoData = @{
                 name    = $REPO_NAME
+                url     = $REPO_URL
                 commits = @()
             }
             

@@ -80,6 +80,7 @@ test('shell --dir --since --util --json', () => {
       "repositories": [
         {
           "name": "tools",
+          "url": "192.168.1.21/webox/tools",
           "commits": [
 
             {
