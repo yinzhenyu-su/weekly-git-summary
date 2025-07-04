@@ -14,13 +14,8 @@
   },
   "scripts": {
     "build": "bun run ./build.ts",
-    "build:declaration": "tsc -p tsconfig.json --outDir build --rootDir src",
-    "start": "bun run ./src/index.ts",
-    "test": "bun test ./src/tests",
-    "test:update": "bun test ./src/tests --update-snapshots",
-    "prepublishOnly": "bun run build",
-    "package": "npm pack",
-    "install:global": "npm install -g ."
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "@types/node": "^22.14.1"
