@@ -13,12 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [18, 20, 22]
-        include:
-          - os: ubuntu-latest
-            platform: linux
-          - os: windows-latest
-            platform: windows
+        node-version: [20, 22]
 
     steps:
     - name: Checkout code
@@ -37,44 +32,24 @@ jobs:
     - name: Install dependencies
       run: bun install
 
+    - name: Run all tests
+      run: bun test
+
     - name: Build project
-      run: bun run build.ts
-
-    - name: Test help command
-      run: node build/cli.js --help
-
-    - name: Test JSON output
-      run: node build/cli.js --json --since 2023-01-01 --until 2023-12-31
-
-    - name: Test Markdown output
-      run: node build/cli.js --md --since 2023-01-01 --until 2023-12-31
-
-    - name: Test Node.js script directly
-      run: node build/weekly-git-summary.js --help
-
-    - name: Test with current directory
-      run: node build/cli.js --dir . --since 2023-01-01 --until 2023-12-31
+      run: bun run build
 
     - name: Verify build artifacts
       shell: bash
       run: |
-        ls -la build/
         test -f build/cli.js
         test -f build/weekly-git-summary.js
-        if [ "${{ matrix.platform }}" = "linux" ]; then
+        if [ "${{ runner.os }}" = "Linux" ]; then
           test -f build/weekly-git-summary.sh
+          test -f build/converter.sh
         fi
 
-    - name: Test cross-platform compatibility
-      shell: bash
-      run: |
-        echo "Testing on ${{ matrix.platform }}"
-        OUTPUT=$(node build/cli.js --json --since 2025-01-01)
-        echo "$OUTPUT"
-        echo "$OUTPUT" | grep -q "2025-01-01"
-
   lint:
-    name: Lint and Format Check
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -93,31 +68,11 @@ jobs:
     - name: Install dependencies
       run: bun install
 
-    - name: Check TypeScript
+    - name: TypeScript check
       run: bun tsc --noEmit
 
     - name: Build project
-      run: bun run build.ts
+      run: bun run build
 
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
-
-    - name: Install dependencies
-      run: bun install
-
-    - name: Run security audit
+    - name: Security audit
       run: bun audit

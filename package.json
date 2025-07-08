@@ -6,7 +6,15 @@
   "type": "module",
   "license": "MIT",
   "author": "yinzhenyu.su@gmail.com",
-  "keywords": ["git", "cli", "summary", "commit", "weekly", "report", "cross-platform"],
+  "keywords": [
+    "git",
+    "cli",
+    "summary",
+    "commit",
+    "weekly",
+    "report",
+    "cross-platform"
+  ],
   "homepage": "https://github.com/yinzhenyu-su/weekly-git-summary#readme",
   "repository": {
     "type": "git",
@@ -35,8 +43,9 @@
     "build": "bun run ./build.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "test:ci": "chmod +x scripts/test-ci.sh && ./scripts/test-ci.sh",
-    "test:nodejs": "node build/weekly-git-summary.js --help && node build/weekly-git-summary.js --json --since 2023-01-01",
+    "test:integration": "bun test tests/integration.test.ts",
+    "test:windows": "bun test tests/windows.test.ts",
+    "test:all": "bun run build && bun test",
     "release": "release-it",
     "release:dry": "release-it --dry-run",
     "release:patch": "release-it patch",
