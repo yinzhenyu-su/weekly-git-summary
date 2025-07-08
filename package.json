@@ -36,13 +36,22 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:ci": "chmod +x scripts/test-ci.sh && ./scripts/test-ci.sh",
-    "test:nodejs": "node build/weekly-git-summary.js --help && node build/weekly-git-summary.js --json --since 2023-01-01"
+    "test:nodejs": "node build/weekly-git-summary.js --help && node build/weekly-git-summary.js --json --since 2023-01-01",
+    "release": "release-it",
+    "release:dry": "release-it --dry-run",
+    "release:patch": "release-it patch",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major",
+    "release:beta": "release-it --preRelease=beta",
+    "release:alpha": "release-it --preRelease=alpha"
   },
   "dependencies": {
     "@types/node": "^22.14.1"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.1",
     "@types/bun": "latest",
+    "release-it": "^19.0.3",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {

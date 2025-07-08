@@ -1,0 +1,94 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
+    "push": true,
+    "commit": true,
+    "tag": true,
+    "requireCleanWorkingDir": true,
+    "requireUpstream": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "Release v${version}",
+    "autoGenerate": true,
+    "draft": false,
+    "preRelease": false,
+    "assets": [
+      "build/**/*"
+    ]
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": ".",
+    "access": "public",
+    "skipChecks": false
+  },
+  "hooks": {
+    "before:init": [
+      "bun run test",
+      "bun run build"
+    ],
+    "after:bump": [
+      "echo 'Version bumped to ${version}'"
+    ],
+    "before:release": [
+      "echo 'Preparing release ${version}'"
+    ],
+    "after:release": [
+      "echo 'Released ${version} successfully!'"
+    ]
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          {
+            "type": "feat",
+            "section": "✨ Features"
+          },
+          {
+            "type": "fix",
+            "section": "🐛 Bug Fixes"
+          },
+          {
+            "type": "docs",
+            "section": "📚 Documentation"
+          },
+          {
+            "type": "style",
+            "section": "💄 Styles"
+          },
+          {
+            "type": "refactor",
+            "section": "♻️ Code Refactoring"
+          },
+          {
+            "type": "perf",
+            "section": "⚡ Performance Improvements"
+          },
+          {
+            "type": "test",
+            "section": "✅ Tests"
+          },
+          {
+            "type": "build",
+            "section": "🏗️ Build System"
+          },
+          {
+            "type": "ci",
+            "section": "👷 CI/CD"
+          },
+          {
+            "type": "chore",
+            "section": "🔧 Maintenance"
+          }
+        ]
+      },
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\n",
+      "ignoreRecommendedBump": false
+    }
+  }
+}
