@@ -1,12 +1,20 @@
 {
   "name": "weekly-git-summary",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI tool to generate weekly git commit summaries",
   "main": "build/index.js",
   "type": "module",
   "license": "MIT",
   "author": "yinzhenyu.su@gmail.com",
-  "keywords": ["git", "cli", "summary", "commit", "weekly", "report", "cross-platform"],
+  "keywords": [
+    "git",
+    "cli",
+    "summary",
+    "commit",
+    "weekly",
+    "report",
+    "cross-platform"
+  ],
   "homepage": "https://github.com/yinzhenyu-su/weekly-git-summary#readme",
   "repository": {
     "type": "git",
