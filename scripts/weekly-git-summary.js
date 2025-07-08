@@ -55,23 +55,15 @@ function generateHtmlOutput(options) {
         process.exit(1);
     }
     
-    // 重新运行脚本获取 JSON 数据
-    const scriptArgs = [process.argv[0], process.argv[1]];
-    if (options.searchDir !== ".") {
-        scriptArgs.push("--dir", options.searchDir);
-    }
-    if (options.since) {
-        scriptArgs.push("--since", options.since);
-    }
-    if (options.until) {
-        scriptArgs.push("--until", options.until);
-    }
-    if (options.author) {
-        scriptArgs.push("--author", options.author);
-    }
-    scriptArgs.push("--json");
+    // 直接生成 JSON 数据而不是递归调用
+    const tempOptions = {
+        ...options,
+        jsonOutput: true,
+        htmlOutput: false
+    };
     
-    const jsonData = execSync(`node ${scriptArgs.join(' ')}`, { encoding: 'utf8' });
+    const jsonOutput = generateJsonOutput(tempOptions);
+    const jsonData = JSON.stringify(jsonOutput, null, 2);
     
     // 读取模板文件内容
     const templateContent = readFileSync(templateFile, 'utf8');
@@ -80,6 +72,80 @@ function generateHtmlOutput(options) {
     const modifiedContent = templateContent.replace('const STATIC_DATA = ``;', `const STATIC_DATA = ${jsonData};`);
     
     console.log(modifiedContent);
+}
+
+// 生成 JSON 数据的独立函数
+function generateJsonOutput(options) {
+    const jsonOutput = {
+        timeRange: {
+            since: options.since,
+            until: options.until
+        },
+        searchDir: options.searchDir,
+        repositories: []
+    };
+    
+    if (options.author) {
+        jsonOutput.author = options.author;
+    }
+    
+    // 查找所有Git仓库
+    const gitRepos = findGitRepositories(options.searchDir);
+    
+    for (const repoPath of gitRepos) {
+        const repoName = repoPath.split('/').pop() || repoPath.split('\\').pop();
+        const repoUrl = getGitRemoteUrl(repoPath);
+        
+        // 获取提交日志
+        const commits = getGitCommits(repoPath, options.since, options.until, options.author);
+        
+        if (commits.length === 0) continue;
+        
+        const repoData = {
+            name: repoName,
+            url: repoUrl,
+            commits: []
+        };
+        
+        // 按日期分组处理提交
+        let currentDate = "";
+        let dateCommits = null;
+        
+        for (const line of commits) {
+            const [date, author, message, hash] = line.split('|');
+            
+            if (date !== currentDate) {
+                // 保存之前的日期数据
+                if (dateCommits) {
+                    repoData.commits.push(dateCommits);
+                }
+                
+                // 创建新的日期组
+                currentDate = date;
+                dateCommits = {
+                    date: date,
+                    commits: []
+                };
+            }
+            
+            // 添加当前提交
+            dateCommits.commits.push({
+                message: message,
+                author: author,
+                hash: hash
+            });
+        }
+        
+        // 添加最后一个日期组
+        if (dateCommits) {
+            repoData.commits.push(dateCommits);
+        }
+        
+        // 添加仓库数据到输出
+        jsonOutput.repositories.push(repoData);
+    }
+    
+    return jsonOutput;
 }
 
 // 显示帮助信息
@@ -242,21 +308,14 @@ function main() {
         process.exit(1);
     }
     
-    // 初始化输出
-    let jsonOutput = null;
+    // 处理不同的输出格式
     if (options.jsonOutput) {
-        jsonOutput = {
-            timeRange: {
-                since: options.since,
-                until: options.until
-            },
-            searchDir: options.searchDir,
-            repositories: []
-        };
-        
-        if (options.author) {
-            jsonOutput.author = options.author;
-        }
+        const jsonOutput = generateJsonOutput(options);
+        console.log(JSON.stringify(jsonOutput, null, 2));
+        return;
+    } else if (options.htmlOutput) {
+        generateHtmlOutput(options);
+        return;
     } else if (options.mdOutput) {
         console.log("# 工作内容Git提交记录汇总");
         console.log("");
@@ -283,57 +342,13 @@ function main() {
     
     for (const repoPath of gitRepos) {
         const repoName = repoPath.split('/').pop();
-        const repoUrl = getGitRemoteUrl(repoPath);
         
         // 获取提交日志
         const commits = getGitCommits(repoPath, options.since, options.until, options.author);
         
         if (commits.length === 0) continue;
         
-        if (options.jsonOutput) {
-            const repoData = {
-                name: repoName,
-                url: repoUrl,
-                commits: []
-            };
-            
-            // 按日期分组处理提交
-            let currentDate = "";
-            let dateCommits = null;
-            
-            for (const line of commits) {
-                const [date, author, message, hash] = line.split('|');
-                
-                if (date !== currentDate) {
-                    // 保存之前的日期数据
-                    if (dateCommits) {
-                        repoData.commits.push(dateCommits);
-                    }
-                    
-                    // 创建新的日期组
-                    currentDate = date;
-                    dateCommits = {
-                        date: date,
-                        commits: []
-                    };
-                }
-                
-                // 添加当前提交
-                dateCommits.commits.push({
-                    message: message,
-                    author: author,
-                    hash: hash
-                });
-            }
-            
-            // 添加最后一个日期组
-            if (dateCommits) {
-                repoData.commits.push(dateCommits);
-            }
-            
-            // 添加仓库数据到输出
-            jsonOutput.repositories.push(repoData);
-        } else if (options.mdOutput) {
+        if (options.mdOutput) {
             console.log("");
             console.log(`## ${repoName}`);
             console.log("");
@@ -350,8 +365,6 @@ function main() {
                 console.log(`- ${message} (作者: ${author}, hash: ${hash})`);
             }
             console.log("");
-        } else if (options.htmlOutput) {
-            // HTML 输出会在后面统一处理
         } else {
             console.log(`${colors.yellow}项目: ${repoName}${colors.reset}`);
             console.log("");
@@ -374,11 +387,7 @@ function main() {
     }
     
     // 输出最终结果
-    if (options.jsonOutput) {
-        console.log(JSON.stringify(jsonOutput, null, 2));
-    } else if (options.htmlOutput) {
-        generateHtmlOutput(options);
-    } else if (options.mdOutput) {
+    if (options.mdOutput) {
         console.log("");
         console.log("---");
         console.log("*工作内容汇总完成*");

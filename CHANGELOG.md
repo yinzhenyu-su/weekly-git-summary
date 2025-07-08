@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.0.2](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.1...v1.0.2) (2025-07-08)
+
+### 🐛 Bug Fixes
+
+* 修复 Windows 系统 HTML 输出功能递归调用错误 ([1fc6a71](https://github.com/yinzhenyu-su/weekly-git-summary/commit/1fc6a710ab20475ac88499102d3bfbd0a226f169))
+
+### ♻️ Code Refactoring
+
+* 重组测试结构并优化 GitHub Workflows ([73d527e](https://github.com/yinzhenyu-su/weekly-git-summary/commit/73d527ecd533cf7994ef288a15d495f3ed16e5e5))
+
 ## 1.0.1 (2025-07-08)
 
 ### ✨ Features

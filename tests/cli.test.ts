@@ -21,7 +21,7 @@ describe('CLI Tool Tests', () => {
     mkdirSync(testDir, { recursive: true });
     
     // 初始化 Git 仓库
-    execSync('git init', { cwd: testDir });
+    execSync('git init --initial-branch=main', { cwd: testDir });
     execSync('git config user.name "Test User"', { cwd: testDir });
     execSync('git config user.email "test@example.com"', { cwd: testDir });
     
@@ -105,7 +105,8 @@ describe('CLI Tool Tests', () => {
     try {
       const result = execSync(`node build/cli.js --dir ${testDir} --author "Test User" --json`, { 
         encoding: 'utf8',
-        cwd: process.cwd()
+        cwd: process.cwd(),
+        stdio: 'pipe'
       });
       
       // 去掉可能的ANSI控制字符和错误信息
@@ -139,14 +140,17 @@ describe('CLI Tool Tests', () => {
     try {
       const result = execSync(`node build/cli.js --dir ${nonExistentDir} --json`, { 
         encoding: 'utf8',
-        cwd: process.cwd()
+        cwd: process.cwd(),
+        stdio: 'pipe' // 隐藏错误输出
       });
       
       const jsonResult = JSON.parse(result);
       expect(jsonResult.repositories).toHaveLength(0);
-    } catch (error) {
-      // 对于不存在的目录，脚本可能会失败，这是预期的行为
-      expect(error).toBeDefined();
+    } catch (error: any) {
+      // 对于不存在的目录，脚本应该失败，这是预期的行为
+      expect(error.status).toBe(1);
+      expect(error.message).toContain('Command failed');
+      // 测试通过 - 错误是预期的
     }
   });
 
