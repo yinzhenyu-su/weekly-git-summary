@@ -38,15 +38,15 @@ node build/cli.js --md
 
 - 使用 `os.platform()` 检测操作系统
 - 自动委托给平台特定的脚本：
-  - Windows: `weekly-git-summary.ps1` (PowerShell)
-  - macOS/Linux: `weekly-git-summary.sh` (Bash)
+  - Windows: `weekly-git-summary.js` (Node.js) - 不再依赖 PowerShell
+  - macOS/Linux: `weekly-git-summary.sh` (Bash) 或回退到 `weekly-git-summary.js` (Node.js)
 - 透明地将所有命令行参数传递给底层脚本
 
 ### 核心组件
 
 1. **CLI 入口点** (`scripts/cli.ts`): 平台检测和脚本委托
-2. **Shell 脚本** (`scripts/weekly-git-summary.sh`): 262 行 Bash 实现
-3. **PowerShell 脚本** (`scripts/weekly-git-summary.ps1`): 301 行 PowerShell 实现
+2. **Node.js 脚本** (`scripts/weekly-git-summary.js`): 跨平台 Node.js 实现，支持所有功能
+3. **Shell 脚本** (`scripts/weekly-git-summary.sh`): 262 行 Bash 实现 (仅限 macOS/Linux)
 4. **URL 转换器** (`scripts/converter.sh`): Git SSH-to-HTTP URL 转换工具
 5. **构建脚本** (`build.ts`): 基于 Bun 的构建配置
 
@@ -80,11 +80,11 @@ node build/cli.js --md
 
 ### 平台特定逻辑
 
-Shell 和 PowerShell 脚本都实现相同的核心功能：
+Shell 和 Node.js 脚本都实现相同的核心功能：
 
 - 仓库扫描（最大深度 2 层）
 - Git 日志提取和日期过滤
-- 输出格式化（彩色终端、JSON、Markdown）
+- 输出格式化（彩色终端、JSON、Markdown、HTML）
 - Git URL 转换（SSH 到 HTTP 格式）
 
 ### 错误处理
@@ -100,5 +100,5 @@ CLI 包装器包含全面的错误处理：
 - Node.js ≥ 22.0.0
 - Git 命令行工具
 - Bun 用于构建
-- Windows: PowerShell (用于 .ps1 脚本)
-- macOS/Linux: Bash (用于 .sh 脚本)
+- Windows: Node.js (不再需要 PowerShell)
+- macOS/Linux: Bash (用于 .sh 脚本) 或 Node.js (回退选项)

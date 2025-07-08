@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 根据用户系统调用不同脚本，并传参
+// 跨平台 Git 提交记录汇总工具 - 统一使用 Node.js 实现
 import { execSync } from "node:child_process";
 import { platform } from "node:os";
 import { join } from "node:path";
@@ -13,37 +13,45 @@ const __dirname = dirname(__filename);
 function main() {
   const args = process.argv.slice(2);
   const currentPlatform = platform();
-  
+
   // 构建参数字符串
-  const argsString = args.join(' ');
-  
+  const argsString = args.join(" ");
+
   let scriptPath: string;
   let command: string;
-  
-  if (currentPlatform === 'win32') {
-    // Windows 系统使用 PowerShell 脚本
-    scriptPath = join(__dirname, '..', 'scripts', 'weekly-git-summary.ps1');
-    command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}" ${argsString}`;
+
+  if (currentPlatform === "win32") {
+    // Windows 系统使用 Node.js 脚本（不再依赖 PowerShell）
+    scriptPath = join(__dirname, "weekly-git-summary.js");
+    command = `node "${scriptPath}" ${argsString}`;
   } else {
-    // macOS/Linux 系统使用 Shell 脚本
-    scriptPath = join(__dirname, '..', 'scripts', 'weekly-git-summary.sh');
-    command = `bash "${scriptPath}" ${argsString}`;
+    // macOS/Linux 系统优先使用 Shell 脚本，回退到 Node.js 脚本
+    const shScriptPath = join(__dirname, "weekly-git-summary.sh");
+    const jsScriptPath = join(__dirname, "weekly-git-summary.js");
+    
+    if (existsSync(shScriptPath)) {
+      scriptPath = shScriptPath;
+      command = `bash "${scriptPath}" ${argsString}`;
+    } else {
+      scriptPath = jsScriptPath;
+      command = `node "${scriptPath}" ${argsString}`;
+    }
   }
-  
+
   // 检查脚本文件是否存在
   if (!existsSync(scriptPath)) {
     console.error(`错误: 找不到脚本文件 ${scriptPath}`);
     process.exit(1);
   }
-  
+
   try {
     // 执行对应的脚本
-    execSync(command, { 
-      stdio: 'inherit',
-      cwd: process.cwd()
+    execSync(command, {
+      stdio: "inherit",
+      cwd: process.cwd(),
     });
   } catch (error) {
-    console.error('脚本执行失败:', error);
+    console.error("脚本执行失败:", error);
     process.exit(1);
   }
 }

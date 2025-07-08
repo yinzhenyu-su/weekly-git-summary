@@ -1,6 +1,6 @@
 import { build } from 'bun';
 import { join } from 'node:path';
-import { existsSync, mkdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, copyFileSync } from 'node:fs';
 
 const buildDir = './build';
 const scriptsDir = './scripts';
@@ -34,6 +34,26 @@ async function buildCli() {
     });
     
     if (result.success) {
+      // 复制脚本文件到构建目录
+      const jsScriptPath = join(scriptsDir, 'weekly-git-summary.js');
+      const shScriptPath = join(scriptsDir, 'weekly-git-summary.sh');
+      const converterPath = join(scriptsDir, 'converter.sh');
+      
+      if (existsSync(jsScriptPath)) {
+        copyFileSync(jsScriptPath, join(buildDir, 'weekly-git-summary.js'));
+        console.log('📄 复制 Node.js 脚本文件');
+      }
+      
+      if (existsSync(shScriptPath)) {
+        copyFileSync(shScriptPath, join(buildDir, 'weekly-git-summary.sh'));
+        console.log('📄 复制 Shell 脚本文件');
+      }
+      
+      if (existsSync(converterPath)) {
+        copyFileSync(converterPath, join(buildDir, 'converter.sh'));
+        console.log('📄 复制 URL 转换器脚本');
+      }
+      
       console.log('✅ CLI 工具构建成功');
       console.log(`📦 输出目录: ${buildDir}`);
       console.log(`🎯 入口文件: ${buildDir}/cli.js`);

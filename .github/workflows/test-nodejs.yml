@@ -1,0 +1,68 @@
+name: Test Node.js Implementation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-nodejs:
+    name: Test Node.js on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [20, 22]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+
+    - name: Install dependencies
+      run: bun install
+
+    - name: Build project
+      run: bun run build.ts
+
+    - name: Test Node.js script help
+      run: node build/weekly-git-summary.js --help
+
+    - name: Test Node.js script JSON output
+      run: node build/weekly-git-summary.js --json --since 2023-01-01 --until 2023-12-31
+
+    - name: Test Node.js script standard output
+      run: node build/weekly-git-summary.js --since 2023-01-01 --until 2023-12-31
+
+    - name: Test Node.js script Markdown output
+      run: node build/weekly-git-summary.js --md --since 2023-01-01 --until 2023-12-31
+
+    - name: Verify JSON output format
+      shell: bash
+      run: |
+        OUTPUT=$(node build/weekly-git-summary.js --json --since 2025-01-01)
+        echo "$OUTPUT"
+        echo "$OUTPUT" | grep -q "timeRange"
+        echo "$OUTPUT" | grep -q "repositories"
+
+    - name: Test with different directories (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        node build/weekly-git-summary.js --dir . --json --since 2023-01-01
+
+    - name: Test with different directories (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        node build/weekly-git-summary.js --dir . --json --since 2023-01-01
