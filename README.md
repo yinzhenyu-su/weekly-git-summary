@@ -191,7 +191,7 @@ weekly-git-summary --help
 
 ### 项目结构
 
-```
+```bash
 weekly-git-summary/
 ├── scripts/
 │   ├── cli.ts                 # CLI 入口点（TypeScript）

@@ -6,9 +6,29 @@
   "type": "module",
   "license": "MIT",
   "author": "yinzhenyu.su@gmail.com",
+  "keywords": ["git", "cli", "summary", "commit", "weekly", "report", "cross-platform"],
+  "homepage": "https://github.com/yinzhenyu/weekly-git-summary#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yinzhenyu/weekly-git-summary.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yinzhenyu/weekly-git-summary/issues"
+  },
   "bin": {
     "weekly-git-summary": "./build/cli.js"
   },
+  "files": [
+    "build/cli.js",
+    "LICENSE",
+    "README.md",
+    "CLAUDE.md",
+    "git-log.html",
+    "scripts/weekly-git-summary.sh",
+    "scripts/weekly-git-summary.ps1",
+    "scripts/converter.sh",
+    "scripts/README.md"
+  ],
   "engines": {
     "node": ">=22.0.0"
   },
