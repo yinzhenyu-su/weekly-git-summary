@@ -2,7 +2,7 @@
 // Node.js 版本的 Git 提交记录汇总工具
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -93,7 +93,7 @@ function generateJsonOutput(options) {
     const gitRepos = findGitRepositories(options.searchDir);
     
     for (const repoPath of gitRepos) {
-        const repoName = repoPath.split('/').pop() || repoPath.split('\\').pop();
+        const repoName = basename(repoPath);
         const repoUrl = getGitRemoteUrl(repoPath);
         
         // 获取提交日志
@@ -341,7 +341,7 @@ function main() {
     const gitRepos = findGitRepositories(options.searchDir);
     
     for (const repoPath of gitRepos) {
-        const repoName = repoPath.split('/').pop();
+        const repoName = basename(repoPath);
         
         // 获取提交日志
         const commits = getGitCommits(repoPath, options.since, options.until, options.author);
