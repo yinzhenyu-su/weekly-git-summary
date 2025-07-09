@@ -200,18 +200,21 @@ weekly-git-summary --help
 weekly-git-summary/
 ├── scripts/
 │   ├── cli.ts                 # CLI 入口点（TypeScript）
+│   ├── weekly-git-summary.js  # Node.js 脚本实现
 │   ├── weekly-git-summary.sh  # Shell 脚本实现
 │   ├── weekly-git-summary.ps1 # PowerShell 脚本实现
-│   ├── converter.sh           # Git URL 转换工具
+│   ├── git-log.html           # Web 可视化界面模板
 │   └── dist/                  # 示例截图
 ├── tests/
 │   ├── cli.test.ts            # CLI 功能测试
-│   └── build.test.ts          # 构建系统测试
+│   ├── build.test.ts          # 构建系统测试
+│   ├── integration.test.ts    # 集成测试
+│   └── windows.test.ts        # Windows 兼容性测试
 ├── build/                     # 构建输出目录
 ├── build.ts                   # Bun 构建配置
-├── git-log.html              # Web 可视化界面
 ├── package.json              # 项目配置
 ├── tsconfig.json             # TypeScript 配置
+├── CLAUDE.md                 # 项目开发指南
 └── README.md                 # 项目文档
 ```
 
@@ -228,7 +231,8 @@ weekly-git-summary/
 2. **平台特定实现**
 
    - **Windows**: Node.js 脚本 (跨平台兼容)
-   - **macOS/Linux**: Bash 脚本或 Node.js 脚本 (回退)
+   - **macOS/Linux**: Bash 脚本（已集成 URL 转换功能）或 Node.js 脚本 (回退)
+   - **PowerShell**: 支持 Windows PowerShell 环境
    - 功能完全一致，参数格式统一
 
 3. **构建系统**

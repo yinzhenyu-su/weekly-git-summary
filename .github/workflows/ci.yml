@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -16,63 +16,63 @@ jobs:
         node-version: [20, 22]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-    - name: Install dependencies
-      run: bun install
+      - name: Install dependencies
+        run: bun install
 
-    - name: Run all tests
-      run: bun test
+      - name: Run all tests
+        run: bun test
 
-    - name: Build project
-      run: bun run build
+      - name: Build project
+        run: bun run build
 
-    - name: Verify build artifacts
-      shell: bash
-      run: |
-        test -f build/cli.js
-        test -f build/weekly-git-summary.js
-        if [ "${{ runner.os }}" = "Linux" ]; then
-          test -f build/weekly-git-summary.sh
-          test -f build/converter.sh
-        fi
-
+      - name: Verify build artifacts
+        shell: bash
+        run: |
+          test -f build/cli.js
+          test -f build/weekly-git-summary.js
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            test -f build/weekly-git-summary.sh
+          fi
+          test -f build/weekly-git-summary.ps1
+          test -f build/git-log.html
   lint:
     name: Code Quality
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-    - name: Install dependencies
-      run: bun install
+      - name: Install dependencies
+        run: bun install
 
-    - name: TypeScript check
-      run: bun tsc --noEmit
+      - name: TypeScript check
+        run: bun tsc --noEmit
 
-    - name: Build project
-      run: bun run build
+      - name: Build project
+        run: bun run build
 
-    - name: Security audit
-      run: bun audit
+      - name: Security audit
+        run: bun audit
