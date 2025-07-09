@@ -30,7 +30,6 @@
     "build/cli.js",
     "build/weekly-git-summary.js",
     "build/weekly-git-summary.sh",
-    "build/converter.sh",
     "LICENSE",
     "README.md",
     "CLAUDE.md",

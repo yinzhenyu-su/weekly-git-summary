@@ -57,7 +57,6 @@ describe("Integration Tests", () => {
     expect(existsSync("build/cli.js")).toBe(true);
     expect(existsSync("build/weekly-git-summary.js")).toBe(true);
     expect(existsSync("build/weekly-git-summary.sh")).toBe(true);
-    expect(existsSync("build/converter.sh")).toBe(true);
   });
 
   test("should handle cross-platform functionality", () => {

@@ -37,7 +37,6 @@ async function buildCli() {
       // 复制脚本文件到构建目录
       const jsScriptPath = join(scriptsDir, 'weekly-git-summary.js');
       const shScriptPath = join(scriptsDir, 'weekly-git-summary.sh');
-      const converterPath = join(scriptsDir, 'converter.sh');
       
       if (existsSync(jsScriptPath)) {
         copyFileSync(jsScriptPath, join(buildDir, 'weekly-git-summary.js'));
@@ -47,11 +46,6 @@ async function buildCli() {
       if (existsSync(shScriptPath)) {
         copyFileSync(shScriptPath, join(buildDir, 'weekly-git-summary.sh'));
         console.log('📄 复制 Shell 脚本文件');
-      }
-      
-      if (existsSync(converterPath)) {
-        copyFileSync(converterPath, join(buildDir, 'converter.sh'));
-        console.log('📄 复制 URL 转换器脚本');
       }
       
       console.log('✅ CLI 工具构建成功');

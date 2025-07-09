@@ -46,9 +46,8 @@ node build/cli.js --md
 
 1. **CLI 入口点** (`scripts/cli.ts`): 平台检测和脚本委托
 2. **Node.js 脚本** (`scripts/weekly-git-summary.js`): 跨平台 Node.js 实现，支持所有功能
-3. **Shell 脚本** (`scripts/weekly-git-summary.sh`): 262 行 Bash 实现 (仅限 macOS/Linux)
-4. **URL 转换器** (`scripts/converter.sh`): Git SSH-to-HTTP URL 转换工具
-5. **构建脚本** (`build.ts`): 基于 Bun 的构建配置
+3. **Shell 脚本** (`scripts/weekly-git-summary.sh`): 独立的 Bash 实现，已集成 URL 转换功能 (仅限 macOS/Linux)
+4. **构建脚本** (`build.ts`): 基于 Bun 的构建配置
 
 ### 构建系统
 
