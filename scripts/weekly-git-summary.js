@@ -47,7 +47,7 @@ function getGitRemoteUrl(repoPath) {
 
 // 生成 HTML 输出函数
 function generateHtmlOutput(options) {
-    const templateFile = join(__dirname, "..", "git-log.html");
+    const templateFile = join(__dirname, "git-log.html");
     
     // 检查模板文件是否存在
     if (!existsSync(templateFile)) {

@@ -34,7 +34,7 @@ function Get-GitRemoteUrl {
 # 生成 HTML 输出函数
 function New-HtmlOutput {
     $scriptDir = Split-Path -Path $MyInvocation.ScriptName -Parent
-    $templateFile = Join-Path $scriptDir "..\git-log.html"
+    $templateFile = Join-Path $scriptDir "git-log.html"
     $outputFile = "git-log-$(Get-Date -Format 'yyyyMMdd-HHmmss').html"
     
     # 检查模板文件是否存在

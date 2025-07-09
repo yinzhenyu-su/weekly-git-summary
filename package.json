@@ -30,10 +30,10 @@
     "build/cli.js",
     "build/weekly-git-summary.js",
     "build/weekly-git-summary.sh",
+    "build/git-log.html",
     "LICENSE",
     "README.md",
-    "CLAUDE.md",
-    "git-log.html"
+    "CLAUDE.md"
   ],
   "engines": {
     "node": ">=22.0.0"

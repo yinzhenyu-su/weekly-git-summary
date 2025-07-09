@@ -52,7 +52,7 @@ HTML_OUTPUT=false
 # 生成 HTML 输出函数
 generate_html_output() {
     local script_dir="$(dirname "$0")"
-    local template_file="$script_dir/../git-log.html"
+    local template_file="$script_dir/git-log.html"
     local output_file="git-log-$(date +%Y%m%d-%H%M%S).html"
     
     # 检查模板文件是否存在
