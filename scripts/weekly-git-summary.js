@@ -220,6 +220,19 @@ function findGitRepositories(searchDir, maxDepth = 2) {
     return repos;
 }
 
+// 清理参数值，去掉多余的引号
+function cleanArgValue(value) {
+    if (typeof value !== 'string') return value;
+    
+    // 去掉首尾的单引号或双引号
+    if ((value.startsWith('"') && value.endsWith('"')) || 
+        (value.startsWith("'") && value.endsWith("'"))) {
+        return value.slice(1, -1);
+    }
+    
+    return value;
+}
+
 // 解析命令行参数
 function parseArgs(args) {
     const options = {
@@ -254,7 +267,7 @@ function parseArgs(args) {
                 break;
             case '-a':
             case '--author':
-                options.author = args[++i];
+                options.author = cleanArgValue(args[++i]);
                 break;
             case '-j':
             case '--json':
