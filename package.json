@@ -30,6 +30,7 @@
     "build/cli.js",
     "build/weekly-git-summary.js",
     "build/weekly-git-summary.sh",
+    "build/weekly-git-summary.ps1",
     "build/git-log.html",
     "LICENSE",
     "README.md",

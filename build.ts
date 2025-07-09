@@ -37,6 +37,7 @@ async function buildCli() {
       // 复制脚本文件到构建目录
       const jsScriptPath = join(scriptsDir, 'weekly-git-summary.js');
       const shScriptPath = join(scriptsDir, 'weekly-git-summary.sh');
+      const ps1ScriptPath = join(scriptsDir, 'weekly-git-summary.ps1');
       const htmlTemplatePath = join(scriptsDir, 'git-log.html');
       
       if (existsSync(jsScriptPath)) {
@@ -47,6 +48,11 @@ async function buildCli() {
       if (existsSync(shScriptPath)) {
         copyFileSync(shScriptPath, join(buildDir, 'weekly-git-summary.sh'));
         console.log('📄 复制 Shell 脚本文件');
+      }
+      
+      if (existsSync(ps1ScriptPath)) {
+        copyFileSync(ps1ScriptPath, join(buildDir, 'weekly-git-summary.ps1'));
+        console.log('📄 复制 PowerShell 脚本文件');
       }
       
       if (existsSync(htmlTemplatePath)) {
