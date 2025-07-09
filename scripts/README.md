@@ -57,3 +57,5 @@
 ![weekly-git-summary](./dist/weekly-git-summary-1.png)
 
 ![weekly-git-summary](./dist/weekly-git-summary-2.png)
+
+![weekly-git-summary](./dist/weekly-git-summary-3.png)

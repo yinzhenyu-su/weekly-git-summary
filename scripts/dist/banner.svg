@@ -1,0 +1,105 @@
+<svg width="790" height="338" viewBox="0 0 790 338" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 渐变背景 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 卡片渐变 -->
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.15);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Logo渐变 -->
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4ecdc4;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 阴影滤镜 -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+    
+    <!-- 模糊滤镜 -->
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="20"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="790" height="338" fill="url(#bgGradient)"/>
+  
+  <!-- 背景装饰图标 -->
+  <g opacity="0.1">
+    <text x="80" y="80" font-size="40" fill="white" font-family="Arial">⚡</text>
+    <text x="650" y="250" font-size="40" fill="white" font-family="Arial">📊</text>
+    <text x="350" y="300" font-size="40" fill="white" font-family="Arial">🔄</text>
+  </g>
+  
+  <!-- 主容器 -->
+  <rect x="20" y="20" width="750" height="298" rx="16" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1" filter="url(#shadow)"/>
+  
+  <!-- Logo -->
+  <rect x="60" y="40" width="40" height="40" rx="8" fill="url(#logoGradient)" filter="url(#shadow)"/>
+  <text x="80" y="65" font-size="20" fill="white" font-family="Arial" text-anchor="middle" font-weight="bold">📋</text>
+  
+  <!-- 标题 -->
+  <text x="120" y="50" font-size="24" fill="white" font-family="Arial, sans-serif" font-weight="bold">Weekly Git Summary</text>
+  <text x="120" y="70" font-size="14" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif">跨平台 Git 提交记录周报汇总工具</text>
+  
+  <!-- 功能卡片区域 -->
+  <!-- 卡片1: 跨平台支持 -->
+  <rect x="50" y="100" width="160" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="70" y="125" font-size="16" fill="white" font-family="Arial">🌐</text>
+  <text x="70" y="145" font-size="12" fill="white" font-family="Arial, sans-serif" font-weight="600">跨平台支持</text>
+  <text x="70" y="160" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">Windows/macOS/Linux</text>
+  <text x="70" y="172" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">无缝运行</text>
+  
+  <!-- 卡片2: 多种输出格式 -->
+  <rect x="230" y="100" width="160" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="250" y="125" font-size="16" fill="white" font-family="Arial">📄</text>
+  <text x="250" y="145" font-size="12" fill="white" font-family="Arial, sans-serif" font-weight="600">多种输出格式</text>
+  <text x="250" y="160" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">JSON/Markdown/HTML</text>
+  <text x="250" y="172" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">彩色终端输出</text>
+  
+  <!-- 卡片3: 智能仓库扫描 -->
+  <rect x="410" y="100" width="160" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="430" y="125" font-size="16" fill="white" font-family="Arial">🔍</text>
+  <text x="430" y="145" font-size="12" fill="white" font-family="Arial, sans-serif" font-weight="600">智能仓库扫描</text>
+  <text x="430" y="160" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">自动扫描 Git 仓库</text>
+  <text x="430" y="172" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">灵活时间范围过滤</text>
+  
+  <!-- 卡片4: Web 可视化 -->
+  <rect x="590" y="100" width="140" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="610" y="125" font-size="16" fill="white" font-family="Arial">📊</text>
+  <text x="610" y="145" font-size="12" fill="white" font-family="Arial, sans-serif" font-weight="600">Web 可视化</text>
+  <text x="610" y="160" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">精美 Web 界面</text>
+  <text x="610" y="172" font-size="10" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif">图表展示</text>
+  
+  <!-- 技术栈标签 -->
+  <rect x="50" y="200" width="70" height="24" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="85" y="215" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" font-weight="500">TypeScript</text>
+  
+  <rect x="130" y="200" width="50" height="24" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="155" y="215" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" font-weight="500">Node.js</text>
+  
+  <rect x="190" y="200" width="35" height="24" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="207" y="215" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" font-weight="500">Bun</text>
+  
+  <rect x="235" y="200" width="30" height="24" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="250" y="215" font-size="10" fill="white" font-family="Arial, sans-serif" text-anchor="middle" font-weight="500">CLI</text>
+  
+  <!-- GitHub 链接 -->
+  <rect x="590" y="200" width="100" height="24" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <text x="610" y="215" font-size="10" fill="white" font-family="Arial, sans-serif" font-weight="500">⭐ GitHub</text>
+  
+  <!-- 安装命令 -->
+  <rect x="50" y="250" width="690" height="30" rx="8" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="400" y="270" font-size="12" fill="rgba(255,255,255,0.8)" font-family="Monaco, monospace" text-anchor="middle">npx --yes weekly-git-summary@latest</text>
+  
+  <!-- 版权信息 -->
+  <text x="400" y="310" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" text-anchor="middle">github.com/yinzhenyu-su/weekly-git-summary</text>
+</svg>

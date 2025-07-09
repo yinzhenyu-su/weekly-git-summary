@@ -1,5 +1,9 @@
 # weekly-git-summary
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/banner.svg" alt="weekly-git-summary Banner" width="100%">
+</div>
+
 [![npm version](https://img.shields.io/npm/v/weekly-git-summary.svg)](https://www.npmjs.com/package/weekly-git-summary)
 [![Node version](https://img.shields.io/node/v/weekly-git-summary.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,7 +12,7 @@
 
 ## 🚀 特性
 
-- **跨平台支持** - 自动检测系统环境，Windows 使用 PowerShell，macOS/Linux 使用 Bash
+- **跨平台支持** - 自动检测系统环境，Windows 使用 Node.js，macOS/Linux 使用 Bash 或 Node.js
 - **多种输出格式** - 支持彩色终端输出、JSON 格式、Markdown 格式
 - **智能仓库扫描** - 自动扫描指定目录下的 Git 仓库（最大深度 2 层）
 - **灵活的时间范围** - 支持自定义开始和结束日期
@@ -154,8 +158,9 @@ weekly-git-summary --help
 - 🕒 交互式时间线
 - 📱 响应式设计
 
-![可视化界面截图](./scripts/dist/weekly-git-summary-1.png)
-![提交详情界面](./scripts/dist/weekly-git-summary-2.png)
+![纯文本格式](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-1.png)
+![JSON 输出](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-2.png)
+![Web 可视化界面](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-3.png)
 
 ## 🛠️ 开发
 
@@ -222,8 +227,8 @@ weekly-git-summary/
 
 2. **平台特定实现**
 
-   - **Windows**: PowerShell 脚本 (301 行)
-   - **macOS/Linux**: Bash 脚本 (262 行)
+   - **Windows**: Node.js 脚本 (跨平台兼容)
+   - **macOS/Linux**: Bash 脚本或 Node.js 脚本 (回退)
    - 功能完全一致，参数格式统一
 
 3. **构建系统**
