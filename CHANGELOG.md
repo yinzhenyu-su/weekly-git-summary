@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.0.4](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.3...v1.0.4) (2025-07-09)
+
+### 🐛 Bug Fixes
+
+* 修复 Windows 下 author 参数包含引号的问题 ([18bc178](https://github.com/yinzhenyu-su/weekly-git-summary/commit/18bc178ff477411b11b57312b83d3941d99a74c6))
+* 修复跨平台路径处理问题，解决 Windows 测试失败 ([aac5a07](https://github.com/yinzhenyu-su/weekly-git-summary/commit/aac5a07dfa6e9fe960b3525a208b9288884376af))
+
+### 📚 Documentation
+
+* 更新 README 项目结构和 CI 配置 ([4529b03](https://github.com/yinzhenyu-su/weekly-git-summary/commit/4529b03b06839b6ae417fb8ffb48b09bbf69fde2))
+* 添加项目介绍图片和更新 README 文档格式 ([1ea088a](https://github.com/yinzhenyu-su/weekly-git-summary/commit/1ea088a5498d7b0c44dd1769edfdcaeba5e039a0))
+
+### ♻️ Code Refactoring
+
+* 将 converter.sh 功能合并到 weekly-git-summary.sh 中 ([6118d5f](https://github.com/yinzhenyu-su/weekly-git-summary/commit/6118d5f55e552ed5d9b3d7cfc52fa1f534d6c9b4))
+* 将 git-log.html 移动到 scripts 目录并调整路径引用 ([6133789](https://github.com/yinzhenyu-su/weekly-git-summary/commit/6133789d52aaa2325a49c9e217ef4dad9e730325))
+
+### 🏗️ Build System
+
+* 配置构建脚本包含 PowerShell 脚本文件 ([55ddf46](https://github.com/yinzhenyu-su/weekly-git-summary/commit/55ddf4664d1f0a8c428eb706d4f4819f2ce703bf))
+
+### 🔧 Maintenance
+
+* 删除 converter.sh 文件，功能已合并到 weekly-git-summary.sh ([9a6ac64](https://github.com/yinzhenyu-su/weekly-git-summary/commit/9a6ac6456cdf650cb9ce6552d74e05b1d37517e7))
+
 ## [1.0.3](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.2...v1.0.3) (2025-07-09)
 
 ### 🐛 Bug Fixes
