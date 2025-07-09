@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>工作内容Git提交记录汇总 - yinzhenyu</title>
+    <title>工作内容Git提交记录汇总</title>
     <!-- echarts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 
@@ -156,7 +156,9 @@
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                 项目: <span class="repo-name">--</span>
               </h2>
-              <p class="text-gray-600 dark:text-gray-400">开发者: yinzhenyu</p>
+              <p class="text-gray-600 dark:text-gray-400">
+                开发者: <span id="developer-name">--</span>
+              </p>
             </div>
           </div>
           <div class="text-right">
@@ -266,7 +268,7 @@
         <div class="text-center space-y-6">
           <div class="flex justify-center space-x-6">
             <a
-              href="https://github.com/yinzhenyu"
+              href="https://github.com/yinzhenyu-su"
               target="_blank"
               class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
@@ -274,15 +276,15 @@
               <span>GitHub</span>
             </a>
             <a
-              href="https://twitter.com/yinzhenyu"
+              href="https://weibo.com/u/5794393582"
               target="_blank"
               class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              <i class="fab fa-twitter text-xl"></i>
-              <span>Twitter</span>
+              <i class="fab fa-weibo text-xl"></i>
+              <span>微博</span>
             </a>
             <a
-              href="https://linkedin.com/in/yinzhenyu"
+              href="https://linkedin.com/in/yinzhenyu-su"
               target="_blank"
               class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             ></a>
@@ -292,6 +294,17 @@
     </footer>
   </body>
   <script>
+    function getAuthorNames(data) {
+      const authorSet = new Set();
+      data.repositories.forEach((repo) => {
+        repo.commits.forEach((dateCommit) => {
+          dateCommit.commits.forEach((commit) => {
+            authorSet.add(commit.author);
+          });
+        });
+      });
+      return Array.from(authorSet);
+    }
     document.addEventListener("DOMContentLoaded", async () => {
       // 切换主题功能
       const themeToggle = document.getElementById("theme-toggle");
@@ -329,6 +342,9 @@
     });
 
     function renderCommitData(data) {
+      const names = getAuthorNames(data);
+      document.title = `工作内容Git提交记录汇总 - ${names.join(", ")}`;
+      document.getElementById("developer-name").textContent = names.join(", ");
       const { repositories, timeRange, author } = data;
       document.getElementById("startDate").textContent = timeRange.since;
       document.getElementById("endDate").textContent = timeRange.until;
@@ -679,7 +695,10 @@
 
     function createCommitCard(commit, repoUrl) {
       const card = document.createElement("a");
-      card.href = !!repoUrl ? `http://${repoUrl}/-/commit/${commit.hash}` : "";
+      const isGitHub = repoUrl && repoUrl.includes("github.com");
+      card.href = !!repoUrl
+        ? `http://${repoUrl}/${isGitHub ? "" : "-/"}commit/${commit.hash}`
+        : "";
       card.target = "_blank";
       card.className =
         "commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block";
