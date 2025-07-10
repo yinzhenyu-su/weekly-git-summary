@@ -200,7 +200,7 @@ weekly-git-summary --help
 weekly-git-summary/
 ├── scripts/
 │   ├── cli.ts                 # CLI 入口点（TypeScript）
-│   ├── weekly-git-summary.js  # Node.js 脚本实现
+│   ├── weekly-git-summary.ts  # TypeScript 脚本实现
 │   ├── weekly-git-summary.sh  # Shell 脚本实现
 │   ├── weekly-git-summary.ps1 # PowerShell 脚本实现
 │   ├── git-log.html           # Web 可视化界面模板

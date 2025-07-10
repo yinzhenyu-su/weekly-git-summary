@@ -27,11 +27,7 @@
     "weekly-git-summary": "./build/cli.js"
   },
   "files": [
-    "build/cli.js",
-    "build/weekly-git-summary.js",
-    "build/weekly-git-summary.sh",
-    "build/weekly-git-summary.ps1",
-    "build/git-log.html",
+    "build/**/*",
     "LICENSE",
     "README.md",
     "CLAUDE.md"

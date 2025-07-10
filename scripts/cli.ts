@@ -21,19 +21,19 @@ function main() {
   let command: string;
 
   if (currentPlatform === "win32") {
-    // Windows 系统使用 Node.js 脚本（不再依赖 PowerShell）
+    // Windows 系统使用 TypeScript 脚本（编译后的 JS）
     scriptPath = join(__dirname, "weekly-git-summary.js");
     command = `node "${scriptPath}" ${argsString}`;
   } else {
-    // macOS/Linux 系统优先使用 Shell 脚本，回退到 Node.js 脚本
+    // macOS/Linux 系统优先使用 Shell 脚本，回退到 TypeScript 脚本
     const shScriptPath = join(__dirname, "weekly-git-summary.sh");
-    const jsScriptPath = join(__dirname, "weekly-git-summary.js");
-    
+    const tsScriptPath = join(__dirname, "weekly-git-summary.js");
+
     if (existsSync(shScriptPath)) {
       scriptPath = shScriptPath;
       command = `bash "${scriptPath}" ${argsString}`;
     } else {
-      scriptPath = jsScriptPath;
+      scriptPath = tsScriptPath;
       command = `node "${scriptPath}" ${argsString}`;
     }
   }
