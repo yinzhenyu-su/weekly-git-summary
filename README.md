@@ -15,10 +15,21 @@
 - **跨平台支持** - 自动检测系统环境，Windows 使用 Node.js，macOS/Linux 使用 Bash 或 Node.js
 - **多种输出格式** - 支持彩色终端输出、JSON 格式、Markdown 格式
 - **智能仓库扫描** - 自动扫描指定目录下的 Git 仓库（最大深度 2 层）
-- **灵活的时间范围** - 支持自定义开始和结束日期
-- **作者过滤** - 可以按特定作者筛选提交记录
+- **灵活的时间范围** - 支持自定义开始和结束日期，以及预设时间范围
+- **高级过滤功能** - 支持作者过滤、提交信息模式匹配（正则表达式）
+- **传统提交规范支持** - 自动识别和分类传统提交格式，提供类型统计
+- **统计分析** - 提供提交数量、参与人数、类型分布等统计信息
 - **可视化展示** - 包含 Web 可视化界面，支持图表展示
 - **零配置使用** - 开箱即用，无需复杂配置
+
+## 🆕 新增功能
+
+- **提交信息模式过滤** (`--message-pattern`) - 使用正则表达式过滤特定类型的提交
+- **传统提交规范支持** (`--conventional`) - 自动解析和分类 feat、fix、docs 等提交类型
+- **时间范围预设** (`--time-range`) - 快捷选择常用时间范围如 this-week、last-month 等
+- **增强统计信息** - 显示总提交数、参与作者数、提交类型分布等详细统计
+
+详细功能说明请参考 [新功能文档](docs/NEW_FEATURES.md)
 
 ## 📦 安装
 
@@ -55,6 +66,15 @@ weekly-git-summary --dir ~/projects --since 2023-01-01 --until 2023-01-31
 # 过滤特定作者的提交
 weekly-git-summary --author "张三" --since 2023-01-01
 
+# 使用时间范围预设
+weekly-git-summary --time-range last-week
+
+# 按提交信息模式过滤
+weekly-git-summary --message-pattern "^feat|^fix"
+
+# 启用传统提交规范分析
+weekly-git-summary --conventional --time-range this-month
+
 # 输出 JSON 格式
 weekly-git-summary --json
 
@@ -65,18 +85,46 @@ weekly-git-summary --md
 weekly-git-summary --help
 ```
 
+### 高级用法
+
+```bash
+# 复合过滤：查看上个月功能相关提交
+weekly-git-summary --time-range last-month --message-pattern "^feat" --conventional --json
+
+# 团队分析：特定作者本周工作成果
+weekly-git-summary --time-range this-week --author "张三" --conventional --md
+
+# 质量分析：查找所有修复相关提交
+weekly-git-summary --message-pattern "^fix|bug|修复" --since 2023-01-01 --conventional
+
+# 生成详细报告：包含统计信息的周报
+weekly-git-summary --time-range this-week --conventional --md > weekly-report.md
+```
+
 ## 📋 命令行参数
 
-| 参数       | 简写 | 描述                  | 默认值   |
-| ---------- | ---- | --------------------- | -------- |
-| `--dir`    | `-d` | 指定要扫描的目录      | 当前目录 |
-| `--since`  | `-s` | 开始日期 (YYYY-MM-DD) | 本周一   |
-| `--until`  | `-u` | 结束日期 (YYYY-MM-DD) | 今天     |
-| `--author` | `-a` | 按作者过滤提交        | 所有作者 |
-| `--json`   | `-j` | 以 JSON 格式输出      | false    |
-| `--md`     | `-m` | 以 Markdown 格式输出  | false    |
-| `--html`   |      | 以 HTML 格式输出      | false    |
-| `--help`   | `-h` | 显示帮助信息          | -        |
+| 参数                     | 简写 | 描述                        | 默认值   |
+| ------------------------ | ---- | --------------------------- | -------- |
+| `--dir`                  | `-d` | 指定要扫描的目录            | 当前目录 |
+| `--since`                | `-s` | 开始日期 (YYYY-MM-DD)       | 本周一   |
+| `--until`                | `-u` | 结束日期 (YYYY-MM-DD)       | 今天     |
+| `--author`               | `-a` | 按作者过滤提交              | 所有作者 |
+| `--message-pattern`      |      | 按提交信息模式过滤 (正则)    | 无       |
+| `--conventional`         |      | 启用传统提交格式解析        | false    |
+| `--time-range`           |      | 使用时间范围预设            | 无       |
+| `--json`                 | `-j` | 以 JSON 格式输出            | false    |
+| `--md`                   | `-m` | 以 Markdown 格式输出        | false    |
+| `--html`                 |      | 以 HTML 格式输出            | false    |
+| `--help`                 | `-h` | 显示帮助信息                | -        |
+
+### 时间范围预设选项
+
+- `today` - 今天
+- `yesterday` - 昨天
+- `this-week` - 本周
+- `last-week` - 上周
+- `this-month` - 本月
+- `last-month` - 上月
 
 ## 📊 输出格式
 
