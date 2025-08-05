@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.0.5](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.4...v1.0.5) (2025-08-05)
+
+### ✨ Features
+
+* 支持多作者过滤和反斜杠转义空格参数 ([f912c58](https://github.com/yinzhenyu-su/weekly-git-summary/commit/f912c58e3e005a53eff7c5d11883fdf0a9743bb4)), closes [#3](https://github.com/yinzhenyu-su/weekly-git-summary/issues/3)
+* 支持多作者过滤和反斜杠转义空格参数 ([2f8934f](https://github.com/yinzhenyu-su/weekly-git-summary/commit/2f8934f9c1850084dc778cbbcf4599db2b8cbab6))
+
+### 🐛 Bug Fixes
+
+* 修复 -a 参数包含空格的作者名称处理问题 (关联 issue [#3](https://github.com/yinzhenyu-su/weekly-git-summary/issues/3)) ([06ffe3c](https://github.com/yinzhenyu-su/weekly-git-summary/commit/06ffe3cc2ca32fa48235c60c027e424ef1b1bffa))
+* 修复按作者过滤时查询不到 commit 记录 [#3](https://github.com/yinzhenyu-su/weekly-git-summary/issues/3) ([bfde0db](https://github.com/yinzhenyu-su/weekly-git-summary/commit/bfde0dbe8110ffbf3f694d71c1a50e80b83a2ffe))
+
+### ♻️ Code Refactoring
+
+* 统一代码风格，调整测试文件中的字符串引号和格式 ([cc6f189](https://github.com/yinzhenyu-su/weekly-git-summary/commit/cc6f189e07476538e8d54189c56ced3b72432e84))
+* 重构 weekly-git-summary 为 ts ([34396b1](https://github.com/yinzhenyu-su/weekly-git-summary/commit/34396b1b569c8552b2f1f3af3c574304bbe12c9f))
+
+### ✅ Tests
+
+* 增强Windows兼容性测试，添加对包含空格的作者名称的错误处理 ([597136e](https://github.com/yinzhenyu-su/weekly-git-summary/commit/597136e9447c54cf43ecd0e846c4e96354562086))
+
 ## [1.0.4](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.3...v1.0.4) (2025-07-09)
 
 ### 🐛 Bug Fixes
