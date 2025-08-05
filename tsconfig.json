@@ -1,36 +1,36 @@
 {
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "react-jsx",
+    // Environment setup & latest features
+    "lib": [
+      "ESNext"
+    ],
+    "moduleDetection": "force",
+    "module": "ESNext",
+    // Bundler mode
+    "moduleResolution": "node",
+    "allowJs": true,
+    // Best practices
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "declaration": true,
+    "declarationDir": "./build",
+    "noEmit": false,
+    "outDir": "./build",
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
   "include": [
     "scripts/**/*"
   ],
   "exclude": [
     "node_modules",
     "build"
-  ],
-  "compilerOptions": {
-    // Environment setup & latest features
-    "lib": [
-      "ESNext"
-    ],
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "declaration": true,
-    "declarationDir": "./build",
-    "outDir": "./build",
-    // Bundler mode
-    "moduleResolution": "node",
-    "verbatimModuleSyntax": true,
-    "noEmit": false,
-    // Best practices
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  }
+  ]
 }

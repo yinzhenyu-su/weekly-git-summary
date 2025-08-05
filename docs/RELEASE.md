@@ -7,6 +7,7 @@
 ### 1. 手动发布
 
 #### 本地发布
+
 ```bash
 # 测试发布流程（不会实际发布）
 bun run release:dry
@@ -29,6 +30,7 @@ bun run release
 ```
 
 #### GitHub Actions 手动触发
+
 1. 访问 GitHub 仓库的 Actions 页面
 2. 选择 "Release" 工作流
 3. 点击 "Run workflow"
@@ -38,6 +40,7 @@ bun run release
 ### 2. 自动发布
 
 #### 通过 release 分支自动发布
+
 当代码推送到 `release` 分支时，会自动触发发布流程：
 
 ```bash
@@ -52,8 +55,9 @@ git push origin release
 ```
 
 自动发布会根据提交信息确定版本类型：
+
 - `BREAKING CHANGE` 或 `feat!` → major 版本
-- `feat:` → minor 版本  
+- `feat:` → minor 版本
 - `fix:` 或其他 → patch 版本
 
 ## 发布流程
@@ -93,6 +97,7 @@ release-it 会自动执行以下步骤：
 ### release-it 配置文件 (`.release-it.json`)
 
 主要配置项：
+
 - **git**: Git 相关配置（提交信息、标签、推送等）
 - **github**: GitHub Release 配置
 - **npm**: NPM 发布配置
@@ -102,10 +107,12 @@ release-it 会自动执行以下步骤：
 ### GitHub Actions 配置
 
 需要配置以下 GitHub Secrets：
+
 - `GITHUB_TOKEN`: 自动提供，用于 GitHub 操作
 - `NPM_TOKEN`: 需要手动添加，用于 NPM 发布
 
 #### 设置 NPM_TOKEN
+
 1. 登录 [npmjs.com](https://www.npmjs.com/)
 2. 进入 Account Settings → Access Tokens
 3. 创建新的 Automation Token
@@ -132,6 +139,7 @@ release-it 会自动执行以下步骤：
 ```
 
 类型说明：
+
 - `feat`: 新功能 (MINOR)
 - `fix`: 修复 bug (PATCH)
 - `docs`: 文档更新
@@ -144,6 +152,7 @@ release-it 会自动执行以下步骤：
 - `chore`: 维护性变更
 
 破坏性更改：
+
 - 在类型后添加 `!`：`feat!: remove deprecated API`
 - 或在 footer 中添加：`BREAKING CHANGE: description`
 
@@ -173,6 +182,7 @@ release-it 会自动执行以下步骤：
 如果发布有问题，可以：
 
 1. **NPM 包回滚**
+
    ```bash
    npm unpublish weekly-git-summary@版本号 --force
    ```

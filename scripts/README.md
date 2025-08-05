@@ -65,7 +65,7 @@
 
 # 作者过滤示例 - 支持多个作者和空格名称（多种转义方式）
 .\weekly-git-summary.ps1 -a "John Doe"                      # 单个作者（引号包裹）
-.\weekly-git-summary.ps1 --author "Zhang San"               # 单个作者（引号包裹） 
+.\weekly-git-summary.ps1 --author "Zhang San"               # 单个作者（引号包裹）
 .\weekly-git-summary.ps1 --author 'Li Ming Wang'            # 单个作者（单引号包裹）
 .\weekly-git-summary.ps1 -a "John\ Doe"                     # 单个作者（引号内反斜杠转义）
 .\weekly-git-summary.ps1 -a "Alice" -a "Bob"                # 多个作者过滤（OR关系）

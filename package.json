@@ -2,10 +2,16 @@
   "name": "weekly-git-summary",
   "version": "1.0.5",
   "description": "A CLI tool to generate weekly git commit summaries",
-  "main": "build/index.js",
-  "type": "module",
-  "license": "MIT",
   "author": "yinzhenyu.su@gmail.com",
+  "license": "MIT",
+  "homepage": "https://github.com/yinzhenyu-su/weekly-git-summary#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yinzhenyu-su/weekly-git-summary.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yinzhenyu-su/weekly-git-summary/issues"
+  },
   "keywords": [
     "git",
     "cli",
@@ -15,28 +21,23 @@
     "report",
     "cross-platform"
   ],
-  "homepage": "https://github.com/yinzhenyu-su/weekly-git-summary#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yinzhenyu-su/weekly-git-summary.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yinzhenyu-su/weekly-git-summary/issues"
-  },
+  "main": "build/index.js",
   "bin": {
     "weekly-git-summary": "./build/cli.js"
   },
   "files": [
-    "build/**/*",
+    "CLAUDE.md",
     "LICENSE",
     "README.md",
-    "CLAUDE.md"
+    "build/**/*"
   ],
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
     "build": "bun run ./build.ts",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:integration": "bun test tests/integration.test.ts",
@@ -50,17 +51,20 @@
     "release:beta": "release-it --preRelease=beta",
     "release:alpha": "release-it --preRelease=alpha"
   },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
   "dependencies": {
     "@types/node": "^22.14.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^5.1.0",
     "@release-it/conventional-changelog": "^10.0.1",
     "@types/bun": "latest",
+    "eslint": "^9.32.0",
+    "eslint-plugin-format": "^1.0.1",
     "release-it": "^19.0.3",
     "typescript": "^5.8.3"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   },
   "volta": {
     "node": "22.14.0"

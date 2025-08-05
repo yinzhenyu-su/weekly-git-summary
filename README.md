@@ -223,13 +223,11 @@ weekly-git-summary/
 该项目采用智能的跨平台架构：
 
 1. **TypeScript CLI 包装器** (`scripts/cli.ts`)
-
    - 检测操作系统类型
    - 自动选择对应的脚本实现
    - 透明传递命令行参数
 
 2. **平台特定实现**
-
    - **Windows**: Node.js 脚本 (跨平台兼容)
    - **macOS/Linux**: Bash 脚本（已集成 URL 转换功能）或 Node.js 脚本 (回退)
    - **PowerShell**: 支持 Windows PowerShell 环境

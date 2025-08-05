@@ -2,7 +2,7 @@ name: Auto Release
 
 on:
   push:
-    branches: [ release ]
+    branches: [release]
 
 jobs:
   auto-release:
@@ -52,7 +52,7 @@ jobs:
           COMMITS=$(git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD 2>/dev/null || git log --pretty=format:"%s")
           echo "Commits since last release:"
           echo "$COMMITS"
-          
+
           # 检查提交类型确定发布类型
           if echo "$COMMITS" | grep -qE "BREAKING CHANGE|feat!|fix!"; then
             echo "release_type=major" >> $GITHUB_OUTPUT
