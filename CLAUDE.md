@@ -29,10 +29,19 @@ node build/cli.js -d ~/projects -s 2023-01-01 -u 2023-01-31
 node build/cli.js --json
 node build/cli.js --md
 
-# 作者过滤 - 支持包含空格的作者名称
-node build/cli.js -a "John Doe"
-node build/cli.js --author "Zhang San"
-node build/cli.js --author 'Li Ming Wang'
+# 目录路径 - 支持包含空格的路径（多种转义方式）
+node build/cli.js -d "Program Files/MyProject"       # 引号包裹
+node build/cli.js --dir "My\ Documents/Projects"     # 引号内反斜杠转义
+node build/cli.js --dir "/Library/Application\ Support"  # 多个反斜杠转义
+
+# 作者过滤 - 支持多个作者和空格名称（多种转义方式）
+node build/cli.js -a "John Doe"                    # 单个作者（引号包裹）
+node build/cli.js --author "Zhang San"             # 单个作者（引号包裹）
+node build/cli.js --author 'Li Ming Wang'          # 单个作者（单引号包裹）
+node build/cli.js -a "John\ Doe"                   # 单个作者（引号内反斜杠转义）
+node build/cli.js -a "Alice" -a "Bob"              # 多个作者过滤（OR 关系）
+node build/cli.js -a "John Doe" --author "Jane Smith"  # 混合使用短参数和长参数
+node build/cli.js -a "Dr\ John\ Doe" -a "Mary\ Jane\ Watson"  # 多个作者反斜杠转义
 ```
 
 ## 架构设计
@@ -78,7 +87,18 @@ node build/cli.js --author 'Li Ming Wang'
 ### 文件结构
 
 - `scripts/`: 包含所有 CLI 逻辑和平台特定实现
+  - `cli.ts`: CLI 入口点，平台检测和脚本委托
+  - `weekly-git-summary.ts`: TypeScript/Node.js 实现，跨平台核心逻辑
+  - `weekly-git-summary.sh`: Bash 脚本实现（macOS/Linux）
+  - `weekly-git-summary.ps1`: PowerShell 脚本实现（Windows）
+  - `git-log.html`: HTML 输出模板文件
+  - `README.md`: 脚本使用说明和示例
 - `build/`: 生成的输出目录 (由构建脚本创建)
+- `tests/`: 测试文件目录
+  - `cli.test.ts`: CLI 功能测试（参数解析、多作者过滤、空格转义等）
+  - `integration.test.ts`: 集成测试（构建、输出格式、跨平台兼容性）
+  - `windows.test.ts`: Windows 平台专用测试
+  - `test-windows-cli.js`: Windows 环境模拟脚本
 - `package.json`: 定义 `weekly-git-summary` 作为二进制入口点
 - `tsconfig.json`: TypeScript 配置，目标 ESNext，严格模式
 

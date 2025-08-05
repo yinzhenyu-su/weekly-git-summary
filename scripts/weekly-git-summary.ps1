@@ -54,8 +54,10 @@ function New-HtmlOutput {
     if ($TODAY) {
         $scriptArgs += "--until", "`"$TODAY`""
     }
-    if ($AUTHOR) {
-        $scriptArgs += "--author", "`"$AUTHOR`""
+    foreach ($author in $AUTHORS) {
+        if ($author -ne "") {
+            $scriptArgs += "--author", "`"$author`""
+        }
     }
     $scriptArgs += "--json"
     
@@ -90,7 +92,7 @@ $CURRENT_WEEKDAY = [int](Get-Date).DayOfWeek.value__
 $DAYS_TO_MONDAY = (($CURRENT_WEEKDAY + 6) % 7)
 $MONDAY = (Get-Date).AddDays(-$DAYS_TO_MONDAY).ToString("yyyy-MM-dd")
 $TODAY = (Get-Date).ToString("yyyy-MM-dd")
-$AUTHOR = ""
+$AUTHORS = @()
 $JSON_OUTPUT = $false
 $MD_OUTPUT = $false
 $HTML_OUTPUT = $false
@@ -127,6 +129,8 @@ while ($i -lt $args.Count) {
         }
         { $_ -in ("-d", "--dir") } {
             $SEARCH_DIR = $args[$i + 1]
+            # 处理反斜杠转义空格：将 "\ " 转换为空格
+            $SEARCH_DIR = $SEARCH_DIR -replace '\\ ', ' '
             $i += 2
             continue
         }
@@ -141,7 +145,12 @@ while ($i -lt $args.Count) {
             continue
         }
         { $_ -in ("-a", "--author") } {
-            $AUTHOR = $args[$i + 1]
+            $author = $args[$i + 1]
+            # 处理反斜杠转义空格：将 "\ " 转换为空格
+            $author = $author -replace '\\ ', ' '
+            if ($author -ne "") {
+                $AUTHORS += $author
+            }
             $i += 2
             continue
         }
@@ -185,8 +194,9 @@ if ($JSON_OUTPUT) {
         repositories = @()
     }
     
-    if ($AUTHOR -ne "") {
-        $jsonOutput.Add("author", $AUTHOR)
+    if ($AUTHORS.Count -gt 0) {
+        $authorsStr = $AUTHORS -join ", "
+        $jsonOutput.Add("author", $authorsStr)
     }
 }
 elseif ($MD_OUTPUT) {
@@ -194,8 +204,9 @@ elseif ($MD_OUTPUT) {
     ""
     "- **统计时间范围**: $MONDAY 到 $TODAY"
     "- **搜索目录**: $SEARCH_DIR"
-    if ($AUTHOR -ne "") {
-        "- **作者过滤**: $AUTHOR"
+    if ($AUTHORS.Count -gt 0) {
+        $authorsStr = $AUTHORS -join ", "
+        "- **作者过滤**: $authorsStr"
     }
     ""
 }
@@ -209,9 +220,10 @@ else {
     Write-Host "$MONDAY 到 $TODAY"
     Write-Host "搜索目录: " -NoNewline -ForegroundColor $GREEN
     Write-Host "$SEARCH_DIR"
-    if ($AUTHOR -ne "") {
+    if ($AUTHORS.Count -gt 0) {
+        $authorsStr = $AUTHORS -join ", "
         Write-Host "作者过滤: " -NoNewline -ForegroundColor $GREEN
-        Write-Host "$AUTHOR"
+        Write-Host "$authorsStr"
     }
     Write-Host ""
 }
@@ -233,8 +245,10 @@ foreach ($gitDir in $gitDirs) {
     
     # 获取提交日志，添加作者过滤条件
     $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s|%h', '--date=short')
-    if ($AUTHOR -ne "") {
-        $gitLogArgs += "--author=`"$AUTHOR`""
+    foreach ($author in $AUTHORS) {
+        if ($author -ne "") {
+            $gitLogArgs += "--author=`"$author`""
+        }
     }
     
     $COMMITS = git $gitLogArgs

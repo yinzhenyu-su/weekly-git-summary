@@ -16,8 +16,16 @@ function main() {
 
   // 构建参数字符串，正确处理包含空格的参数
   const argsString = args.map(arg => {
-    // 如果参数包含空格且没有被引号包裹，则添加引号
-    if (arg.includes(' ') && !((arg.startsWith('"') && arg.endsWith('"')) || (arg.startsWith("'") && arg.endsWith("'")))) {
+    // 如果参数已经被引号包裹，不处理
+    if ((arg.startsWith('"') && arg.endsWith('"')) || (arg.startsWith("'") && arg.endsWith("'"))) {
+      return arg;
+    }
+    // 如果参数包含反斜杠转义空格，认为用户已转义，不添加引号
+    if (arg.includes('\\ ')) {
+      return arg;
+    }
+    // 如果参数包含普通空格，添加引号
+    if (arg.includes(' ')) {
       return `"${arg}"`;
     }
     return arg;

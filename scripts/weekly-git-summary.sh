@@ -44,7 +44,7 @@ CURRENT_WEEKDAY=$(date +%w)
 DAYS_TO_MONDAY=$(( (($CURRENT_WEEKDAY + 6) % 7) ))
 MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
 TODAY=$(date +%Y-%m-%d)
-AUTHOR=""
+AUTHORS=()
 JSON_OUTPUT=false
 MD_OUTPUT=false
 HTML_OUTPUT=false
@@ -72,9 +72,11 @@ generate_html_output() {
     if [ ! -z "$TODAY" ]; then
         args="$args --until \"$TODAY\""
     fi
-    if [ ! -z "$AUTHOR" ]; then
-        args="$args --author \"$AUTHOR\""
-    fi
+    for author in "${AUTHORS[@]}"; do
+        if [ ! -z "$author" ]; then
+            args="$args --author \"$author\""
+        fi
+    done
     
     # 转义`字符
     local json_data=$(eval "$0 $args --json" | sed 's/`/\\`/g')
@@ -123,6 +125,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         -d|--dir)
             SEARCH_DIR="$2"
+            # 处理反斜杠转义空格：将 "\ " 转换为空格
+            SEARCH_DIR="${SEARCH_DIR//\\ / }"
             shift 2
             ;;
         -s|--since)
@@ -134,7 +138,12 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -a|--author)
-            AUTHOR="$2"
+            author="$2"
+            # 处理反斜杠转义空格：将 "\ " 转换为空格
+            author="${author//\\ / }"
+            if [ ! -z "$author" ]; then
+                AUTHORS+=("$author")
+            fi
             shift 2
             ;;
         -j|--json)
@@ -170,8 +179,10 @@ if [ "$JSON_OUTPUT" = true ]; then
     echo "    \"until\": \"$TODAY\""
     echo '  },'
     echo "  \"searchDir\": \"$SEARCH_DIR\","
-    if [ ! -z "$AUTHOR" ]; then
-        echo "  \"author\": \"$AUTHOR\","
+    if [ ${#AUTHORS[@]} -gt 0 ]; then
+        authors_str=$(printf "%s, " "${AUTHORS[@]}")
+        authors_str="${authors_str%, }"  # 去掉最后的逗号和空格
+        echo "  \"author\": \"$authors_str\","
     fi
     echo '  "repositories": ['
 elif [ "$MD_OUTPUT" = true ]; then
@@ -179,8 +190,10 @@ elif [ "$MD_OUTPUT" = true ]; then
     echo ""
     echo "- **统计时间范围**: $MONDAY 到 $TODAY"
     echo "- **搜索目录**: $SEARCH_DIR"
-    if [ ! -z "$AUTHOR" ]; then
-        echo "- **作者过滤**: $AUTHOR"
+    if [ ${#AUTHORS[@]} -gt 0 ]; then
+        authors_str=$(printf "%s, " "${AUTHORS[@]}")
+        authors_str="${authors_str%, }"  # 去掉最后的逗号和空格
+        echo "- **作者过滤**: $authors_str"
     fi
     echo ""
 elif [ "$HTML_OUTPUT" = true ]; then
@@ -189,8 +202,10 @@ else
     echo -e "${BLUE}===== 工作内容Git提交记录汇总 =====${NC}"
     echo -e "${GREEN}统计时间范围:${NC} $MONDAY 到 $TODAY"
     echo -e "${GREEN}搜索目录:${NC} $SEARCH_DIR"
-    if [ ! -z "$AUTHOR" ]; then
-        echo -e "${GREEN}作者过滤:${NC} $AUTHOR"
+    if [ ${#AUTHORS[@]} -gt 0 ]; then
+        authors_str=$(printf "%s, " "${AUTHORS[@]}")
+        authors_str="${authors_str%, }"  # 去掉最后的逗号和空格
+        echo -e "${GREEN}作者过滤:${NC} $authors_str"
     fi
     echo ""
 fi
@@ -199,7 +214,7 @@ fi
 REPO_COUNT=0
 
 # 查找所有Git仓库
-find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
+while read gitdir; do
     # 进入仓库所在目录
     cd "$(dirname "$gitdir")"
     
@@ -209,12 +224,22 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     REPO_URL=$(convert_git_remote_to_url)
     
     # 获取本周提交日志，添加作者过滤条件$
-    AUTHOR_FILTER=""
-    if [ ! -z "$AUTHOR" ]; then
-        AUTHOR_FILTER="--author=\"$AUTHOR\""
-    fi
+    AUTHOR_FILTERS=""
+    for author in "${AUTHORS[@]}"; do
+        if [ ! -z "$author" ]; then
+            if [ -z "$AUTHOR_FILTERS" ]; then
+                AUTHOR_FILTERS="--author=\"$author\""
+            else
+                AUTHOR_FILTERS="$AUTHOR_FILTERS --author=\"$author\""
+            fi
+        fi
+    done
     # 调整时间范围：从周一 00:00:00 到今天 23:59:59
-    COMMITS=$(git log $AUTHOR_FILTER --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)
+    if [ -z "$AUTHOR_FILTERS" ]; then
+        COMMITS=$(git log --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)
+    else
+        COMMITS=$(eval "git log $AUTHOR_FILTERS --since=\"${MONDAY} 00:00:00\" --until=\"${TODAY} 23:59:59\" --pretty=format:\"%ad|%an|%s|%h\" --date=short")
+    fi
     
     # 如果有提交，则显示仓库信息和提交
     if [ ! -z "$COMMITS" ]; then
@@ -320,7 +345,7 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     
     # 返回原目录
     cd - > /dev/null
-done
+done < <(find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git")
 
 # 完成JSON输出
 if [ "$JSON_OUTPUT" = true ]; then
