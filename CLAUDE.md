@@ -87,7 +87,18 @@ node build/cli.js -a "Dr\ John\ Doe" -a "Mary\ Jane\ Watson"  # 多个作者反�
 ### 文件结构
 
 - `scripts/`: 包含所有 CLI 逻辑和平台特定实现
+  - `cli.ts`: CLI 入口点，平台检测和脚本委托
+  - `weekly-git-summary.ts`: TypeScript/Node.js 实现，跨平台核心逻辑
+  - `weekly-git-summary.sh`: Bash 脚本实现（macOS/Linux）
+  - `weekly-git-summary.ps1`: PowerShell 脚本实现（Windows）
+  - `git-log.html`: HTML 输出模板文件
+  - `README.md`: 脚本使用说明和示例
 - `build/`: 生成的输出目录 (由构建脚本创建)
+- `tests/`: 测试文件目录
+  - `cli.test.ts`: CLI 功能测试（参数解析、多作者过滤、空格转义等）
+  - `integration.test.ts`: 集成测试（构建、输出格式、跨平台兼容性）
+  - `windows.test.ts`: Windows 平台专用测试
+  - `test-windows-cli.js`: Windows 环境模拟脚本
 - `package.json`: 定义 `weekly-git-summary` 作为二进制入口点
 - `tsconfig.json`: TypeScript 配置，目标 ESNext，严格模式
 

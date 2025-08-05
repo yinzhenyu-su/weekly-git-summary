@@ -214,7 +214,7 @@ fi
 REPO_COUNT=0
 
 # 查找所有Git仓库
-find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
+while read gitdir; do
     # 进入仓库所在目录
     cd "$(dirname "$gitdir")"
     
@@ -227,11 +227,19 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     AUTHOR_FILTERS=""
     for author in "${AUTHORS[@]}"; do
         if [ ! -z "$author" ]; then
-            AUTHOR_FILTERS="$AUTHOR_FILTERS --author=\"$author\""
+            if [ -z "$AUTHOR_FILTERS" ]; then
+                AUTHOR_FILTERS="--author=\"$author\""
+            else
+                AUTHOR_FILTERS="$AUTHOR_FILTERS --author=\"$author\""
+            fi
         fi
     done
     # 调整时间范围：从周一 00:00:00 到今天 23:59:59
-    COMMITS=$(git log $AUTHOR_FILTERS --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)
+    if [ -z "$AUTHOR_FILTERS" ]; then
+        COMMITS=$(git log --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)
+    else
+        COMMITS=$(eval "git log $AUTHOR_FILTERS --since=\"${MONDAY} 00:00:00\" --until=\"${TODAY} 23:59:59\" --pretty=format:\"%ad|%an|%s|%h\" --date=short")
+    fi
     
     # 如果有提交，则显示仓库信息和提交
     if [ ! -z "$COMMITS" ]; then
@@ -337,7 +345,7 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     
     # 返回原目录
     cd - > /dev/null
-done
+done < <(find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git")
 
 # 完成JSON输出
 if [ "$JSON_OUTPUT" = true ]; then

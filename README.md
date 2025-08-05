@@ -285,15 +285,15 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ## 🔗 相关链接
 
 - [npm 包地址](https://www.npmjs.com/package/weekly-git-summary)
-- [GitHub 仓库](https://github.com/user/weekly-git-summary)
-- [问题反馈](https://github.com/user/weekly-git-summary/issues)
+- [GitHub 仓库](https://github.com/yinzhenyu-su/weekly-git-summary)
+- [问题反馈](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
 
 ## 📞 支持
 
 如果您遇到任何问题或有功能建议，请：
 
 1. 查看 [常见问题](docs/FAQ.md)
-2. 搜索已有的 [Issues](https://github.com/user/weekly-git-summary/issues)
+2. 搜索已有的 [Issues](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
 3. 创建新的 Issue 描述您的问题
 
 ---
