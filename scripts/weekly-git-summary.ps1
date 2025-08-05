@@ -234,7 +234,7 @@ foreach ($gitDir in $gitDirs) {
     # 获取提交日志，添加作者过滤条件
     $gitLogArgs = @('log', "--since=$MONDAY 00:00:00", "--until=$TODAY 23:59:59", '--pretty=format:%ad|%an|%s|%h', '--date=short')
     if ($AUTHOR -ne "") {
-        $gitLogArgs += "--author=$AUTHOR"
+        $gitLogArgs += "--author=`"$AUTHOR`""
     }
     
     $COMMITS = git $gitLogArgs

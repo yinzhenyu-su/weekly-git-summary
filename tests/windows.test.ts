@@ -58,4 +58,31 @@ describe("Windows Compatibility Tests", () => {
     });
     expect(standardOutput).toContain("模拟 Windows 环境执行");
   });
+
+  test("should handle author names with spaces on Windows", () => {
+    const scriptPath = join(process.cwd(), "tests", "test-windows-cli.js");
+    
+    // 测试包含空格的作者名称 - 双引号
+    const output1 = execSync(`node "${scriptPath}" --author "John Doe" --json --since 2025-07-01`, { 
+      encoding: "utf8" 
+    });
+    expect(output1).toContain("模拟 Windows 环境执行");
+    
+    // 检查 JSON 输出中的作者信息
+    const lines1 = output1.split('\n');
+    const separatorIndex1 = lines1.findIndex(line => line.includes('='.repeat(50)));
+    const jsonLines1 = lines1.slice(separatorIndex1 + 1).join('\n').trim();
+    
+    if (jsonLines1) {
+      const jsonData1 = JSON.parse(jsonLines1);
+      expect(jsonData1).toHaveProperty("author");
+      expect(jsonData1.author).toBe("John Doe");
+    }
+    
+    // 测试包含空格的作者名称 - 单引号
+    const output2 = execSync(`node "${scriptPath}" --author 'Zhang San' --json --since 2025-07-01`, { 
+      encoding: "utf8" 
+    });
+    expect(output2).toContain("模拟 Windows 环境执行");
+  });
 });

@@ -14,8 +14,14 @@ function main() {
   const args = process.argv.slice(2);
   const currentPlatform = platform();
 
-  // 构建参数字符串
-  const argsString = args.join(" ");
+  // 构建参数字符串，正确处理包含空格的参数
+  const argsString = args.map(arg => {
+    // 如果参数包含空格且没有被引号包裹，则添加引号
+    if (arg.includes(' ') && !((arg.startsWith('"') && arg.endsWith('"')) || (arg.startsWith("'") && arg.endsWith("'")))) {
+      return `"${arg}"`;
+    }
+    return arg;
+  }).join(" ");
 
   let scriptPath: string;
   let command: string;

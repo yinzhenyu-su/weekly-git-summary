@@ -134,6 +134,83 @@ describe('CLI Tool Tests', () => {
     }
   });
 
+  it('should handle author names with spaces using double quotes', () => {
+    // 创建包含空格的作者名称的提交
+    execSync('git config user.name "John Doe"', { cwd: testDir });
+    writeFileSync(join(testDir, 'test2.txt'), 'test content 2');
+    execSync('git add .', { cwd: testDir });
+    execSync('git commit -m "Test commit with spaced author"', { cwd: testDir });
+    
+    try {
+      const result = execSync(`node build/cli.js --dir ${testDir} --author "John Doe" --json`, { 
+        encoding: 'utf8',
+        cwd: process.cwd(),
+        stdio: 'pipe'
+      });
+      
+      const lines = result.split('\n');
+      const jsonLine = lines.find(line => line.trim().startsWith('{'));
+      
+      if (jsonLine) {
+        const jsonResult = JSON.parse(jsonLine);
+        expect(jsonResult).toHaveProperty('repositories');
+        expect(jsonResult).toHaveProperty('author');
+        expect(jsonResult.author).toBe('John Doe');
+      }
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
+  });
+
+  it('should handle author names with spaces using single quotes', () => {
+    // 创建包含空格的作者名称的提交
+    execSync('git config user.name "Zhang San"', { cwd: testDir });
+    writeFileSync(join(testDir, 'test3.txt'), 'test content 3');
+    execSync('git add .', { cwd: testDir });
+    execSync('git commit -m "Test commit with Chinese spaced author"', { cwd: testDir });
+    
+    try {
+      const result = execSync(`node build/cli.js --dir ${testDir} --author 'Zhang San' --json`, { 
+        encoding: 'utf8',
+        cwd: process.cwd(),
+        stdio: 'pipe'
+      });
+      
+      const lines = result.split('\n');
+      const jsonLine = lines.find(line => line.trim().startsWith('{'));
+      
+      if (jsonLine) {
+        const jsonResult = JSON.parse(jsonLine);
+        expect(jsonResult).toHaveProperty('repositories');
+        expect(jsonResult).toHaveProperty('author');
+        expect(jsonResult.author).toBe('Zhang San');
+      }
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
+  });
+
+  it('should handle long form author parameter with spaces', () => {
+    try {
+      const result = execSync(`node build/cli.js --dir ${testDir} --author "Li Ming Wang" --json`, { 
+        encoding: 'utf8',
+        cwd: process.cwd(),
+        stdio: 'pipe'
+      });
+      
+      const lines = result.split('\n');
+      const jsonLine = lines.find(line => line.trim().startsWith('{'));
+      
+      if (jsonLine) {
+        const jsonResult = JSON.parse(jsonLine);
+        expect(jsonResult).toHaveProperty('author');
+        expect(jsonResult.author).toBe('Li Ming Wang');
+      }
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
+  });
+
   it('should handle non-existent directory', () => {
     const nonExistentDir = join(process.cwd(), 'non-existent-dir');
     

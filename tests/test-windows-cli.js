@@ -11,7 +11,14 @@ const __dirname = dirname(__filename);
 
 function simulateWindowsCli() {
   const args = process.argv.slice(2);
-  const argsString = args.join(" ");
+  // 正确处理包含空格的参数
+  const argsString = args.map(arg => {
+    // 如果参数包含空格且没有被引号包裹，则添加引号
+    if (arg.includes(' ') && !((arg.startsWith('"') && arg.endsWith('"')) || (arg.startsWith("'") && arg.endsWith("'")))) {
+      return `"${arg}"`;
+    }
+    return arg;
+  }).join(" ");
 
   // 模拟 Windows 系统行为
   const scriptPath = join(__dirname, "..", "build", "weekly-git-summary.js");

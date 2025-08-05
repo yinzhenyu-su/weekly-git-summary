@@ -211,7 +211,7 @@ find "$SEARCH_DIR" -maxdepth 2 -type d -name ".git" | while read gitdir; do
     # 获取本周提交日志，添加作者过滤条件$
     AUTHOR_FILTER=""
     if [ ! -z "$AUTHOR" ]; then
-        AUTHOR_FILTER="--author=$AUTHOR"
+        AUTHOR_FILTER="--author=\"$AUTHOR\""
     fi
     # 调整时间范围：从周一 00:00:00 到今天 23:59:59
     COMMITS=$(git log $AUTHOR_FILTER --since="${MONDAY} 00:00:00" --until="${TODAY} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short)

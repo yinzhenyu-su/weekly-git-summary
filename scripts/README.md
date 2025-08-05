@@ -25,7 +25,7 @@
 - `-d, --dir` 指定要搜索的目录，默认为当前目录。
 - `-s, --since` 指定开始日期，格式为 `YYYY-MM-DD`，默认为本周一。
 - `-u, --until` 指定结束日期，格式为 `YYYY-MM-DD`，默认为今天。
-- `-a, --author` 指定作者，默认为所有作者。
+- `-a, --author` 指定作者，默认为所有作者。支持包含空格的作者名称，需用引号包裹。
 - `-j, --json` 以 JSON 格式输出结果。
 - `-m --md` 以 Markdown 格式输出结果。
 - `--html` 以 HTML 格式输出结果。
@@ -37,12 +37,20 @@
 
 ```bash
 ./weekly-git-summary.sh -d ~/projects -s 2023-01-01 -u 2023-01-31
+
+# 作者过滤示例 - 支持包含空格的作者名称
+./weekly-git-summary.sh -a "John Doe"
+./weekly-git-summary.sh --author "Zhang San"
 ```
 
 - **windows**
 
 ```powershell
 .\weekly-git-summary.ps1 -d ~/projects -s 2023-01-01 -u 2023-01-31
+
+# 作者过滤示例 - 支持包含空格的作者名称
+.\weekly-git-summary.ps1 -a "John Doe"
+.\weekly-git-summary.ps1 --author "Zhang San"
 ```
 
 ## 注意事项

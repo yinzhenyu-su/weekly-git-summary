@@ -28,6 +28,11 @@ node build/cli.js --help
 node build/cli.js -d ~/projects -s 2023-01-01 -u 2023-01-31
 node build/cli.js --json
 node build/cli.js --md
+
+# 作者过滤 - 支持包含空格的作者名称
+node build/cli.js -a "John Doe"
+node build/cli.js --author "Zhang San"
+node build/cli.js --author 'Li Ming Wang'
 ```
 
 ## 架构设计
