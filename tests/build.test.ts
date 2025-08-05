@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "bun:test";
+import { describe, it, expect } from "bun:test";
 import { execSync } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
