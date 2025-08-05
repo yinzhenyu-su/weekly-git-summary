@@ -29,10 +29,19 @@ node build/cli.js -d ~/projects -s 2023-01-01 -u 2023-01-31
 node build/cli.js --json
 node build/cli.js --md
 
-# 作者过滤 - 支持包含空格的作者名称
-node build/cli.js -a "John Doe"
-node build/cli.js --author "Zhang San"
-node build/cli.js --author 'Li Ming Wang'
+# 目录路径 - 支持包含空格的路径（多种转义方式）
+node build/cli.js -d "Program Files/MyProject"       # 引号包裹
+node build/cli.js --dir "My\ Documents/Projects"     # 引号内反斜杠转义
+node build/cli.js --dir "/Library/Application\ Support"  # 多个反斜杠转义
+
+# 作者过滤 - 支持多个作者和空格名称（多种转义方式）
+node build/cli.js -a "John Doe"                    # 单个作者（引号包裹）
+node build/cli.js --author "Zhang San"             # 单个作者（引号包裹）
+node build/cli.js --author 'Li Ming Wang'          # 单个作者（单引号包裹）
+node build/cli.js -a "John\ Doe"                   # 单个作者（引号内反斜杠转义）
+node build/cli.js -a "Alice" -a "Bob"              # 多个作者过滤（OR 关系）
+node build/cli.js -a "John Doe" --author "Jane Smith"  # 混合使用短参数和长参数
+node build/cli.js -a "Dr\ John\ Doe" -a "Mary\ Jane\ Watson"  # 多个作者反斜杠转义
 ```
 
 ## 架构设计

@@ -22,7 +22,7 @@ export interface Options {
   searchDir: string;
   since: string;
   until: string;
-  author: string;
+  authors: string[];
   jsonOutput: boolean;
   mdOutput: boolean;
   htmlOutput: boolean;
@@ -132,8 +132,8 @@ function generateJsonOutput(options: Options): JsonOutput {
     repositories: [],
   };
 
-  if (options.author) {
-    jsonOutput.author = options.author;
+  if (options.authors.length > 0) {
+    jsonOutput.author = options.authors.join(", ");
   }
 
   // 查找所有Git仓库
@@ -148,7 +148,7 @@ function generateJsonOutput(options: Options): JsonOutput {
       repoPath,
       options.since,
       options.until,
-      options.author
+      options.authors
     );
 
     if (commits.length === 0) continue;
@@ -285,19 +285,24 @@ function findGitRepositories(
   return repos;
 }
 
-// 清理参数值，去掉多余的引号
+// 清理参数值，去掉多余的引号并处理反斜杠转义
 function cleanArgValue(value: string): string {
   if (typeof value !== "string") return value;
 
+  let result = value;
+
   // 去掉首尾的单引号或双引号
   if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
+    (result.startsWith('"') && result.endsWith('"')) ||
+    (result.startsWith("'") && result.endsWith("'"))
   ) {
-    return value.slice(1, -1);
+    result = result.slice(1, -1);
   }
 
-  return value;
+  // 处理反斜杠转义空格：将 "\ " 转换为空格
+  result = result.replace(/\\ /g, " ");
+
+  return result;
 }
 
 // 解析命令行参数
@@ -305,8 +310,8 @@ function parseArgs(args: string[]): Options {
   const options: Options = {
     searchDir: ".",
     since: getMondayDate(),
-    until: getTodayDate(),
-    author: "",
+    until: getTodayDate(),  
+    authors: [],
     jsonOutput: false,
     mdOutput: false,
     htmlOutput: false,
@@ -322,7 +327,7 @@ function parseArgs(args: string[]): Options {
         break;
       case "-d":
       case "--dir":
-        options.searchDir = args[++i] || ".";
+        options.searchDir = cleanArgValue(args[++i] || ".");
         break;
       case "-s":
       case "--since":
@@ -334,7 +339,10 @@ function parseArgs(args: string[]): Options {
         break;
       case "-a":
       case "--author":
-        options.author = cleanArgValue(args[++i] || "");
+        const author = cleanArgValue(args[++i] || "");
+        if (author) {
+          options.authors.push(author);
+        }
         break;
       case "-j":
       case "--json":
@@ -362,13 +370,16 @@ function getGitCommits(
   repoPath: string,
   since: string,
   until: string,
-  author: string
+  authors: string[]
 ): string[] {
   try {
     let gitLogCmd = `git log --since="${since} 00:00:00" --until="${until} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short`;
 
-    if (author) {
-      gitLogCmd += ` --author="${author}"`;
+    // 为每个作者添加 --author 参数（OR 关系）
+    for (const author of authors) {
+      if (author) {
+        gitLogCmd += ` --author="${author}"`;
+      }
     }
 
     const commits = execSync(gitLogCmd, {
@@ -410,8 +421,8 @@ export function main(): void {
     console.log("");
     console.log(`- **统计时间范围**: ${options.since} 到 ${options.until}`);
     console.log(`- **搜索目录**: ${options.searchDir}`);
-    if (options.author) {
-      console.log(`- **作者过滤**: ${options.author}`);
+    if (options.authors.length > 0) {
+      console.log(`- **作者过滤**: ${options.authors.join(", ")}`);
     }
     console.log("");
   } else if (options.htmlOutput) {
@@ -424,8 +435,8 @@ export function main(): void {
       `${colors.green}统计时间范围: ${colors.reset}${options.since} 到 ${options.until}`
     );
     console.log(`${colors.green}搜索目录: ${colors.reset}${options.searchDir}`);
-    if (options.author) {
-      console.log(`${colors.green}作者过滤: ${colors.reset}${options.author}`);
+    if (options.authors.length > 0) {
+      console.log(`${colors.green}作者过滤: ${colors.reset}${options.authors.join(", ")}`);
     }
     console.log("");
   }
@@ -441,7 +452,7 @@ export function main(): void {
       repoPath,
       options.since,
       options.until,
-      options.author
+      options.authors
     );
 
     if (commits.length === 0) continue;
