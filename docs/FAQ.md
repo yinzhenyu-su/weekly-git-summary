@@ -1,163 +1,258 @@
-# 常见问题 (FAQ)
+# Frequently Asked Questions (FAQ)
 
-## 📋 目录
+**Language**: [English](FAQ.md) | [中文](FAQ.zh.md)
 
-- [安装和环境问题](#安装和环境问题)
-- [使用相关问题](#使用相关问题)
-- [输出格式问题](#输出格式问题)
-- [Git 相关问题](#git-相关问题)
-- [跨平台问题](#跨平台问题)
-- [性能和限制](#性能和限制)
-- [故障排除](#故障排除)
+## 📋 Table of Contents
 
-## 🛠️ 安装和环境问题
+- [Installation and Environment Issues](#installation-and-environment-issues)
+- [Usage Related Questions](#usage-related-questions)
+- [Output Format Questions](#output-format-questions)
+- [Git Related Questions](#git-related-questions)
+- [Cross-platform Issues](#cross-platform-issues)
+- [Performance and Limitations](#performance-and-limitations)
+- [Troubleshooting](#troubleshooting)
 
-### Q: 安装后运行 `weekly-git-summary` 提示"命令未找到"？
+## 🛠️ Installation and Environment Issues
 
-**A:** 请确保：
+### Q: After installation, running `weekly-git-summary` shows "command not found"?
 
-1. 使用 `-g` 参数进行全局安装：`npm install -g weekly-git-summary`
-2. 检查 npm 全局安装路径是否在 PATH 中：`npm config get prefix`
-3. 重新加载终端或执行 `source ~/.bashrc` / `source ~/.zshrc`
-4. 或者使用 `npx weekly-git-summary` 无需全局安装
+**A:** Please ensure:
 
-### Q: 提示 Node.js 版本过低？
+1. Use the `-g` parameter for global installation: `npm install -g weekly-git-summary`
+2. Check if npm global installation path is in PATH: `npm config get prefix`
+3. Reload terminal or execute `source ~/.bashrc` / `source ~/.zshrc`
+4. Or use `npx weekly-git-summary` without global installation
 
-**A:** 该工具要求 Node.js ≥ 22.0.0，请：
+### Q: Getting "Node.js version too low" error?
 
-1. 使用 `node --version` 检查当前版本
-2. 升级到最新的 Node.js 版本
-3. 推荐使用 nvm 管理 Node.js 版本：`nvm install node && nvm use node`
+**A:** This tool requires Node.js ≥ 22.0.0, please:
 
-### Q: Windows 上提示 PowerShell 脚本执行被阻止？
+1. Check current version with `node --version`
+2. Upgrade to the latest Node.js version
+3. Recommend using nvm to manage Node.js versions: `nvm install node && nvm use node`
 
-**A:** 这是 PowerShell 的安全策略，请：
+### Q: Windows shows PowerShell script execution blocked?
 
-1. 以管理员身份运行 PowerShell
-2. 执行：`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
-3. 或者修改为 Bypass 策略：`Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
+**A:** This is PowerShell's security policy, please:
 
-## 🎯 使用相关问题
+1. Run PowerShell as administrator
+2. Execute: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+3. Or change to Bypass policy: `Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
 
-### Q: 如何生成指定时间范围的报告？
+## 🎯 Usage Related Questions
 
-**A:** 使用 `--since` 和 `--until` 参数：
+### Q: How to generate reports for specific time ranges?
+
+**A:** Use `--since` and `--until` parameters:
 
 ```bash
 weekly-git-summary --since 2023-01-01 --until 2023-12-31
 ```
 
-### Q: 如何只查看特定作者的提交？
+### Q: How to view commits from specific authors only?
 
-**A:** 使用 `--author` 参数：
+**A:** Use the `--author` parameter:
 
 ```bash
-weekly-git-summary --author "张三"
-# 或者使用邮箱
-weekly-git-summary --author "zhangsan@example.com"
+# Single author
+weekly-git-summary --author "John Doe"
+
+# Multiple authors (OR relationship)
+weekly-git-summary --author "John Doe" --author "Jane Smith" --author "Bob Wilson"
+
+# Using email
+weekly-git-summary --author "johndoe@example.com"
+
+# Handle author names with spaces
+weekly-git-summary --author "John Doe" --author "Jane Smith"
 ```
 
-### Q: 如何扫描多个项目目录？
+### Q: How to scan multiple project directories?
 
-**A:** 工具会自动扫描指定目录下的所有 Git 仓库（最大深度 2 层）：
+**A:** The tool automatically scans all Git repositories in the specified directory (max depth 2 levels):
 
 ```bash
 weekly-git-summary --dir ~/projects
 ```
 
-### Q: 没有提交记录是怎么回事？
+### Q: Why are there no commit records?
 
-**A:** 可能的原因：
+**A:** Possible reasons:
 
-1. 指定的时间范围内没有提交
-2. 目录中没有 Git 仓库
-3. 作者过滤条件太严格
-4. 当前用户没有访问 Git 仓库的权限
+1. No commits within the specified time range
+2. No Git repositories in the directory
+3. Author filter conditions are too strict
+4. Current user doesn't have access permissions to Git repositories
+5. Message pattern filter conditions are too strict
 
-## 📊 输出格式问题
+### Q: How to use time range presets?
 
-### Q: 如何导出为文件？
-
-**A:** 使用输出重定向：
+**A:** Use the `--time-range` parameter:
 
 ```bash
-# 导出为 Markdown 文件
+# Today's commits
+weekly-git-summary --time-range today
+
+# Yesterday's commits
+weekly-git-summary --time-range yesterday
+
+# This week's commits
+weekly-git-summary --time-range this-week
+
+# Last week's commits
+weekly-git-summary --time-range last-week
+
+# This month's commits
+weekly-git-summary --time-range this-month
+
+# Last month's commits
+weekly-git-summary --time-range last-month
+```
+
+### Q: How to enable conventional commits analysis?
+
+**A:** Use the `--conventional` parameter:
+
+```bash
+# Enable conventional commits analysis
+weekly-git-summary --conventional
+
+# Combine with time range
+weekly-git-summary --conventional --time-range this-week
+
+# Combine with author filtering
+weekly-git-summary --conventional --author "John Doe"
+```
+
+This will display commit type distribution and breaking change indicators.
+
+### Q: How to filter specific types of commit messages?
+
+**A:** Use the `--message-pattern` parameter (supports regular expressions):
+
+```bash
+# Show only feature and fix related commits
+weekly-git-summary --message-pattern "feat|fix"
+
+# Filter commits containing specific keywords
+weekly-git-summary --message-pattern "user|login|auth"
+
+# Use regular expressions for filtering
+weekly-git-summary --message-pattern "^(feat|fix)(\(.+\))?:"
+
+# Combine with conventional commits
+weekly-git-summary --message-pattern "feat" --conventional
+```
+
+## 📊 Output Format Questions
+
+### Q: How to export to files?
+
+**A:** Use output redirection:
+
+```bash
+# Export as Markdown file
 weekly-git-summary --md > report.md
 
-# 导出为 JSON 文件
+# Export as JSON file
 weekly-git-summary --json > report.json
 
-# 导出为 HTML 文件
+# Export as HTML file
 weekly-git-summary --html > report.html
 ```
 
-### Q: 终端显示乱码或格式不正确？
+### Q: Terminal displays garbled characters or incorrect formatting?
 
-**A:** 请确保：
+**A:** Please ensure:
 
-1. 终端支持 UTF-8 编码
-2. 使用支持颜色的终端（如 iTerm2、Windows Terminal）
-3. 设置 `LANG=zh_CN.UTF-8` 环境变量
+1. Terminal supports UTF-8 encoding
+2. Use terminals that support colors (like iTerm2, Windows Terminal)
+3. Set `LANG=en_US.UTF-8` environment variable
 
-### Q: JSON 输出可以用于其他工具吗？
+### Q: Can JSON output be used with other tools?
 
-**A:** 是的，JSON 格式输出设计用于与其他工具集成：
+**A:** Yes, JSON format output is designed for integration with other tools:
 
 ```bash
-# 使用 jq 处理 JSON 输出
+# Use jq to process JSON output
 weekly-git-summary --json | jq '.repositories[0].commits'
 
-# 导入到数据库或其他系统
+# Extract statistics information
+weekly-git-summary --json --conventional | jq '.statistics'
+
+# Get commit type distribution
+weekly-git-summary --json --conventional | jq '.statistics.typeDistribution'
+
+# Import to database or other systems
 weekly-git-summary --json | curl -X POST -d @- http://your-api.com/reports
 ```
 
-## 🔧 Git 相关问题
+### Q: How to view detailed statistics?
 
-### Q: 支持哪些 Git 仓库类型？
+**A:** The tool automatically displays statistics including:
 
-**A:** 支持所有标准 Git 仓库：
+- Total commit count
+- Number of participants and participant list
+- Commit type distribution (when `--conventional` is enabled)
 
-- 本地 Git 仓库
-- GitHub、GitLab、Bitbucket 等远程仓库的本地克隆
-- 裸仓库（bare repository）
-- 工作树（worktree）
+```bash
+# View basic statistics
+weekly-git-summary --time-range this-week
 
-### Q: SSH 和 HTTPS 的仓库 URL 如何处理？
+# View statistics with type analysis
+weekly-git-summary --conventional --time-range this-week
 
-**A:** 工具会自动转换 SSH URL 为 HTTPS 格式以便在报告中显示：
+# JSON format output contains complete statistical data
+weekly-git-summary --json --conventional
+```
+
+## 🔧 Git Related Questions
+
+### Q: What types of Git repositories are supported?
+
+**A:** Supports all standard Git repositories:
+
+- Local Git repositories
+- Local clones of remote repositories (GitHub, GitLab, Bitbucket, etc.)
+- Bare repositories
+- Worktrees
+
+### Q: How are SSH and HTTPS repository URLs handled?
+
+**A:** The tool automatically converts SSH URLs to HTTPS format for display in reports:
 
 - `git@github.com:user/repo.git` → `https://github.com/user/repo`
 - `ssh://git@gitlab.com/user/repo.git` → `https://gitlab.com/user/repo`
 
-### Q: 如何处理私有仓库？
+### Q: How to handle private repositories?
 
-**A:** 确保：
+**A:** Ensure:
 
-1. 已正确配置 Git 凭据
-2. 对私有仓库有读取权限
-3. SSH 密钥或访问令牌已正确设置
+1. Git credentials are properly configured
+2. You have read access to private repositories
+3. SSH keys or access tokens are properly set up
 
-## 🌍 跨平台问题
+## 🌍 Cross-platform Issues
 
-### Q: 在不同系统上输出结果不一致？
+### Q: Inconsistent output results on different systems?
 
-**A:** 虽然核心功能一致，但可能存在细微差异：
+**A:** While core functionality is consistent, there may be minor differences:
 
-- Windows (PowerShell) 和 Unix (Bash) 的日期格式解析
-- 文件路径分隔符差异
-- 颜色显示支持差异
+- Date format parsing differences between Windows (PowerShell) and Unix (Bash)
+- File path separator differences
+- Color display support differences
 
-### Q: macOS 上提示权限错误？
+### Q: Permission errors on macOS?
 
-**A:** 可能需要：
+**A:** You may need to:
 
-1. 给予终端完全磁盘访问权限
-2. 使用 `sudo` 运行（不推荐）
-3. 检查目录权限：`ls -la /path/to/directory`
+1. Grant terminal full disk access permissions
+2. Use `sudo` to run (not recommended)
+3. Check directory permissions: `ls -la /path/to/directory`
 
-### Q: Linux 上缺少依赖？
+### Q: Missing dependencies on Linux?
 
-**A:** 确保安装了必要的工具：
+**A:** Ensure necessary tools are installed:
 
 ```bash
 # Ubuntu/Debian
@@ -170,107 +265,107 @@ sudo yum install git nodejs npm
 sudo pacman -S git nodejs npm
 ```
 
-## ⚡ 性能和限制
+## ⚡ Performance and Limitations
 
-### Q: 扫描大型项目很慢怎么办？
+### Q: What to do when scanning large projects is slow?
 
-**A:** 优化建议：
+**A:** Optimization suggestions:
 
-1. 减少扫描深度（工具默认最大深度 2 层）
-2. 缩小时间范围：`--since 2023-01-01 --until 2023-01-31`
-3. 指定具体项目目录而非根目录
-4. 使用 `--author` 过滤特定作者
+1. Reduce scanning depth (tool defaults to max depth 2 levels)
+2. Narrow time range: `--since 2023-01-01 --until 2023-01-31`
+3. Specify specific project directories instead of root directory
+4. Use `--author` to filter specific authors
 
-### Q: 有扫描仓库数量限制吗？
+### Q: Is there a limit on the number of repositories scanned?
 
-**A:** 没有硬性限制，但建议：
+**A:** No hard limit, but recommendations:
 
-- 单次扫描不超过 100 个仓库
-- 超大项目可分批处理
-- 使用 JSON 输出便于后续处理
+- Single scan should not exceed 100 repositories
+- Large projects can be processed in batches
+- Use JSON output for easier subsequent processing
 
-### Q: 内存占用过高？
+### Q: High memory usage?
 
-**A:** 对于大型项目：
+**A:** For large projects:
 
-1. 使用流式处理，避免一次性加载所有数据
-2. 分时间段生成报告
-3. 清理不必要的 Git 对象：`git gc`
+1. Use streaming processing, avoid loading all data at once
+2. Generate reports by time periods
+3. Clean unnecessary Git objects: `git gc`
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### Q: 提示"git 命令未找到"？
+### Q: Getting "git command not found" error?
 
-**A:** 请确保：
+**A:** Please ensure:
 
-1. 已安装 Git：`git --version`
-2. Git 在 PATH 环境变量中
-3. 重启终端或重新加载环境变量
+1. Git is installed: `git --version`
+2. Git is in PATH environment variable
+3. Restart terminal or reload environment variables
 
-### Q: 脚本执行失败？
+### Q: Script execution fails?
 
-**A:** 排查步骤：
+**A:** Troubleshooting steps:
 
-1. 检查脚本文件是否存在
-2. 确认有执行权限：`chmod +x scripts/weekly-git-summary.sh`
-3. 查看详细错误信息
-4. 尝试手动执行脚本
+1. Check if script files exist
+2. Confirm execution permissions: `chmod +x scripts/weekly-git-summary.sh`
+3. View detailed error information
+4. Try executing script manually
 
-### Q: 某些仓库被跳过？
+### Q: Some repositories are skipped?
 
-**A:** 可能原因：
+**A:** Possible reasons:
 
-1. 不是有效的 Git 仓库
-2. 仓库损坏或不完整
-3. 权限不足
-4. 符号链接指向无效路径
+1. Not a valid Git repository
+2. Repository is corrupted or incomplete
+3. Insufficient permissions
+4. Symbolic links point to invalid paths
 
-### Q: 输出中缺少某些提交？
+### Q: Missing some commits in output?
 
-**A:** 检查：
+**A:** Check:
 
-1. 提交是否在指定时间范围内
-2. 提交者姓名/邮箱是否匹配过滤条件
-3. 是否是合并提交（merge commit）
-4. 本地仓库是否已同步最新更改
+1. Whether commits are within the specified time range
+2. Whether committer name/email matches filter conditions
+3. Whether it's a merge commit
+4. Whether local repository is synchronized with latest changes
 
-## 📞 获取帮助
+## 📞 Getting Help
 
-### Q: 如何报告问题或建议功能？
+### Q: How to report issues or suggest features?
 
-**A:** 请访问：
+**A:** Please visit:
 
-1. **GitHub Issues**: https://github.com/yinzhenyu/weekly-git-summary/issues
-2. **查看已有问题**: 搜索是否有相似问题
-3. **提供详细信息**: 包括系统信息、错误消息、重现步骤
-4. **功能请求**: 详细描述需求和使用场景
+1. **GitHub Issues**: https://github.com/yinzhenyu-su/weekly-git-summary/issues
+2. **Search existing issues**: Look for similar problems
+3. **Provide detailed information**: Include system info, error messages, reproduction steps
+4. **Feature requests**: Describe requirements and use cases in detail
 
-### Q: 如何贡献代码？
+### Q: How to contribute code?
 
-**A:** 欢迎贡献！请：
+**A:** Contributions welcome! Please:
 
-1. Fork 项目到自己的 GitHub
-2. 创建功能分支
-3. 添加测试用例
-4. 提交 Pull Request
-5. 参考 README.md 中的贡献指南
+1. Fork the project to your GitHub
+2. Create a feature branch
+3. Add test cases
+4. Submit a Pull Request
+5. Refer to contributing guidelines in README.md
 
-### Q: 如何获取最新版本？
+### Q: How to get the latest version?
 
-**A:** 检查更新：
+**A:** Check for updates:
 
 ```bash
-# 检查当前版本
+# Check current version
 weekly-git-summary --version
 
-# 更新到最新版本
+# Update to latest version
 npm update -g weekly-git-summary
 
-# 或重新安装
+# Or reinstall
 npm uninstall -g weekly-git-summary
 npm install -g weekly-git-summary
 ```
 
 ---
 
-💡 **提示**: 如果您的问题没有在这里找到答案，请查看 [GitHub Issues](https://github.com/yinzhenyu/weekly-git-summary/issues) 或创建新的问题。我们会尽快回复！
+💡 **Tip**: If your question isn't answered here, please check [GitHub Issues](https://github.com/yinzhenyu-su/weekly-git-summary/issues) or create a new issue. We'll respond as soon as possible!

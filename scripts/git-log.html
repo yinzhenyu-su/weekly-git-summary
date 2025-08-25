@@ -325,20 +325,29 @@
         feat: '新功能',
         fix: '问题修复',
         docs: '文档更新',
-        chore: '构建维护',
+        style: '样式调整',
         refactor: '重构代码',
+        perf: '性能优化',
+        test: '测试相关',
+        build: '构建系统',
+        ci: 'CI配置',
+        chore: '构建维护',
+        revert: '回滚更改',
       }
 
       const radarData = []
       const chartData = []
 
-      // 构建雷达图指标和数据
+      // 构建雷达图指标和数据 - 只包含有数据的提交类型
       Object.keys(commitTypeLabels).forEach((type) => {
-        radarData.push({
-          name: commitTypeLabels[type],
-          max: Math.max(10, Math.max(...Object.values(types)) * 1.2), // 动态设置最大值
-        })
-        chartData.push(types[type] || 0)
+        const count = types[type] || 0
+        if (count > 0) { // 只添加有数据的提交类型
+          radarData.push({
+            name: commitTypeLabels[type],
+            max: Math.max(10, Math.max(...Object.values(types)) * 1.2), // 动态设置最大值
+          })
+          chartData.push(count)
+        }
       })
 
       const option = {
@@ -357,7 +366,7 @@
         radar: {
           indicator: radarData,
           center: ['50%', '50%'],
-          radius: '60%',
+          radius: radarData.length > 0 ? '60%' : '0%', // 如果没有数据则隐藏雷达图
           axisName: {
             color: isDark ? '#9ca3af' : '#6b7280',
             fontSize: 14,
@@ -407,7 +416,25 @@
         ],
       }
 
-      myChart.setOption(option)
+      // 只有当有数据时才设置图表选项
+      if (radarData.length > 0) {
+        myChart.setOption(option)
+      } else {
+        // 如果没有数据，显示空状态信息
+        myChart.setOption({
+          backgroundColor: 'transparent',
+          graphic: {
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: {
+              text: '暂无提交类型数据',
+              fontSize: 16,
+              fill: isDark ? '#9ca3af' : '#6b7280',
+            }
+          }
+        })
+      }
 
       // 响应式调整
       window.addEventListener('resize', function () {
@@ -465,14 +492,9 @@
 
       commits.forEach((commit) => {
         const message = commit.message
-        let type = 'other'
-
-        if (message.startsWith('feat:')) type = 'feat'
-        else if (message.startsWith('fix:')) type = 'fix'
-        else if (message.startsWith('docs:')) type = 'docs'
-        else if (message.startsWith('chore:')) type = 'chore'
-        else if (message.startsWith('refactor:')) type = 'refactor'
-
+        const typeInfo = getCommitTypeInfo(message)
+        const type = typeInfo.type
+        
         types[type] = (types[type] || 0) + 1
       })
 
@@ -608,7 +630,7 @@
       card.className = 'commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block'
 
       // 获取提交类型和图标
-      const { type, icon, bgColor, textColor } = getCommitTypeInfo(commit.message)
+      const { type, icon, bgColor, textColor, label, isBreaking } = getCommitTypeInfo(commit.message)
 
       // 获取提交描述
       const description = getCommitDescription(commit.message)
@@ -623,9 +645,10 @@
           <div class="flex-1">
             <div class="flex items-center space-x-2 mb-2">
               <span
-                class="commit-type-${type} px-2 py-1 rounded-lg text-xs font-medium"
-                >${type}</span
+                class="commit-type-${type} px-2 py-1 rounded-lg text-xs font-medium bg-${bgColor}-100 text-${bgColor}-700 dark:bg-${bgColor}-900/30 dark:text-${bgColor}-300"
+                >${label}</span
               >
+              ${isBreaking ? '<span class="px-2 py-1 rounded-lg text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">BREAKING</span>' : ''}
               <span
                 class="text-xs text-gray-500 dark:text-gray-400 font-mono"
                 >${commit.hash}</span
@@ -645,54 +668,102 @@
     }
 
     function getCommitTypeInfo(message) {
-      if (message.startsWith('feat:')) {
-        return {
-          type: 'feat',
+      // 支持带范围的提交格式，如 feat(scope): 或 feat!:
+      const conventionalPattern = /^([a-z]+)(\([^)]*\))?(!)?:\s*(.+)/i
+      const match = message.match(conventionalPattern)
+      
+      const type = match ? match[1].toLowerCase() : 'other'
+      const isBreaking = match ? !!match[3] : false
+      
+      const typeConfig = {
+        feat: {
           icon: 'fas fa-plus',
           bgColor: 'green',
           textColor: 'green',
-        }
-      } else if (message.startsWith('fix:')) {
-        return {
-          type: 'fix',
+          label: '功能'
+        },
+        fix: {
           icon: 'fas fa-bug',
           bgColor: 'red',
           textColor: 'red',
-        }
-      } else if (message.startsWith('docs:')) {
-        return {
-          type: 'docs',
+          label: '修复'
+        },
+        docs: {
           icon: 'fas fa-file-alt',
           bgColor: 'blue',
           textColor: 'blue',
-        }
-      } else if (message.startsWith('chore:')) {
-        return {
-          type: 'chore',
-          icon: 'fas fa-cog',
-          bgColor: 'gray',
-          textColor: 'gray',
-        }
-      } else if (message.startsWith('refactor:')) {
-        return {
-          type: 'refactor',
+          label: '文档'
+        },
+        style: {
+          icon: 'fas fa-paint-brush',
+          bgColor: 'pink',
+          textColor: 'pink',
+          label: '样式'
+        },
+        refactor: {
           icon: 'fas fa-sync-alt',
           bgColor: 'purple',
           textColor: 'purple',
-        }
-      } else {
-        return {
-          type: 'other',
-          icon: 'fas fa-code',
+          label: '重构'
+        },
+        perf: {
+          icon: 'fas fa-tachometer-alt',
+          bgColor: 'orange',
+          textColor: 'orange',
+          label: '性能'
+        },
+        test: {
+          icon: 'fas fa-vial',
+          bgColor: 'yellow',
+          textColor: 'yellow',
+          label: '测试'
+        },
+        build: {
+          icon: 'fas fa-hammer',
+          bgColor: 'indigo',
+          textColor: 'indigo',
+          label: '构建'
+        },
+        ci: {
+          icon: 'fas fa-server',
+          bgColor: 'teal',
+          textColor: 'teal',
+          label: 'CI'
+        },
+        chore: {
+          icon: 'fas fa-cog',
           bgColor: 'gray',
           textColor: 'gray',
+          label: '维护'
+        },
+        revert: {
+          icon: 'fas fa-undo',
+          bgColor: 'red',
+          textColor: 'red',
+          label: '回滚'
         }
+      }
+      
+      const config = typeConfig[type] || {
+        icon: 'fas fa-code',
+        bgColor: 'gray',
+        textColor: 'gray',
+        label: '其他'
+      }
+      
+      return {
+        type: type,
+        icon: config.icon,
+        bgColor: config.bgColor,
+        textColor: config.textColor,
+        label: config.label,
+        isBreaking: isBreaking
       }
     }
 
     function getCommitDescription(message) {
-      // 移除类型前缀
-      return message.replace(/^(feat|fix|docs|chore|refactor|other):/, '').trim()
+      // 移除类型前缀，支持带范围的格式
+      return message.replace(/^([a-z]+)(\([^)]*\))?(!)?:\s*/, '').trim()
     }
 
     function getCommitSummary(type, description) {
@@ -704,10 +775,22 @@
           return '修复了系统问题或错误'
         case 'docs':
           return '更新了文档或注释'
-        case 'chore':
-          return '完成了依赖更新或构建任务'
+        case 'style':
+          return '调整了代码格式或样式'
         case 'refactor':
           return '优化了代码结构或性能'
+        case 'perf':
+          return '提升了系统性能或响应速度'
+        case 'test':
+          return '完善了测试用例或测试覆盖'
+        case 'build':
+          return '更新了构建系统或依赖配置'
+        case 'ci':
+          return '调整了CI/CD流程或配置'
+        case 'chore':
+          return '完成了维护任务或杂项工作'
+        case 'revert':
+          return '回滚了之前的代码更改'
         default:
           return '完成了代码更改'
       }

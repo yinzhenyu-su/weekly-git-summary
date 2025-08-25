@@ -1,134 +1,136 @@
-# 发布管理指南
+# Release Management Guide
 
-本项目使用 [release-it](https://github.com/release-it/release-it) 来管理版本发布和 npm 包发布。
+**Language**: [English](RELEASE.md) | [中文](RELEASE.zh.md)
 
-## 发布方式
+This project uses [release-it](https://github.com/release-it/release-it) to manage version releases and npm package publishing.
 
-### 1. 手动发布
+## Release Methods
 
-#### 本地发布
+### 1. Manual Release
+
+#### Local Release
 
 ```bash
-# 测试发布流程（不会实际发布）
+# Test release process (dry run, won't actually release)
 bun run release:dry
 
-# 发布补丁版本 (1.0.0 -> 1.0.1)
+# Release patch version (1.0.0 -> 1.0.1)
 bun run release:patch
 
-# 发布次要版本 (1.0.0 -> 1.1.0)
+# Release minor version (1.0.0 -> 1.1.0)
 bun run release:minor
 
-# 发布主要版本 (1.0.0 -> 2.0.0)
+# Release major version (1.0.0 -> 2.0.0)
 bun run release:major
 
-# 发布预发布版本
+# Release pre-release versions
 bun run release:beta    # 1.0.0 -> 1.0.1-beta.0
 bun run release:alpha   # 1.0.0 -> 1.0.1-alpha.0
 
-# 交互式发布（推荐）
+# Interactive release (recommended)
 bun run release
 ```
 
-#### GitHub Actions 手动触发
+#### GitHub Actions Manual Trigger
 
-1. 访问 GitHub 仓库的 Actions 页面
-2. 选择 "Release" 工作流
-3. 点击 "Run workflow"
-4. 选择发布类型：patch/minor/major/beta/alpha
-5. 点击 "Run workflow" 确认
+1. Visit the Actions page of your GitHub repository
+2. Select the "Release" workflow
+3. Click "Run workflow"
+4. Choose release type: patch/minor/major/beta/alpha
+5. Click "Run workflow" to confirm
 
-### 2. 自动发布
+### 2. Automatic Release
 
-#### 通过 release 分支自动发布
+#### Automatic Release via release Branch
 
-当代码推送到 `release` 分支时，会自动触发发布流程：
+When code is pushed to the `release` branch, it automatically triggers the release process:
 
 ```bash
-# 创建 release 分支
+# Create release branch
 git checkout -b release
 git push origin release
 
-# 或者推送到现有 release 分支
+# Or push to existing release branch
 git checkout release
 git merge main
 git push origin release
 ```
 
-自动发布会根据提交信息确定版本类型：
+Automatic release determines version type based on commit messages:
 
-- `BREAKING CHANGE` 或 `feat!` → major 版本
-- `feat:` → minor 版本
-- `fix:` 或其他 → patch 版本
+- `BREAKING CHANGE` or `feat!` → major version
+- `feat:` → minor version
+- `fix:` or others → patch version
 
-## 发布流程
+## Release Process
 
-release-it 会自动执行以下步骤：
+release-it automatically performs the following steps:
 
-1. **前置检查**
-   - 运行测试：`bun run test`
-   - 构建项目：`bun run build`
-   - 检查工作目录是否干净
-   - 检查是否有上游分支
+1. **Pre-checks**
+   - Run tests: `bun run test`
+   - Build project: `bun run build`
+   - Check if working directory is clean
+   - Check for upstream branch
 
-2. **版本升级**
-   - 根据语义化版本规则升级版本号
-   - 更新 `package.json` 中的版本
+2. **Version Upgrade**
+   - Upgrade version number according to semantic versioning rules
+   - Update version in `package.json`
 
-3. **生成 CHANGELOG**
-   - 基于 conventional commits 自动生成变更日志
-   - 更新 `CHANGELOG.md` 文件
+3. **Generate CHANGELOG**
+   - Automatically generate changelog based on conventional commits
+   - Update `CHANGELOG.md` file
 
-4. **Git 操作**
-   - 创建发布提交：`chore: release v${version}`
-   - 创建 Git 标签：`v${version}`
-   - 推送到远程仓库
+4. **Git Operations**
+   - Create release commit: `chore: release v${version}`
+   - Create Git tag: `v${version}`
+   - Push to remote repository
 
 5. **GitHub Release**
-   - 创建 GitHub Release
-   - 自动生成 Release Notes
-   - 上传构建产物
+   - Create GitHub Release
+   - Auto-generate Release Notes
+   - Upload build artifacts
 
-6. **NPM 发布**
-   - 发布到 npm registry
-   - 设置为公开包
+6. **NPM Publishing**
+   - Publish to npm registry
+   - Set as public package
 
-## 配置说明
+## Configuration
 
-### release-it 配置文件 (`.release-it.json`)
+### release-it Configuration File (`.release-it.json`)
 
-主要配置项：
+Main configuration items:
 
-- **git**: Git 相关配置（提交信息、标签、推送等）
-- **github**: GitHub Release 配置
-- **npm**: NPM 发布配置
-- **hooks**: 发布过程中的钩子函数
-- **plugins**: 插件配置（conventional changelog）
+- **git**: Git-related configuration (commit messages, tags, push, etc.)
+- **github**: GitHub Release configuration
+- **npm**: NPM publishing configuration
+- **hooks**: Hook functions during release process
+- **plugins**: Plugin configuration (conventional changelog)
 
-### GitHub Actions 配置
+### GitHub Actions Configuration
 
-需要配置以下 GitHub Secrets：
+Need to configure the following GitHub Secrets:
 
-- `GITHUB_TOKEN`: 自动提供，用于 GitHub 操作
-- `NPM_TOKEN`: 需要手动添加，用于 NPM 发布
+- `GITHUB_TOKEN`: Automatically provided, used for GitHub operations
+- `NPM_TOKEN`: Manually added, used for NPM publishing
 
-#### 设置 NPM_TOKEN
+#### Setting up NPM_TOKEN
 
-1. 登录 [npmjs.com](https://www.npmjs.com/)
-2. 进入 Account Settings → Access Tokens
-3. 创建新的 Automation Token
-4. 在 GitHub 仓库设置中添加 Secret：`NPM_TOKEN`
+1. Login to [npmjs.com](https://www.npmjs.com/)
+2. Go to Account Settings → Access Tokens
+3. Create a new Automation Token
+4. Add Secret in GitHub repository settings: `NPM_TOKEN`
 
-## 版本规范
+## Version Standards
 
-项目遵循 [语义化版本](https://semver.org/) 规范：
+The project follows [Semantic Versioning](https://semver.org/) standards:
 
-- **MAJOR**: 不兼容的 API 修改
-- **MINOR**: 向下兼容的功能新增
-- **PATCH**: 向下兼容的问题修正
+- **MAJOR**: Incompatible API changes
+- **MINOR**: Backward-compatible feature additions
+- **PATCH**: Backward-compatible bug fixes
 
-### 提交信息规范
+### Commit Message Standards
 
-使用 [Conventional Commits](https://www.conventionalcommits.org/) 规范：
+Uses [Conventional Commits](https://www.conventionalcommits.org/) standards:
 
 ```
 <type>[optional scope]: <description>
@@ -138,77 +140,112 @@ release-it 会自动执行以下步骤：
 [optional footer(s)]
 ```
 
-类型说明：
+Type descriptions:
 
-- `feat`: 新功能 (MINOR)
-- `fix`: 修复 bug (PATCH)
-- `docs`: 文档更新
-- `style`: 代码格式（不影响功能）
-- `refactor`: 重构（不添加功能也不修复 bug）
-- `perf`: 性能优化 (PATCH)
-- `test`: 测试相关
-- `build`: 构建系统或依赖变更
-- `ci`: CI 配置变更
-- `chore`: 维护性变更
+- `feat`: New features (MINOR)
+- `fix`: Bug fixes (PATCH)
+- `docs`: Documentation updates
+- `style`: Code formatting (doesn't affect functionality)
+- `refactor`: Refactoring (no new features or bug fixes)
+- `perf`: Performance optimization (PATCH)
+- `test`: Testing related
+- `build`: Build system or dependency changes
+- `ci`: CI configuration changes
+- `chore`: Maintenance changes
 
-破坏性更改：
+Breaking changes:
 
-- 在类型后添加 `!`：`feat!: remove deprecated API`
-- 或在 footer 中添加：`BREAKING CHANGE: description`
+- Add `!` after type: `feat!: remove deprecated API`
+- Or add in footer: `BREAKING CHANGE: description`
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Issues
 
-1. **NPM 发布失败**
-   - 检查 `NPM_TOKEN` 是否正确设置
-   - 确认包名是否已被占用
-   - 检查网络连接
+1. **NPM Publishing Fails**
+   - Check if `NPM_TOKEN` is correctly set
+   - Confirm package name isn't already taken
+   - Check network connection
 
-2. **GitHub Release 失败**
-   - 检查 `GITHUB_TOKEN` 权限
-   - 确认仓库权限设置
+2. **GitHub Release Fails**
+   - Check `GITHUB_TOKEN` permissions
+   - Confirm repository permission settings
 
-3. **版本号冲突**
-   - 检查本地和远程分支是否同步
-   - 确认标签是否已存在
+3. **Version Number Conflicts**
+   - Check if local and remote branches are synchronized
+   - Confirm tags don't already exist
 
-4. **测试失败**
-   - 确保所有测试通过
-   - 检查构建是否成功
+4. **Test Failures**
+   - Ensure all tests pass
+   - Check if build succeeds
 
-### 回滚发布
+### Rolling Back Releases
 
-如果发布有问题，可以：
+If there are issues with a release, you can:
 
-1. **NPM 包回滚**
+1. **NPM Package Rollback**
 
    ```bash
-   npm unpublish weekly-git-summary@版本号 --force
+   npm unpublish weekly-git-summary@version --force
    ```
 
-2. **GitHub Release 删除**
-   - 在 GitHub 页面手动删除 Release 和 Tag
+2. **Delete GitHub Release**
+   - Manually delete Release and Tag on GitHub page
 
-3. **Git 标签删除**
+3. **Delete Git Tag**
    ```bash
-   git tag -d v版本号
-   git push origin :refs/tags/v版本号
+   git tag -d v<version>
+   git push origin :refs/tags/v<version>
    ```
 
-## 最佳实践
+## Best Practices
 
-1. **发布前**
-   - 确保所有测试通过
-   - 检查 CHANGELOG 内容
-   - 验证构建产物
+1. **Before Release**
+   - Ensure all tests pass
+   - Check CHANGELOG content
+   - Verify build artifacts
 
-2. **版本选择**
-   - 遵循语义化版本规范
-   - 谨慎使用 major 版本升级
-   - 使用预发布版本测试
+2. **Version Selection**
+   - Follow semantic versioning standards
+   - Be cautious with major version upgrades
+   - Use pre-release versions for testing
 
-3. **文档维护**
-   - 及时更新 README
-   - 保持 CHANGELOG 准确性
-   - 更新使用示例
+3. **Documentation Maintenance**
+   - Update README promptly
+   - Keep CHANGELOG accurate
+   - Update usage examples
+
+## Release Checklist
+
+### Pre-release Checklist
+
+- [ ] All tests pass (`bun test`)
+- [ ] Build succeeds (`bun run build`)
+- [ ] Documentation is up to date
+- [ ] CHANGELOG is updated
+- [ ] Version number follows semantic versioning
+- [ ] No uncommitted changes
+- [ ] Remote branch is up to date
+
+### Post-release Checklist
+
+- [ ] GitHub Release is created
+- [ ] NPM package is published
+- [ ] Documentation links are updated
+- [ ] Announce release in relevant channels
+- [ ] Monitor for any immediate issues
+- [ ] Update project boards/issues as needed
+
+### Emergency Release Process
+
+For critical bug fixes that need immediate release:
+
+1. Create hotfix branch from main
+2. Apply minimal fix
+3. Test thoroughly
+4. Use `bun run release:patch` for immediate patch release
+5. Merge back to main and develop branches
+
+---
+
+💡 **Note**: Always test the release process in a development environment before performing production releases. Use `bun run release:dry` to simulate the release process without actually publishing.

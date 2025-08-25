@@ -136,7 +136,7 @@ function generateHtmlOutput(options: Options): void {
 
   // 替换模板中的 STATIC_DATA
   const modifiedContent = templateContent.replace(
-    'const STATIC_DATA = ``;',
+    'const STATIC_DATA = ``',
     `const STATIC_DATA = ${jsonData};`,
   )
 

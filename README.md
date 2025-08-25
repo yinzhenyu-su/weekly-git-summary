@@ -8,97 +8,138 @@
 [![Node version](https://img.shields.io/node/v/weekly-git-summary.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个跨平台的 CLI 工具，用于生成 Git 提交记录的周报汇总。支持多种输出格式（文本、JSON、Markdown），自动扫描项目目录并提取指定时间范围内的提交历史。
+**Language**: [English](README.md) | [中文](README.zh.md)
 
-## 🚀 特性
+A cross-platform CLI tool for generating weekly Git commit summaries. Supports multiple output formats (text, JSON, Markdown), automatically scans project directories and extracts commit history within specified date ranges.
 
-- **跨平台支持** - 自动检测系统环境，Windows 使用 Node.js，macOS/Linux 使用 Bash 或 Node.js
-- **多种输出格式** - 支持彩色终端输出、JSON 格式、Markdown 格式
-- **智能仓库扫描** - 自动扫描指定目录下的 Git 仓库（最大深度 2 层）
-- **灵活的时间范围** - 支持自定义开始和结束日期
-- **作者过滤** - 可以按特定作者筛选提交记录
-- **可视化展示** - 包含 Web 可视化界面，支持图表展示
-- **零配置使用** - 开箱即用，无需复杂配置
+## 🚀 Features
 
-## 📦 安装
+- **Cross-platform Support** - Automatically detects system environment, uses Node.js on Windows, Bash or Node.js on macOS/Linux
+- **Multiple Output Formats** - Supports colorized terminal output, JSON, Markdown, and HTML formats
+- **Intelligent Repository Scanning** - Automatically scans Git repositories in specified directories (max depth 2 levels)
+- **Flexible Time Ranges** - Supports custom dates and preset time ranges (today, this-week, last-month, etc.)
+- **Multi-dimensional Filtering** - Supports multiple author filtering, message pattern matching (regex)
+- **Conventional Commits** - Supports Conventional Commits parsing and statistical analysis
+- **Visual Display** - Includes web visualization interface with chart support
+- **Statistical Analysis** - Provides commit statistics, contributor analysis, type distribution, etc.
+- **Zero Configuration** - Ready to use out of the box, no complex setup required
 
-### 全局安装
+## 📦 Installation
+
+### Global Installation
 
 ```bash
 npm install -g weekly-git-summary
 ```
 
-### 使用 npx（推荐）
+### Using npx (Recommended)
 
 ```bash
 npx weekly-git-summary
 ```
 
-## 🎯 使用方法
+## 🎯 Usage
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 生成当前目录的本周提交汇总
+# Generate weekly commit summary for current directory
 weekly-git-summary
 
-# 或使用 npx
+# Or use npx
 npx weekly-git-summary
 ```
 
-### 常用选项
+### Common Options
 
 ```bash
-# 指定目录和时间范围
+# Specify directory and date range
 weekly-git-summary --dir ~/projects --since 2023-01-01 --until 2023-01-31
 
-# 过滤特定作者的提交
-weekly-git-summary --author "张三" --since 2023-01-01
+# Filter commits by specific author
+weekly-git-summary --author "John Doe" --since 2023-01-01
 
-# 输出 JSON 格式
+# Multiple author filtering (OR relationship)
+weekly-git-summary --author "John Doe" --author "Jane Smith" --author "Bob Wilson"
+
+# Use preset time ranges
+weekly-git-summary --time-range this-week
+weekly-git-summary --time-range last-month
+
+# Enable conventional commits analysis
+weekly-git-summary --conventional --time-range this-week
+
+# Message pattern filtering (supports regex)
+weekly-git-summary --message-pattern "feat|fix" --conventional
+
+# Output in different formats
 weekly-git-summary --json
-
-# 输出 Markdown 格式
 weekly-git-summary --md
+weekly-git-summary --html
 
-# 显示帮助信息
+# Show help information
 weekly-git-summary --help
 ```
 
-## 📋 命令行参数
+## 📋 Command Line Arguments
 
-| 参数       | 简写 | 描述                  | 默认值   |
-| ---------- | ---- | --------------------- | -------- |
-| `--dir`    | `-d` | 指定要扫描的目录      | 当前目录 |
-| `--since`  | `-s` | 开始日期 (YYYY-MM-DD) | 本周一   |
-| `--until`  | `-u` | 结束日期 (YYYY-MM-DD) | 今天     |
-| `--author` | `-a` | 按作者过滤提交        | 所有作者 |
-| `--json`   | `-j` | 以 JSON 格式输出      | false    |
-| `--md`     | `-m` | 以 Markdown 格式输出  | false    |
-| `--html`   |      | 以 HTML 格式输出      | false    |
-| `--help`   | `-h` | 显示帮助信息          | -        |
+| Argument            | Short | Description                               | Default     |
+| ------------------- | ----- | ----------------------------------------- | ----------- |
+| `--dir`             | `-d`  | Specify directory to scan                 | Current dir |
+| `--since`           | `-s`  | Start date (YYYY-MM-DD)                   | This Monday |
+| `--until`           | `-u`  | End date (YYYY-MM-DD)                     | Today       |
+| `--author`          | `-a`  | Filter by author (can use multiple)       | All authors |
+| `--message-pattern` |       | Filter commit messages by pattern (regex) | None        |
+| `--conventional`    |       | Enable conventional commits parsing       | false       |
+| `--time-range`      |       | Preset time range                         | None        |
+| `--json`            | `-j`  | Output in JSON format                     | false       |
+| `--md`              | `-m`  | Output in Markdown format                 | false       |
+| `--html`            |       | Output in HTML format                     | false       |
+| `--help`            | `-h`  | Show help information                     | -           |
 
-## 📊 输出格式
+### Time Range Presets
 
-### 1. 彩色终端输出（默认）
+The `--time-range` parameter supports the following preset values:
+
+- `today` - Today
+- `yesterday` - Yesterday
+- `this-week` - This week (Monday to Sunday)
+- `last-week` - Last week
+- `this-month` - This month
+- `last-month` - Last month
+
+## 📊 Output Formats
+
+### 1. Colorized Terminal Output (Default)
 
 ```
-工作内容Git提交记录汇总
+Git Commit Summary
 
-统计时间范围: 2023-06-26 到 2023-07-02
-搜索目录: .
+Time Range: 2023-06-26 to 2023-07-02
+Search Directory: .
 
 📦 my-project (github.com/user/my-project)
 
 📅 2023-07-02
-  • feat: 添加用户认证功能 (作者: 张三, hash: abc123)
-  • fix: 修复登录页面样式问题 (作者: 李四, hash: def456)
+  • feat: add user authentication (author: John Doe, hash: abc123)
+  • fix: fix login page styling (author: Jane Smith, hash: def456)
 
 📅 2023-07-01
-  • docs: 更新 API 文档 (作者: 王五, hash: ghi789)
+  • docs: update API documentation (author: Bob Wilson, hash: ghi789)
+
+===== Statistics =====
+Total commits: 15
+Participants: 3
+Contributors: John Doe, Jane Smith, Bob Wilson
+
+===== Commit Type Distribution =====
+Features: 8 times
+Fixes: 4 times
+Documentation: 2 times
+Styling: 1 time
 ```
 
-### 2. JSON 格式
+### 2. JSON Format
 
 ```json
 {
@@ -107,6 +148,19 @@ weekly-git-summary --help
     "until": "2023-07-02"
   },
   "searchDir": ".",
+  "conventional": true,
+  "messagePattern": "feat|fix",
+  "statistics": {
+    "totalCommits": 15,
+    "participantCount": 3,
+    "participants": ["John Doe", "Jane Smith", "Bob Wilson"],
+    "typeDistribution": {
+      "feat": 8,
+      "fix": 4,
+      "docs": 2,
+      "style": 1
+    }
+  },
   "repositories": [
     {
       "name": "my-project",
@@ -116,9 +170,10 @@ weekly-git-summary --help
           "date": "2023-07-02",
           "commits": [
             {
-              "message": "feat: 添加用户认证功能",
-              "author": "张三",
-              "hash": "abc123"
+              "message": "feat: add user authentication",
+              "author": "John Doe",
+              "hash": "abc123",
+              "type": "feat"
             }
           ]
         }
@@ -128,172 +183,256 @@ weekly-git-summary --help
 }
 ```
 
-### 3. Markdown 格式
+### 3. Markdown Format
 
 ```markdown
-# 工作内容 Git 提交记录汇总
+# Git Commit Summary
 
-- **统计时间范围**: 2023-06-26 到 2023-07-02
-- **搜索目录**: .
+- **Time Range**: 2023-06-26 to 2023-07-02
+- **Search Directory**: .
 
 ## my-project
 
 ### 2023-07-02
 
-- feat: 添加用户认证功能 (作者: 张三, hash: abc123)
-- fix: 修复登录页面样式问题 (作者: 李四, hash: def456)
+- feat: add user authentication (author: John Doe, hash: abc123)
+- fix: fix login page styling (author: Jane Smith, hash: def456)
 
 ### 2023-07-01
 
-- docs: 更新 API 文档 (作者: 王五, hash: ghi789)
+- docs: update API documentation (author: Bob Wilson, hash: ghi789)
+
+## Statistics
+
+- **Total Commits**: 15
+- **Participants**: 3
+- **Contributors**: John Doe, Jane Smith, Bob Wilson
+
+### Commit Type Distribution
+
+- **Features**: 8 times
+- **Fixes**: 4 times
+- **Documentation**: 2 times
+- **Styling**: 1 time
 ```
 
-## 🎨 可视化界面
+## 🔧 Advanced Features
 
-项目包含一个精美的 Web 可视化界面 (`git-log.html`)，提供：
+### Conventional Commits Support
 
-- 🌓 深色/浅色主题切换
-- 📊 提交类型分布雷达图
-- 📈 提交统计卡片
-- 🕒 交互式时间线
-- 📱 响应式设计
-
-![纯文本格式](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-1.png)
-![JSON 输出](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-2.png)
-![Web 可视化界面](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-3.png)
-
-## 🛠️ 开发
-
-### 环境要求
-
-- Node.js ≥ 22.0.0
-- Bun (用于构建)
-- Git 命令行工具
-
-### 本地开发
+When the `--conventional` parameter is enabled, the tool parses commit messages following the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
 ```bash
-# 克隆项目
+# Enable conventional commits analysis
+weekly-git-summary --conventional --time-range this-week
+```
+
+**Supported Commit Types:**
+
+- `feat`: New features
+- `fix`: Bug fixes
+- `docs`: Documentation updates
+- `style`: Code formatting
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Testing related
+- `build`: Build system
+- `ci`: CI configuration
+- `chore`: Maintenance work
+- `revert`: Revert changes
+
+**Output Example:**
+
+```
+📅 2023-07-02
+  • [Feature] Add user authentication (author: John Doe, hash: abc123)
+  • [Fix] Fix login page styling [BREAKING] (author: Jane Smith, hash: def456)
+```
+
+### Message Pattern Filtering
+
+Use the `--message-pattern` parameter to filter commit messages by specific patterns (supports regex):
+
+```bash
+# Show only feature and fix related commits
+weekly-git-summary --message-pattern "feat|fix"
+
+# Filter commits containing specific keywords
+weekly-git-summary --message-pattern "user|login|auth"
+
+# Use complex regular expressions
+weekly-git-summary --message-pattern "^(feat|fix)(\(.+\))?:"
+```
+
+### Multiple Author Filtering
+
+Supports filtering commits from multiple authors simultaneously (OR relationship):
+
+```bash
+# Filter multiple authors
+weekly-git-summary --author "John Doe" --author "Jane Smith" --author "Bob Wilson"
+
+# Support author names with spaces
+weekly-git-summary --author "John Doe" --author "Jane Smith"
+```
+
+### Statistical Analysis
+
+The tool automatically generates detailed statistics:
+
+- **Basic Statistics**: Total commits, participant count, contributor list
+- **Type Distribution**: Count statistics for various commit types (when `--conventional` is enabled)
+- **Participation Analysis**: Contribution analysis for each participant
+
+## 🎨 Visualization Interface
+
+The project includes a beautiful web visualization interface (`git-log.html`) that provides:
+
+- 🌓 Dark/Light theme toggle
+- 📊 Commit type distribution radar charts
+- 📈 Commit statistics cards
+- 🕒 Interactive timeline
+- 📱 Responsive design
+
+![Text Format](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-1.png)
+![JSON Output](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-2.png)
+![Web Visualization Interface](https://raw.githubusercontent.com/yinzhenyu-su/weekly-git-summary/main/scripts/dist/weekly-git-summary-3.png)
+
+## 🛠️ Development
+
+### Environment Requirements
+
+- Node.js ≥ 22.0.0
+- Bun (for building)
+- Git command line tools
+
+### Local Development
+
+```bash
+# Clone the project
 git clone <repository-url>
 cd weekly-git-summary
 
-# 安装依赖
+# Install dependencies
 bun install
 
-# 构建项目
+# Build the project
 bun run build
 
-# 运行测试
+# Run tests
 bun test
 
-# 监视模式测试
+# Watch mode testing
 bun test --watch
 
-# 本地链接测试
+# Local link testing
 npm link
 weekly-git-summary --help
 ```
 
-### 项目结构
+### Project Structure
 
 ```bash
 weekly-git-summary/
 ├── scripts/
-│   ├── cli.ts                 # CLI 入口点（TypeScript）
-│   ├── weekly-git-summary.ts  # TypeScript 脚本实现
-│   ├── weekly-git-summary.sh  # Shell 脚本实现
-│   ├── weekly-git-summary.ps1 # PowerShell 脚本实现
-│   ├── git-log.html           # Web 可视化界面模板
-│   └── dist/                  # 示例截图
+│   ├── cli.ts                 # CLI entry point (TypeScript)
+│   ├── weekly-git-summary.ts  # TypeScript script implementation
+│   ├── weekly-git-summary.sh  # Shell script implementation
+│   ├── weekly-git-summary.ps1 # PowerShell script implementation
+│   ├── git-log.html           # Web visualization interface template
+│   └── dist/                  # Example screenshots
 ├── tests/
-│   ├── cli.test.ts            # CLI 功能测试
-│   ├── build.test.ts          # 构建系统测试
-│   ├── integration.test.ts    # 集成测试
-│   └── windows.test.ts        # Windows 兼容性测试
-├── build/                     # 构建输出目录
-├── build.ts                   # Bun 构建配置
-├── package.json              # 项目配置
-├── tsconfig.json             # TypeScript 配置
-├── CLAUDE.md                 # 项目开发指南
-└── README.md                 # 项目文档
+│   ├── cli.test.ts            # CLI functionality tests
+│   ├── build.test.ts          # Build system tests
+│   ├── integration.test.ts    # Integration tests
+│   └── windows.test.ts        # Windows compatibility tests
+├── docs/
+│   ├── FAQ.md                 # Frequently asked questions
+│   └── RELEASE.md             # Release management guide
+├── build/                     # Build output directory
+├── build.ts                   # Bun build configuration
+├── package.json              # Project configuration
+├── tsconfig.json             # TypeScript configuration
+├── CLAUDE.md                 # Project development guide
+└── README.md                 # Project documentation
 ```
 
-### 架构设计
+### Architecture Design
 
-该项目采用智能的跨平台架构：
+This project uses an intelligent cross-platform architecture:
 
-1. **TypeScript CLI 包装器** (`scripts/cli.ts`)
-   - 检测操作系统类型
-   - 自动选择对应的脚本实现
-   - 透明传递命令行参数
+1. **TypeScript CLI Wrapper** (`scripts/cli.ts`)
+   - Detects operating system type
+   - Automatically selects corresponding script implementation
+   - Transparently passes command line arguments
 
-2. **平台特定实现**
-   - **Windows**: Node.js 脚本 (跨平台兼容)
-   - **macOS/Linux**: Bash 脚本（已集成 URL 转换功能）或 Node.js 脚本 (回退)
-   - **PowerShell**: 支持 Windows PowerShell 环境
-   - 功能完全一致，参数格式统一
+2. **Platform-specific Implementations**
+   - **Windows**: Node.js script (cross-platform compatible)
+   - **macOS/Linux**: Bash script (with integrated URL conversion) or Node.js script (fallback)
+   - **PowerShell**: Supports Windows PowerShell environment
+   - Identical functionality, unified parameter format
 
-3. **构建系统**
-   - 使用 Bun 进行 TypeScript 编译
-   - 输出 ESM 格式的 Node.js 模块
-   - 自动生成可执行的 CLI 工具
+3. **Build System**
+   - Uses Bun for TypeScript compilation
+   - Outputs ESM format Node.js modules
+   - Automatically generates executable CLI tools
 
-## 🧪 测试
+## 🧪 Testing
 
-项目包含全面的测试套件：
+The project includes a comprehensive test suite:
 
 ```bash
-# 运行所有测试
+# Run all tests
 bun test
 
-# 查看测试覆盖率
+# View test coverage
 bun test --coverage
 ```
 
-### 测试内容
+### Test Coverage
 
-- **CLI 功能测试** - 验证命令行参数处理、输出格式等
-- **构建系统测试** - 验证构建过程和输出文件
-- **跨平台兼容性** - 验证不同系统环境下的行为
-- **错误处理** - 验证异常情况的处理
+- **CLI Functionality Tests** - Verify command line argument processing, output formats, etc.
+- **Build System Tests** - Verify build process and output files
+- **Cross-platform Compatibility** - Verify behavior in different system environments
+- **Error Handling** - Verify handling of exceptional situations
 
-## 📄 许可证
+## 📄 License
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+MIT License - see [LICENSE](LICENSE) file for details
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-### 贡献指南
+### Contributing Guidelines
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### 开发规范
+### Development Standards
 
-- 使用 TypeScript 进行类型安全的开发
-- 遵循 ESLint 和 Prettier 规范
-- 为新功能添加相应的测试
-- 更新相关文档
+- Use TypeScript for type-safe development
+- Follow ESLint and Prettier conventions
+- Add corresponding tests for new features
+- Update relevant documentation
 
-## 🔗 相关链接
+## 🔗 Related Links
 
-- [npm 包地址](https://www.npmjs.com/package/weekly-git-summary)
-- [GitHub 仓库](https://github.com/yinzhenyu-su/weekly-git-summary)
-- [问题反馈](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
+- [npm Package](https://www.npmjs.com/package/weekly-git-summary)
+- [GitHub Repository](https://github.com/yinzhenyu-su/weekly-git-summary)
+- [Issue Reports](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
 
-## 📞 支持
+## 📞 Support
 
-如果您遇到任何问题或有功能建议，请：
+If you encounter any issues or have feature suggestions, please:
 
-1. 查看 [常见问题](docs/FAQ.md)
-2. 搜索已有的 [Issues](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
-3. 创建新的 Issue 描述您的问题
+1. Check the [FAQ](docs/FAQ.md)
+2. Search existing [Issues](https://github.com/yinzhenyu-su/weekly-git-summary/issues)
+3. Create a new Issue describing your problem
 
 ---
 
-**喜欢这个项目？请给它一个 ⭐️**
+**Like this project? Please give it a ⭐️**
