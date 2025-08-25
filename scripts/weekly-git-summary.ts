@@ -157,11 +157,11 @@ function generateJsonOutput(options: Options): JsonOutput {
   if (options.authors.length > 0) {
     jsonOutput.author = options.authors.join(', ')
   }
-  
+
   if (options.messagePattern) {
     jsonOutput.messagePattern = options.messagePattern
   }
-  
+
   if (options.conventional) {
     jsonOutput.conventional = options.conventional
   }
@@ -222,7 +222,7 @@ function generateJsonOutput(options: Options): JsonOutput {
         author,
         hash,
       }
-      
+
       if (options.conventional) {
         const conventionalInfo = parseConventionalCommit(message)
         commitData.type = conventionalInfo ? conventionalInfo.type : 'other'
@@ -240,7 +240,7 @@ function generateJsonOutput(options: Options): JsonOutput {
     // 添加仓库数据到输出
     jsonOutput.repositories.push(repoData)
   }
-  
+
   // 收集统计信息
   const statistics = collectCommitStatistics(jsonOutput.repositories, options.conventional)
   jsonOutput.statistics = statistics
@@ -297,54 +297,54 @@ function getYesterdayDate(): string {
 }
 
 // 获取本周开始和结束日期
-function getThisWeekRange(): { since: string; until: string } {
+function getThisWeekRange(): { since: string, until: string } {
   const now = new Date()
   const currentWeekday = now.getDay() // 0=周日，1=周一，等等
   const daysToMonday = (currentWeekday + 6) % 7 // 计算到本周一的天数
   const monday = new Date(now.getTime() - daysToMonday * 24 * 60 * 60 * 1000)
   const sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000)
-  
+
   return {
     since: monday.toISOString().split('T')[0] || '',
-    until: sunday.toISOString().split('T')[0] || ''
+    until: sunday.toISOString().split('T')[0] || '',
   }
 }
 
 // 获取上周开始和结束日期
-function getLastWeekRange(): { since: string; until: string } {
+function getLastWeekRange(): { since: string, until: string } {
   const thisWeek = getThisWeekRange()
   const lastWeekMonday = new Date(thisWeek.since)
   lastWeekMonday.setDate(lastWeekMonday.getDate() - 7)
   const lastWeekSunday = new Date(thisWeek.until)
   lastWeekSunday.setDate(lastWeekSunday.getDate() - 7)
-  
+
   return {
     since: lastWeekMonday.toISOString().split('T')[0] || '',
-    until: lastWeekSunday.toISOString().split('T')[0] || ''
+    until: lastWeekSunday.toISOString().split('T')[0] || '',
   }
 }
 
 // 获取本月开始和结束日期
-function getThisMonthRange(): { since: string; until: string } {
+function getThisMonthRange(): { since: string, until: string } {
   const now = new Date()
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-  
+
   return {
     since: firstDay.toISOString().split('T')[0] || '',
-    until: lastDay.toISOString().split('T')[0] || ''
+    until: lastDay.toISOString().split('T')[0] || '',
   }
 }
 
 // 获取上月开始和结束日期
-function getLastMonthRange(): { since: string; until: string } {
+function getLastMonthRange(): { since: string, until: string } {
   const now = new Date()
   const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const lastDay = new Date(now.getFullYear(), now.getMonth(), 0)
-  
+
   return {
     since: firstDay.toISOString().split('T')[0] || '',
-    until: lastDay.toISOString().split('T')[0] || ''
+    until: lastDay.toISOString().split('T')[0] || '',
   }
 }
 
@@ -354,20 +354,20 @@ function parseConventionalCommit(message: string): ConventionalCommitType | null
   // 或者 type!: description (表示破坏性更改)
   const conventionalPattern = /^([a-z]+)(\([^)]*\))?(!)?:\s*(.+)/i
   const match = message.match(conventionalPattern)
-  
+
   if (!match) {
     return null
   }
-  
+
   const [, type, scopeWithParens, breakingExclamation, description] = match
   const scope = scopeWithParens ? scopeWithParens.slice(1, -1) : undefined
   const breaking = !!breakingExclamation || message.includes('BREAKING CHANGE')
-  
+
   return {
-    type: type.toLowerCase(),
+    type: type!.toLowerCase(),
     scope,
-    description: description.trim(),
-    breaking
+    description: description!.trim(),
+    breaking,
   }
 }
 
@@ -384,9 +384,9 @@ function getCommitTypeDisplayName(type: string): string {
     build: '构建',
     ci: 'CI',
     chore: '维护',
-    revert: '回滚'
+    revert: '回滚',
   }
-  
+
   return typeNames[type] || type
 }
 
@@ -396,16 +396,17 @@ function filterCommitByPattern(message: string, pattern: string): boolean {
     // 尝试作为正则表达式
     const regex = new RegExp(pattern, 'i')
     return regex.test(message)
-  } catch (error) {
+  }
+  catch (error) {
     // 如果正则表达式无效，回退到简单字符串匹配
     return message.toLowerCase().includes(pattern.toLowerCase())
   }
 }
 
 // 解析时间范围预设
-function parseTimeRange(timeRange: string): { since: string; until: string } {
+function parseTimeRange(timeRange: string): { since: string, until: string } {
   const today = getTodayDate()
-  
+
   switch (timeRange.toLowerCase()) {
     case 'today':
       return { since: today, until: today }
@@ -543,7 +544,8 @@ function parseArgs(args: string[]): Options {
             options.since = range.since
             options.until = range.until
             options.timeRange = timeRange
-          } catch (error) {
+          }
+          catch (error: any) {
             console.error(`${colors.red}错误: ${error.message}${colors.reset}`)
             console.error(`${colors.yellow}支持的时间范围: today, yesterday, this-week, last-week, this-month, last-month${colors.reset}`)
             process.exit(1)
@@ -576,14 +578,14 @@ function collectCommitStatistics(repositories: RepoData[], conventional: boolean
   const allCommits: CommitData[] = []
   const participantsSet = new Set<string>()
   const typeDistribution: Record<string, number> = {}
-  
+
   // 收集所有提交
   for (const repo of repositories) {
     for (const dateGroup of repo.commits) {
       for (const commit of dateGroup.commits) {
         allCommits.push(commit)
         participantsSet.add(commit.author)
-        
+
         if (conventional) {
           const conventionalInfo = parseConventionalCommit(commit.message)
           const type = conventionalInfo ? conventionalInfo.type : 'other'
@@ -593,12 +595,12 @@ function collectCommitStatistics(repositories: RepoData[], conventional: boolean
       }
     }
   }
-  
+
   return {
     totalCommits: allCommits.length,
     participantCount: participantsSet.size,
     typeDistribution,
-    participants: Array.from(participantsSet).sort()
+    participants: Array.from(participantsSet).sort(),
   }
 }
 
@@ -629,7 +631,7 @@ function getGitCommits(
 
     // 应用消息模式过滤
     if (messagePattern) {
-      return commits.filter(commit => {
+      return commits.filter((commit) => {
         const parts = commit.split('|')
         const message = parts[2] || ''
         return filterCommitByPattern(message, messagePattern)
@@ -713,7 +715,7 @@ export function main(): void {
 
   // 查找所有Git仓库
   const gitRepos = findGitRepositories(options.searchDir)
-  
+
   // 收集统计信息
   const allRepositories: RepoData[] = []
 
@@ -770,7 +772,7 @@ export function main(): void {
         author,
         hash,
       }
-      
+
       if (options.conventional) {
         const conventionalInfo = parseConventionalCommit(message)
         commitData.type = conventionalInfo ? conventionalInfo.type : 'other'
@@ -805,7 +807,7 @@ export function main(): void {
           console.log(`### ${date}`)
           currentDate = date
         }
-        
+
         // 显示传统提交信息
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
@@ -813,10 +815,12 @@ export function main(): void {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type)
             const breakingTag = conventionalInfo.breaking ? ' **[BREAKING]**' : ''
             console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (作者: ${author}, hash: ${hash})`)
-          } else {
+          }
+          else {
             console.log(`- **[其他]** ${message} (作者: ${author}, hash: ${hash})`)
           }
-        } else {
+        }
+        else {
           console.log(`- ${message} (作者: ${author}, hash: ${hash})`)
         }
       }
@@ -839,7 +843,7 @@ export function main(): void {
           console.log(`${colors.green}${date}${colors.reset}`)
           currentDate = date
         }
-        
+
         // 显示传统提交信息
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
@@ -847,10 +851,12 @@ export function main(): void {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type)
             const breakingTag = conventionalInfo.breaking ? ` ${colors.red}[BREAKING]${colors.reset}` : ''
             console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (作者: ${author}, hash: ${hash})`)
-          } else {
+          }
+          else {
             console.log(`  • ${colors.blue}[其他]${colors.reset} ${message} (作者: ${author}, hash: ${hash})`)
           }
-        } else {
+        }
+        else {
           console.log(`  • ${message} (作者: ${author}, hash: ${hash})`)
         }
       }
@@ -862,7 +868,7 @@ export function main(): void {
 
   // 收集和显示统计信息
   const statistics = collectCommitStatistics(allRepositories, options.conventional)
-  
+
   if (statistics.totalCommits > 0) {
     if (options.mdOutput) {
       console.log('')
@@ -871,29 +877,30 @@ export function main(): void {
       console.log(`- **总提交数**: ${statistics.totalCommits}`)
       console.log(`- **参与人数**: ${statistics.participantCount}`)
       console.log(`- **参与者**: ${statistics.participants.join(', ')}`)
-      
+
       if (options.conventional && Object.keys(statistics.typeDistribution).length > 0) {
         console.log('')
         console.log('### 提交类型分布')
         console.log('')
         Object.entries(statistics.typeDistribution)
-          .sort(([,a], [,b]) => b - a)
+          .sort(([, a], [, b]) => b - a)
           .forEach(([type, count]) => {
             const typeDisplay = getCommitTypeDisplayName(type)
             console.log(`- **${typeDisplay}**: ${count} 次`)
           })
       }
-    } else {
+    }
+    else {
       console.log(`${colors.blue}===== 统计信息 =====${colors.reset}`)
       console.log(`${colors.green}总提交数: ${colors.reset}${statistics.totalCommits}`)
       console.log(`${colors.green}参与人数: ${colors.reset}${statistics.participantCount}`)
       console.log(`${colors.green}参与者: ${colors.reset}${statistics.participants.join(', ')}`)
-      
+
       if (options.conventional && Object.keys(statistics.typeDistribution).length > 0) {
         console.log('')
         console.log(`${colors.blue}===== 提交类型分布 =====${colors.reset}`)
         Object.entries(statistics.typeDistribution)
-          .sort(([,a], [,b]) => b - a)
+          .sort(([, a], [, b]) => b - a)
           .forEach(([type, count]) => {
             const typeDisplay = getCommitTypeDisplayName(type)
             console.log(`${colors.green}${typeDisplay}: ${colors.reset}${count} 次`)

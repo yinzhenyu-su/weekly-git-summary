@@ -1,5 +1,6 @@
 {
   "name": "weekly-git-summary",
+  "type": "module",
   "version": "1.0.5",
   "description": "A CLI tool to generate weekly git commit summaries",
   "author": "yinzhenyu.su@gmail.com",
