@@ -167,7 +167,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --message-pattern|--conventional|--time-range)
             # 新功能参数，委托给 Node.js 版本处理
-            echo -e "${YELLOW}检测到新功能参数，使用 Node.js 版本处理...${NC}"
             
             # 检查 Node.js 版本是否存在
             SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -177,8 +176,8 @@ while [[ $# -gt 0 ]]; do
                 # 将所有参数传递给 Node.js 版本
                 exec node "$NODE_SCRIPT" "$@"
             else
-                echo -e "${RED}错误: 找不到 Node.js 版本 ($NODE_SCRIPT)${NC}"
-                echo -e "${YELLOW}提示: 请运行 'bun run build.ts' 来构建 Node.js 版本${NC}"
+                echo -e "${RED}错误: 找不到 Node.js 版本 ($NODE_SCRIPT)${NC}" >&2
+                echo -e "${YELLOW}提示: 请运行 'bun run build.ts' 来构建 Node.js 版本${NC}" >&2
                 exit 1
             fi
             ;;
