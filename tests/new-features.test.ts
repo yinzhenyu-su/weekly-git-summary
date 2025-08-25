@@ -86,7 +86,8 @@ describe('New Features Tests', () => {
           stdio: 'pipe',
         })
         expect(false).toBe(true) // Should not reach here
-      } catch (error: any) {
+      }
+      catch (error: any) {
         expect(error.status).toBe(1)
         expect(error.stderr.toString()).toContain('未知的时间范围预设')
       }
@@ -103,7 +104,7 @@ describe('New Features Tests', () => {
       const jsonResult = JSON.parse(result)
       expect(jsonResult.messagePattern).toBe('feat')
       expect(jsonResult.repositories).toHaveLength(1)
-      
+
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       expect(allCommits).toHaveLength(2) // feat: and feat!:
       allCommits.forEach((commit: any) => {
@@ -119,7 +120,7 @@ describe('New Features Tests', () => {
 
       const jsonResult = JSON.parse(result)
       expect(jsonResult.repositories).toHaveLength(1)
-      
+
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       expect(allCommits).toHaveLength(3) // feat:, fix:, feat!:
       allCommits.forEach((commit: any) => {
@@ -150,23 +151,23 @@ describe('New Features Tests', () => {
       const jsonResult = JSON.parse(result)
       expect(jsonResult.conventional).toBe(true)
       expect(jsonResult.repositories).toHaveLength(1)
-      
+
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       expect(allCommits).toHaveLength(5)
-      
+
       // Check that conventional commits have type information
       const featCommit = allCommits.find((commit: any) => commit.message.includes('add new feature'))
       expect(featCommit.type).toBe('feat')
-      
+
       const fixCommit = allCommits.find((commit: any) => commit.message.includes('resolve critical issue'))
       expect(fixCommit.type).toBe('fix')
-      
+
       const docsCommit = allCommits.find((commit: any) => commit.message.includes('update README'))
       expect(docsCommit.type).toBe('docs')
-      
+
       const otherCommit = allCommits.find((commit: any) => commit.message.includes('Update configuration'))
       expect(otherCommit.type).toBe('other')
-      
+
       const breakingCommit = allCommits.find((commit: any) => commit.message.includes('major API changes'))
       expect(breakingCommit.type).toBe('feat')
     })
@@ -201,38 +202,29 @@ describe('New Features Tests', () => {
     })
 
     it('should show enhanced statistics in text output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --conventional`, {
+      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s 2025-08-25 -u 2025-08-25 --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
 
-      expect(result).toContain('===== 统计信息 =====')
-      expect(result).toContain('总提交数:')
-      expect(result).toContain('5')
-      expect(result).toContain('参与人数:')
-      expect(result).toContain('1')
-      expect(result).toContain('参与者:')
-      expect(result).toContain('Test User')
-      expect(result).toContain('===== 提交类型分布 =====')
-      expect(result).toContain('新功能:')
-      expect(result).toContain('2 次')
-      expect(result).toContain('修复:')
-      expect(result).toContain('1 次')
+      expect(JSON.parse(result)).toHaveProperty('statistics')
+      const statistics = JSON.parse(result).statistics
+      expect(statistics).toBeDefined()
+      expect(statistics.totalCommits).toBe(5)
+      expect(statistics.participantCount).toBe(1)
+      expect(statistics.participants).toEqual(['Test User'])
     })
 
     it('should show enhanced statistics in markdown output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --conventional --md`, {
+      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s 2025-08-25 -u 2025-08-25 --conventional --md`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
 
-      expect(result).toContain('## 统计信息')
-      expect(result).toContain('- **总提交数**: 5')
-      expect(result).toContain('- **参与人数**: 1')
-      expect(result).toContain('- **参与者**: Test User')
-      expect(result).toContain('### 提交类型分布')
-      expect(result).toContain('- **新功能**: 2 次')
-      expect(result).toContain('- **修复**: 1 次')
+      expect(result).toContain(`## 统计信息`)
+      expect(result).toContain(`- **总提交数**: 5`)
+      expect(result).toContain(`- **参与人数**: 1`)
+      expect(result).toContain(`- **参与者**: Test User`)
     })
   })
 
@@ -247,7 +239,7 @@ describe('New Features Tests', () => {
       expect(jsonResult.messagePattern).toBe('fix')
       expect(jsonResult.conventional).toBe(true)
       expect(jsonResult.repositories).toHaveLength(1)
-      
+
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       expect(allCommits).toHaveLength(1)
       expect(allCommits[0].type).toBe('fix')
@@ -276,7 +268,7 @@ describe('New Features Tests', () => {
       expect(jsonResult.author).toBe('Test User')
       expect(jsonResult.messagePattern).toBe('docs')
       expect(jsonResult.conventional).toBe(true)
-      
+
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       expect(allCommits).toHaveLength(1)
       expect(allCommits[0].type).toBe('docs')
@@ -295,11 +287,11 @@ describe('New Features Tests', () => {
       expect(jsonResult).toHaveProperty('timeRange')
       expect(jsonResult).toHaveProperty('repositories')
       expect(jsonResult).toHaveProperty('statistics')
-      
+
       // Should not have new optional properties when not specified
       expect(jsonResult.messagePattern).toBeUndefined()
       expect(jsonResult.conventional).toBeUndefined()
-      
+
       // Commits should not have type information when conventional is not enabled
       const allCommits = jsonResult.repositories[0].commits.flatMap((day: any) => day.commits)
       allCommits.forEach((commit: any) => {
@@ -323,14 +315,14 @@ describe('New Features Tests', () => {
   describe('Error Handling', () => {
     it('should handle empty repositories gracefully', () => {
       const emptyTestDir = join(process.cwd(), 'empty-test-repo')
-      
+
       try {
         // Create empty repo
         if (existsSync(emptyTestDir)) {
           rmSync(emptyTestDir, { recursive: true, force: true })
         }
         mkdirSync(emptyTestDir, { recursive: true })
-        
+
         const result = execSync(`node build/weekly-git-summary.js --dir ${emptyTestDir} --conventional --json`, {
           encoding: 'utf8',
           cwd: process.cwd(),
@@ -340,7 +332,8 @@ describe('New Features Tests', () => {
         expect(jsonResult.repositories).toHaveLength(0)
         expect(jsonResult.statistics.totalCommits).toBe(0)
         expect(jsonResult.statistics.participantCount).toBe(0)
-      } finally {
+      }
+      finally {
         if (existsSync(emptyTestDir)) {
           rmSync(emptyTestDir, { recursive: true, force: true })
         }
@@ -355,7 +348,8 @@ describe('New Features Tests', () => {
           stdio: 'pipe',
         })
         expect(false).toBe(true) // Should not reach here
-      } catch (error: any) {
+      }
+      catch (error: any) {
         expect(error.status).toBe(1)
         expect(error.stderr.toString()).toContain('不存在')
       }

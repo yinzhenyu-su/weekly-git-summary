@@ -48,6 +48,72 @@ AUTHORS=()
 JSON_OUTPUT=false
 MD_OUTPUT=false
 HTML_OUTPUT=false
+LANG_OUTPUT="zh"
+
+# 多语言翻译函数
+translate() {
+    local key="$1"
+    local lang="${2:-$LANG_OUTPUT}"
+    
+    case $lang in
+        "en")
+            case $key in
+                "usage") echo "Usage:" ;;
+                "options") echo "Options:" ;;
+                "examples") echo "Examples:" ;;
+                "help") echo "Show this help message" ;;
+                "dir") echo "Specify search directory (default: current directory)" ;;
+                "since") echo "Specify start date (format: YYYY-MM-DD, default: this Monday)" ;;
+                "until") echo "Specify end date (format: YYYY-MM-DD, default: today)" ;;
+                "author") echo "Show commits by specified author only" ;;
+                "json") echo "Output result in JSON format" ;;
+                "markdown") echo "Output result in Markdown format" ;;
+                "html") echo "Generate HTML visualization file" ;;
+                "lang") echo "Set output language (zh|en, default: zh)" ;;
+                "new_features") echo "New Features (automatically use Node.js version):" ;;
+                "message_pattern") echo "Filter commit messages by pattern (supports regex)" ;;
+                "conventional") echo "Enable conventional commits parsing and statistics" ;;
+                "time_range") echo "Use preset time range (today, yesterday, this-week, last-week, this-month, last-month)" ;;
+                "time_range_label") echo "Time Range" ;;
+                "search_dir_label") echo "Search Directory" ;;
+                "author_filter") echo "Author Filter" ;;
+                "git_commit_summary") echo "Git Commit Summary" ;;
+                "summary_completed") echo "Summary Completed" ;;
+                "to") echo "to" ;;
+                "author_text") echo "author" ;;
+                *) echo "$key" ;;
+            esac
+            ;;
+        *)
+            case $key in
+                "usage") echo "使用方法:" ;;
+                "options") echo "选项:" ;;
+                "examples") echo "示例:" ;;
+                "help") echo "显示此帮助信息" ;;
+                "dir") echo "指定搜索目录 (默认: 当前目录)" ;;
+                "since") echo "指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)" ;;
+                "until") echo "指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)" ;;
+                "author") echo "只显示指定作者的提交" ;;
+                "json") echo "以JSON格式输出结果" ;;
+                "markdown") echo "以Markdown格式输出结果" ;;
+                "html") echo "生成HTML可视化文件" ;;
+                "lang") echo "设置输出语言 (zh|en, 默认: zh)" ;;
+                "new_features") echo "新功能 (自动使用 Node.js 版本):" ;;
+                "message_pattern") echo "过滤符合模式的提交信息 (支持正则表达式)" ;;
+                "conventional") echo "启用传统提交规范解析和统计" ;;
+                "time_range") echo "使用预设时间范围 (today, yesterday, this-week, last-week, this-month, last-month)" ;;
+                "time_range_label") echo "统计时间范围" ;;
+                "search_dir_label") echo "搜索目录" ;;
+                "author_filter") echo "作者过滤" ;;
+                "git_commit_summary") echo "工作内容Git提交记录汇总" ;;
+                "summary_completed") echo "工作内容汇总完成" ;;
+                "to") echo "到" ;;
+                "author_text") echo "作者" ;;
+                *) echo "$key" ;;
+            esac
+            ;;
+    esac
+}
 
 # 生成 HTML 输出函数
 generate_html_output() {
@@ -97,32 +163,58 @@ generate_html_output() {
 
 # 显示帮助信息
 show_help() {
-    echo -e "${BLUE}使用方法:${NC}"
-    echo "  $0 [选项]"
+    echo -e "${BLUE}$(translate "usage"):${NC}"
+    echo "  $0 [options]"
     echo ""
-    echo -e "${GREEN}选项:${NC}"
-    echo "  -h, --help                    显示此帮助信息"
-    echo "  -d, --dir DIR                 指定搜索目录 (默认: 当前目录)"
-    echo "  -s, --since DATE              指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
-    echo "  -u, --until DATE              指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
-    echo "  -a, --author NAME             只显示指定作者的提交"
-    echo "  -j, --json                    以JSON格式输出结果"
-    echo "  -m, --md                      以Markdown格式输出结果"
-    echo "  --html                        生成HTML可视化文件"
+    echo -e "${GREEN}$(translate "options"):${NC}"
+    echo "  -h, --help                    $(translate "help")"
+    echo "  -d, --dir DIR                 $(translate "dir")"
+    echo "  -s, --since DATE              $(translate "since")"
+    echo "  -u, --until DATE              $(translate "until")"
+    echo "  -a, --author NAME             $(translate "author")"
+    echo "  -j, --json                    $(translate "json")"
+    echo "  -m, --md                      $(translate "markdown")"
+    echo "  --html                        $(translate "html")"
+    echo "  --lang LANG                   $(translate "lang")"
     echo ""
-    echo -e "${GREEN}新功能 (自动使用 Node.js 版本):${NC}"
-    echo "  --message-pattern PATTERN     过滤符合模式的提交信息 (支持正则表达式)"
-    echo "  --conventional                启用传统提交规范解析和统计"
-    echo "  --time-range RANGE            使用预设时间范围 (today, yesterday, this-week, last-week, this-month, last-month)"
+    echo -e "${GREEN}$(translate "new_features")${NC}"
+    echo "  --message-pattern PATTERN     $(translate "message_pattern")"
+    echo "  --conventional                $(translate "conventional")"
+    echo "  --time-range RANGE            $(translate "time_range")"
     echo ""
-    echo -e "${YELLOW}示例:${NC}"
-    echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
-    echo "  $0 --author '张三' --since 2023-01-01"
-    echo "  $0 --json --since 2023-01-01"
-    echo "  $0 --time-range this-week --conventional"
-    echo "  $0 --message-pattern \"feat|fix\" --json"
+    echo -e "${YELLOW}$(translate "examples"):${NC}"
+    if [ "$LANG_OUTPUT" = "en" ]; then
+        echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
+        echo "  $0 --author 'John Doe' --since 2023-01-01"
+        echo "  $0 --json --since 2023-01-01"
+        echo "  $0 --time-range this-week --conventional"
+        echo "  $0 --message-pattern \"feat|fix\" --json --lang en"
+    else
+        echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
+        echo "  $0 --author '张三' --since 2023-01-01"
+        echo "  $0 --json --since 2023-01-01"
+        echo "  $0 --time-range this-week --conventional"
+        echo "  $0 --message-pattern \"feat|fix\" --json"
+    fi
     exit 0
 }
+
+# 预先解析 --lang 参数以正确显示帮助信息
+for arg in "$@"; do
+    if [[ "$arg" == "--lang" ]]; then
+        # 找到下一个参数作为语言设置
+        for ((i=1; i<=$#; i++)); do
+            if [[ "${!i}" == "--lang" ]]; then
+                next_i=$((i+1))
+                if [[ $next_i -le $# ]]; then
+                    LANG_OUTPUT="${!next_i}"
+                fi
+                break
+            fi
+        done
+        break
+    fi
+done
 
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
@@ -164,6 +256,14 @@ while [[ $# -gt 0 ]]; do
         --html)
             HTML_OUTPUT=true
             shift
+            ;;
+        --lang)
+            LANG_OUTPUT="$2"
+            if [[ "$LANG_OUTPUT" != "en" && "$LANG_OUTPUT" != "zh" ]]; then
+                echo -e "${RED}Error: Unsupported language $LANG_OUTPUT, supported languages: zh, en${NC}"
+                exit 1
+            fi
+            shift 2
             ;;
         --message-pattern|--conventional|--time-range)
             # 新功能参数，委托给 Node.js 版本处理
@@ -209,26 +309,26 @@ if [ "$JSON_OUTPUT" = true ]; then
     fi
     echo '  "repositories": ['
 elif [ "$MD_OUTPUT" = true ]; then
-    echo "# 工作内容Git提交记录汇总"
+    echo "# $(translate "git_commit_summary")"
     echo ""
-    echo "- **统计时间范围**: $MONDAY 到 $TODAY"
-    echo "- **搜索目录**: $SEARCH_DIR"
+    echo "- **$(translate "time_range_label")**: $MONDAY $(translate "to") $TODAY"
+    echo "- **$(translate "search_dir_label")**: $SEARCH_DIR"
     if [ ${#AUTHORS[@]} -gt 0 ]; then
         authors_str=$(printf "%s, " "${AUTHORS[@]}")
         authors_str="${authors_str%, }"  # 去掉最后的逗号和空格
-        echo "- **作者过滤**: $authors_str"
+        echo "- **$(translate "author_filter")**: $authors_str"
     fi
     echo ""
 elif [ "$HTML_OUTPUT" = true ]; then
     echo ""
 else
-    echo -e "${BLUE}===== 工作内容Git提交记录汇总 =====${NC}"
-    echo -e "${GREEN}统计时间范围:${NC} $MONDAY 到 $TODAY"
-    echo -e "${GREEN}搜索目录:${NC} $SEARCH_DIR"
+    echo -e "${BLUE}===== $(translate "git_commit_summary") =====${NC}"
+    echo -e "${GREEN}$(translate "time_range_label"):${NC} $MONDAY $(translate "to") $TODAY"
+    echo -e "${GREEN}$(translate "search_dir_label"):${NC} $SEARCH_DIR"
     if [ ${#AUTHORS[@]} -gt 0 ]; then
         authors_str=$(printf "%s, " "${AUTHORS[@]}")
         authors_str="${authors_str%, }"  # 去掉最后的逗号和空格
-        echo -e "${GREEN}作者过滤:${NC} $authors_str"
+        echo -e "${GREEN}$(translate "author_filter"):${NC} $authors_str"
     fi
     echo ""
 fi
@@ -382,8 +482,8 @@ else
     if [ "$MD_OUTPUT" = true ]; then
         echo ""
         echo "---"
-        echo "*工作内容汇总完成*"
+        echo "*$(translate "summary_completed")*"
     else
-        echo -e "${BLUE}===== 工作内容汇总完成 =====${NC}"
+        echo -e "${BLUE}===== $(translate "summary_completed") =====${NC}"
     fi
 fi

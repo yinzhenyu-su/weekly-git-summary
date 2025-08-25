@@ -17,6 +17,98 @@ const colors = {
   reset: '\x1B[0m',
 } as const
 
+// 多语言字符串
+const i18n = {
+  zh: {
+    usage: '使用方法:',
+    options: '选项:',
+    examples: '示例:',
+    help: '显示此帮助信息',
+    dir: '指定搜索目录 (默认: 当前目录)',
+    since: '指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)',
+    until: '指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)',
+    author: '只显示指定作者的提交',
+    messagePattern: '过滤符合模式的提交信息 (支持正则表达式)',
+    conventional: '启用传统提交规范解析和统计',
+    timeRange: '使用预设时间范围 (today, yesterday, this-week, last-week, this-month, last-month)',
+    json: '以JSON格式输出结果',
+    markdown: '以Markdown格式输出结果',
+    html: '生成HTML可视化文件',
+    lang: '设置输出语言 (zh|en, 默认: zh)',
+    timeRangeLabel: '统计时间范围',
+    searchDirLabel: '搜索目录',
+    statisticsTitle: '===== 统计信息 =====',
+    totalCommits: '总提交数',
+    participantCount: '参与人数',
+    participants: '参与者',
+    commitTypeDistribution: '===== 提交类型分布 =====',
+    statisticsMarkdown: '统计信息',
+    commitTypeDistributionMarkdown: '提交类型分布',
+    times: '次',
+    gitCommitSummary: '工作内容Git提交记录汇总',
+    feature: '新功能',
+    fix: '问题修复',
+    docs: '文档更新',
+    style: '样式调整',
+    refactor: '重构代码',
+    perf: '性能优化',
+    test: '测试相关',
+    build: '构建系统',
+    ci: 'CI配置',
+    chore: '构建维护',
+    revert: '回滚更改',
+    other: '其他类型',
+    breaking: '破坏性',
+  },
+  en: {
+    usage: 'Usage:',
+    options: 'Options:',
+    examples: 'Examples:',
+    help: 'Show this help message',
+    dir: 'Specify search directory (default: current directory)',
+    since: 'Specify start date (format: YYYY-MM-DD, default: this Monday)',
+    until: 'Specify end date (format: YYYY-MM-DD, default: today)',
+    author: 'Show commits by specified author only',
+    messagePattern: 'Filter commit messages by pattern (supports regex)',
+    conventional: 'Enable conventional commits parsing and statistics',
+    timeRange: 'Use preset time range (today, yesterday, this-week, last-week, this-month, last-month)',
+    json: 'Output result in JSON format',
+    markdown: 'Output result in Markdown format',
+    html: 'Generate HTML visualization file',
+    lang: 'Set output language (zh|en, default: zh)',
+    timeRangeLabel: 'Time Range',
+    searchDirLabel: 'Search Directory',
+    statisticsTitle: '===== Statistics =====',
+    totalCommits: 'Total commits',
+    participantCount: 'Participants',
+    participants: 'Contributors',
+    commitTypeDistribution: '===== Commit Type Distribution =====',
+    statisticsMarkdown: 'Statistics',
+    commitTypeDistributionMarkdown: 'Commit Type Distribution',
+    times: 'times',
+    gitCommitSummary: 'Git Commit Summary',
+    feature: 'Features',
+    fix: 'Fixes',
+    docs: 'Documentation',
+    style: 'Styling',
+    refactor: 'Refactoring',
+    perf: 'Performance',
+    test: 'Testing',
+    build: 'Build',
+    ci: 'CI',
+    chore: 'Maintenance',
+    revert: 'Reverts',
+    other: 'Others',
+    breaking: 'BREAKING',
+  },
+} as const
+
+// 获取语言字符串
+function t(key: keyof typeof i18n.zh, lang: string = 'zh'): string {
+  const language = (lang === 'en' ? 'en' : 'zh') as keyof typeof i18n
+  return i18n[language][key]
+}
+
 // 类型定义
 export interface Options {
   searchDir: string
@@ -29,6 +121,7 @@ export interface Options {
   messagePattern?: string
   conventional: boolean
   timeRange?: string
+  lang: string
 }
 
 export interface CommitData {
@@ -249,29 +342,39 @@ function generateJsonOutput(options: Options): JsonOutput {
 }
 
 // 显示帮助信息
-function showHelp(): void {
-  console.log(`${colors.blue}使用方法:${colors.reset}`)
-  console.log('  node weekly-git-summary.js [选项]')
+function showHelp(lang: string = 'zh'): void {
+  console.log(`${colors.blue}${t('usage', lang)}${colors.reset}`)
+  console.log('  node weekly-git-summary.js [options]')
   console.log()
-  console.log(`${colors.green}选项:${colors.reset}`)
-  console.log('  -h, --help                    显示此帮助信息')
-  console.log('  -d, --dir DIR                 指定搜索目录 (默认: 当前目录)')
-  console.log('  -s, --since DATE              指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)')
-  console.log('  -u, --until DATE              指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)')
-  console.log('  -a, --author NAME             只显示指定作者的提交')
-  console.log('  --message-pattern PATTERN     过滤符合模式的提交信息 (支持正则表达式)')
-  console.log('  --conventional                启用传统提交规范解析和统计')
-  console.log('  --time-range RANGE            使用预设时间范围 (today, yesterday, this-week, last-week, this-month, last-month)')
-  console.log('  -j, --json                    以JSON格式输出结果')
-  console.log('  -m, --md                      以Markdown格式输出结果')
-  console.log('  --html                        生成HTML可视化文件')
+  console.log(`${colors.green}${t('options', lang)}${colors.reset}`)
+  console.log(`  -h, --help                    ${t('help', lang)}`)
+  console.log(`  -d, --dir DIR                 ${t('dir', lang)}`)
+  console.log(`  -s, --since DATE              ${t('since', lang)}`)
+  console.log(`  -u, --until DATE              ${t('until', lang)}`)
+  console.log(`  -a, --author NAME             ${t('author', lang)}`)
+  console.log(`  --message-pattern PATTERN     ${t('messagePattern', lang)}`)
+  console.log(`  --conventional                ${t('conventional', lang)}`)
+  console.log(`  --time-range RANGE            ${t('timeRange', lang)}`)
+  console.log(`  -j, --json                    ${t('json', lang)}`)
+  console.log(`  -m, --md                      ${t('markdown', lang)}`)
+  console.log(`  --html                        ${t('html', lang)}`)
+  console.log(`  --lang LANG                   ${t('lang', lang)}`)
   console.log()
-  console.log(`${colors.yellow}示例:${colors.reset}`)
-  console.log('  node weekly-git-summary.js -d /projects -s 2023-01-01 -u 2023-01-31')
-  console.log('  node weekly-git-summary.js -a \'张三\' -s 2023-01-01')
-  console.log('  node weekly-git-summary.js --time-range this-week --conventional')
-  console.log('  node weekly-git-summary.js --message-pattern "feat|fix" --json')
-  console.log('  node weekly-git-summary.js --conventional --time-range last-month')
+  console.log(`${colors.yellow}${t('examples', lang)}${colors.reset}`)
+  if (lang === 'en') {
+    console.log('  node weekly-git-summary.js -d /projects -s 2023-01-01 -u 2023-01-31')
+    console.log('  node weekly-git-summary.js -a "John Doe" -s 2023-01-01')
+    console.log('  node weekly-git-summary.js --time-range this-week --conventional')
+    console.log('  node weekly-git-summary.js --message-pattern "feat|fix" --json')
+    console.log('  node weekly-git-summary.js --conventional --time-range last-month --lang en')
+  }
+  else {
+    console.log('  node weekly-git-summary.js -d /projects -s 2023-01-01 -u 2023-01-31')
+    console.log('  node weekly-git-summary.js -a \'张三\' -s 2023-01-01')
+    console.log('  node weekly-git-summary.js --time-range this-week --conventional')
+    console.log('  node weekly-git-summary.js --message-pattern "feat|fix" --json')
+    console.log('  node weekly-git-summary.js --conventional --time-range last-month')
+  }
   process.exit(0)
 }
 
@@ -372,22 +475,21 @@ function parseConventionalCommit(message: string): ConventionalCommitType | null
 }
 
 // 获取提交类型的显示名称
-function getCommitTypeDisplayName(type: string): string {
-  const typeNames: Record<string, string> = {
-    feat: '新功能',
-    fix: '修复',
-    docs: '文档',
-    style: '格式',
-    refactor: '重构',
-    perf: '性能',
-    test: '测试',
-    build: '构建',
-    ci: 'CI',
-    chore: '维护',
-    revert: '回滚',
+function getCommitTypeDisplayName(type: string, lang: string = 'zh'): string {
+  const typeKey = type as keyof typeof i18n.zh
+
+  // 如果在 i18n 对象中有对应的翻译，使用翻译
+  if (typeKey in i18n.zh) {
+    return t(typeKey, lang)
   }
 
-  return typeNames[type] || type
+  // 对于 other 类型的特殊处理
+  if (type === 'other') {
+    return t('other', lang)
+  }
+
+  // 如果没有翻译，返回原始类型名
+  return type
 }
 
 // 过滤提交消息
@@ -501,6 +603,7 @@ function parseArgs(args: string[]): Options {
     mdOutput: false,
     htmlOutput: false,
     conventional: false,
+    lang: 'zh',
   }
 
   for (let i = 0; i < args.length; i++) {
@@ -509,7 +612,15 @@ function parseArgs(args: string[]): Options {
     switch (arg) {
       case '-h':
       case '--help':
-        showHelp()
+        // 先检查是否有 --lang 参数
+        let helpLang = 'zh'
+        for (let j = i + 1; j < args.length; j++) {
+          if (args[j] === '--lang' && args[j + 1]) {
+            helpLang = args[j + 1] === 'en' ? 'en' : 'zh'
+            break
+          }
+        }
+        showHelp(helpLang)
         break
       case '-d':
       case '--dir':
@@ -546,8 +657,12 @@ function parseArgs(args: string[]): Options {
             options.timeRange = timeRange
           }
           catch (error: any) {
-            console.error(`${colors.red}错误: ${error.message}${colors.reset}`)
-            console.error(`${colors.yellow}支持的时间范围: today, yesterday, this-week, last-week, this-month, last-month${colors.reset}`)
+            const errorMsg = options.lang === 'en' ? 'Error' : '错误'
+            const supportedRangesMsg = options.lang === 'en'
+              ? 'Supported time ranges: today, yesterday, this-week, last-week, this-month, last-month'
+              : '支持的时间范围: today, yesterday, this-week, last-week, this-month, last-month'
+            console.error(`${colors.red}${errorMsg}: ${error.message}${colors.reset}`)
+            console.error(`${colors.yellow}${supportedRangesMsg}${colors.reset}`)
             process.exit(1)
           }
         }
@@ -563,9 +678,20 @@ function parseArgs(args: string[]): Options {
       case '--html':
         options.htmlOutput = true
         break
+      case '--lang':
+        const lang = args[++i] || 'zh'
+        if (lang === 'en' || lang === 'zh') {
+          options.lang = lang
+        }
+        else {
+          console.error(`${colors.red}Error: Unsupported language ${lang}, supported languages: zh, en${colors.reset}`)
+          process.exit(1)
+        }
+        break
       default:
-        console.error(`${colors.red}错误: 未知参数 ${arg}${colors.reset}`)
-        showHelp()
+        const errorMsg = options.lang === 'en' ? `Error: Unknown argument ${arg}` : `错误: 未知参数 ${arg}`
+        console.error(`${colors.red}${errorMsg}${colors.reset}`)
+        showHelp(options.lang)
         process.exit(1)
     }
   }
@@ -652,9 +778,10 @@ export function main(): void {
 
   // 检查搜索目录是否存在
   if (!existsSync(options.searchDir)) {
-    console.error(
-      `${colors.red}错误: 目录 '${options.searchDir}' 不存在${colors.reset}`,
-    )
+    const errorMsg = options.lang === 'en'
+      ? `Error: Directory '${options.searchDir}' does not exist`
+      : `错误: 目录 '${options.searchDir}' 不存在`
+    console.error(`${colors.red}${errorMsg}${colors.reset}`)
     process.exit(1)
   }
 
@@ -669,21 +796,27 @@ export function main(): void {
     return
   }
   else if (options.mdOutput) {
-    console.log('# 工作内容Git提交记录汇总')
+    console.log(`# ${t('gitCommitSummary', options.lang)}`)
     console.log('')
-    console.log(`- **统计时间范围**: ${options.since} 到 ${options.until}`)
+    const toText = options.lang === 'en' ? 'to' : '到'
+    console.log(`- **${t('timeRangeLabel', options.lang)}**: ${options.since} ${toText} ${options.until}`)
     if (options.timeRange) {
-      console.log(`- **时间范围预设**: ${options.timeRange}`)
+      const timeRangePreset = options.lang === 'en' ? 'Time Range Preset' : '时间范围预设'
+      console.log(`- **${timeRangePreset}**: ${options.timeRange}`)
     }
-    console.log(`- **搜索目录**: ${options.searchDir}`)
+    console.log(`- **${t('searchDirLabel', options.lang)}**: ${options.searchDir}`)
     if (options.authors.length > 0) {
-      console.log(`- **作者过滤**: ${options.authors.join(', ')}`)
+      const authorFilter = options.lang === 'en' ? 'Author Filter' : '作者过滤'
+      console.log(`- **${authorFilter}**: ${options.authors.join(', ')}`)
     }
     if (options.messagePattern) {
-      console.log(`- **消息模式**: ${options.messagePattern}`)
+      const messagePattern = options.lang === 'en' ? 'Message Pattern' : '消息模式'
+      console.log(`- **${messagePattern}**: ${options.messagePattern}`)
     }
     if (options.conventional) {
-      console.log(`- **传统提交规范**: 启用`)
+      const conventionalCommitsText = options.lang === 'en' ? 'Conventional Commits' : '传统提交规范'
+      const enabledText = options.lang === 'en' ? 'Enabled' : '启用'
+      console.log(`- **${conventionalCommitsText}**: ${enabledText}`)
     }
     console.log('')
   }
@@ -691,24 +824,30 @@ export function main(): void {
     // HTML 输出会在 generateHtmlOutput 函数中处理
   }
   else {
+    const toText = options.lang === 'en' ? 'to' : '到'
     console.log(
-      `${colors.blue}===== 工作内容Git提交记录汇总 =====${colors.reset}`,
+      `${colors.blue}===== ${t('gitCommitSummary', options.lang)} =====${colors.reset}`,
     )
     console.log(
-      `${colors.green}统计时间范围: ${colors.reset}${options.since} 到 ${options.until}`,
+      `${colors.green}${t('timeRangeLabel', options.lang)}: ${colors.reset}${options.since} ${toText} ${options.until}`,
     )
     if (options.timeRange) {
-      console.log(`${colors.green}时间范围预设: ${colors.reset}${options.timeRange}`)
+      const timeRangePreset = options.lang === 'en' ? 'Time Range Preset' : '时间范围预设'
+      console.log(`${colors.green}${timeRangePreset}: ${colors.reset}${options.timeRange}`)
     }
-    console.log(`${colors.green}搜索目录: ${colors.reset}${options.searchDir}`)
+    console.log(`${colors.green}${t('searchDirLabel', options.lang)}: ${colors.reset}${options.searchDir}`)
     if (options.authors.length > 0) {
-      console.log(`${colors.green}作者过滤: ${colors.reset}${options.authors.join(', ')}`)
+      const authorFilter = options.lang === 'en' ? 'Author Filter' : '作者过滤'
+      console.log(`${colors.green}${authorFilter}: ${colors.reset}${options.authors.join(', ')}`)
     }
     if (options.messagePattern) {
-      console.log(`${colors.green}消息模式: ${colors.reset}${options.messagePattern}`)
+      const messagePattern = options.lang === 'en' ? 'Message Pattern' : '消息模式'
+      console.log(`${colors.green}${messagePattern}: ${colors.reset}${options.messagePattern}`)
     }
     if (options.conventional) {
-      console.log(`${colors.green}传统提交规范: ${colors.reset}启用`)
+      const conventionalCommitsText = options.lang === 'en' ? 'Conventional Commits' : '传统提交规范'
+      const enabledText = options.lang === 'en' ? 'Enabled' : '启用'
+      console.log(`${colors.green}${conventionalCommitsText}: ${colors.reset}${enabledText}`)
     }
     console.log('')
   }
@@ -809,19 +948,21 @@ export function main(): void {
         }
 
         // 显示传统提交信息
+        const authorText = options.lang === 'en' ? 'author' : '作者'
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
-            const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type)
-            const breakingTag = conventionalInfo.breaking ? ' **[BREAKING]**' : ''
-            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (作者: ${author}, hash: ${hash})`)
+            const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
+            const breakingTag = conventionalInfo.breaking ? ` **[${t('breaking', options.lang)}]**` : ''
+            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
           }
           else {
-            console.log(`- **[其他]** ${message} (作者: ${author}, hash: ${hash})`)
+            const otherText = t('other', options.lang)
+            console.log(`- **[${otherText}]** ${message} (${authorText}: ${author}, hash: ${hash})`)
           }
         }
         else {
-          console.log(`- ${message} (作者: ${author}, hash: ${hash})`)
+          console.log(`- ${message} (${authorText}: ${author}, hash: ${hash})`)
         }
       }
       console.log('')
@@ -845,19 +986,21 @@ export function main(): void {
         }
 
         // 显示传统提交信息
+        const authorText = options.lang === 'en' ? 'author' : '作者'
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
-            const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type)
-            const breakingTag = conventionalInfo.breaking ? ` ${colors.red}[BREAKING]${colors.reset}` : ''
-            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (作者: ${author}, hash: ${hash})`)
+            const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
+            const breakingTag = conventionalInfo.breaking ? ` ${colors.red}[${t('breaking', options.lang)}]${colors.reset}` : ''
+            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
           }
           else {
-            console.log(`  • ${colors.blue}[其他]${colors.reset} ${message} (作者: ${author}, hash: ${hash})`)
+            const otherText = t('other', options.lang)
+            console.log(`  • ${colors.blue}[${otherText}]${colors.reset} ${message} (${authorText}: ${author}, hash: ${hash})`)
           }
         }
         else {
-          console.log(`  • ${message} (作者: ${author}, hash: ${hash})`)
+          console.log(`  • ${message} (${authorText}: ${author}, hash: ${hash})`)
         }
       }
       console.log('')
@@ -872,38 +1015,38 @@ export function main(): void {
   if (statistics.totalCommits > 0) {
     if (options.mdOutput) {
       console.log('')
-      console.log('## 统计信息')
+      console.log(`## ${t('statisticsMarkdown', options.lang)}`)
       console.log('')
-      console.log(`- **总提交数**: ${statistics.totalCommits}`)
-      console.log(`- **参与人数**: ${statistics.participantCount}`)
-      console.log(`- **参与者**: ${statistics.participants.join(', ')}`)
+      console.log(`- **${t('totalCommits', options.lang)}**: ${statistics.totalCommits}`)
+      console.log(`- **${t('participantCount', options.lang)}**: ${statistics.participantCount}`)
+      console.log(`- **${t('participants', options.lang)}**: ${statistics.participants.join(', ')}`)
 
       if (options.conventional && Object.keys(statistics.typeDistribution).length > 0) {
         console.log('')
-        console.log('### 提交类型分布')
+        console.log(`### ${t('commitTypeDistributionMarkdown', options.lang)}`)
         console.log('')
         Object.entries(statistics.typeDistribution)
           .sort(([, a], [, b]) => b - a)
           .forEach(([type, count]) => {
-            const typeDisplay = getCommitTypeDisplayName(type)
-            console.log(`- **${typeDisplay}**: ${count} 次`)
+            const typeDisplay = getCommitTypeDisplayName(type, options.lang)
+            console.log(`- **${typeDisplay}**: ${count} ${t('times', options.lang)}`)
           })
       }
     }
     else {
-      console.log(`${colors.blue}===== 统计信息 =====${colors.reset}`)
-      console.log(`${colors.green}总提交数: ${colors.reset}${statistics.totalCommits}`)
-      console.log(`${colors.green}参与人数: ${colors.reset}${statistics.participantCount}`)
-      console.log(`${colors.green}参与者: ${colors.reset}${statistics.participants.join(', ')}`)
+      console.log(`${colors.blue}${t('statisticsTitle', options.lang)}${colors.reset}`)
+      console.log(`${colors.green}${t('totalCommits', options.lang)}: ${colors.reset}${statistics.totalCommits}`)
+      console.log(`${colors.green}${t('participantCount', options.lang)}: ${colors.reset}${statistics.participantCount}`)
+      console.log(`${colors.green}${t('participants', options.lang)}: ${colors.reset}${statistics.participants.join(', ')}`)
 
       if (options.conventional && Object.keys(statistics.typeDistribution).length > 0) {
         console.log('')
-        console.log(`${colors.blue}===== 提交类型分布 =====${colors.reset}`)
+        console.log(`${colors.blue}${t('commitTypeDistribution', options.lang)}${colors.reset}`)
         Object.entries(statistics.typeDistribution)
           .sort(([, a], [, b]) => b - a)
           .forEach(([type, count]) => {
-            const typeDisplay = getCommitTypeDisplayName(type)
-            console.log(`${colors.green}${typeDisplay}: ${colors.reset}${count} 次`)
+            const typeDisplay = getCommitTypeDisplayName(type, options.lang)
+            console.log(`${colors.green}${typeDisplay}: ${colors.reset}${count} ${t('times', options.lang)}`)
           })
       }
       console.log('')
@@ -911,13 +1054,14 @@ export function main(): void {
   }
 
   // 输出最终结果
+  const completedText = options.lang === 'en' ? 'Summary Completed' : '工作内容汇总完成'
   if (options.mdOutput) {
     console.log('')
     console.log('---')
-    console.log('*工作内容汇总完成*')
+    console.log(`*${completedText}*`)
   }
   else {
-    console.log(`${colors.blue}===== 工作内容汇总完成 =====${colors.reset}`)
+    console.log(`${colors.blue}===== ${completedText} =====${colors.reset}`)
   }
 }
 
