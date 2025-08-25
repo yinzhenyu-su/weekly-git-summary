@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.1.0](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.5...v1.1.0) (2025-08-25)
+
+### ✨ Features
+
+* add message pattern filtering support ([3b851f7](https://github.com/yinzhenyu-su/weekly-git-summary/commit/3b851f71bda3e41a11ed890c0b011d64974372e7))
+* implement comprehensive new features for weekly-git-summary ([d33b191](https://github.com/yinzhenyu-su/weekly-git-summary/commit/d33b1910d76a5586485a0f7cc96698a662a4bd88))
+* 完善文档国际化和HTML雷达图优化 ([bbb42f6](https://github.com/yinzhenyu-su/weekly-git-summary/commit/bbb42f6b4bbc6005fa70ba2af487596597ef37c8))
+
+### 🐛 Bug Fixes
+
+* **cli:** resolve date parsing issues ([8a354a0](https://github.com/yinzhenyu-su/weekly-git-summary/commit/8a354a0f57b13601f2792e96474a16cfd5a766d9))
+* improve CLI integration and add comprehensive test coverage ([22ccf30](https://github.com/yinzhenyu-su/weekly-git-summary/commit/22ccf30bc2d266147df822a2dc95dfb15a2635e8))
+
+### 💄 Styles
+
+* 使用 eslint 统一代码格式 ([0b0b125](https://github.com/yinzhenyu-su/weekly-git-summary/commit/0b0b125090f78d44b79fe98813d83290593ea993))
+* 启用 ES 模块并优化代码格式 ([0e90061](https://github.com/yinzhenyu-su/weekly-git-summary/commit/0e9006106ab6375918529cfe7e34c1565254f17f))
+
 ## [1.0.5](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.4...v1.0.5) (2025-08-05)
 
 ### ✨ Features
