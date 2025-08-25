@@ -101,19 +101,26 @@ show_help() {
     echo "  $0 [选项]"
     echo ""
     echo -e "${GREEN}选项:${NC}"
-    echo "  -h, --help         显示此帮助信息"
-    echo "  -d, --dir DIR      指定搜索目录 (默认: 当前目录)"
-    echo "  -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
-    echo "  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
-    echo "  -a, --author NAME  只显示指定作者的提交"
-    echo "  -j, --json         以JSON格式输出结果"
-    echo "  -m, --md           以Markdown格式输出结果"
-    echo "  --html             生成HTML可视化文件"
+    echo "  -h, --help                    显示此帮助信息"
+    echo "  -d, --dir DIR                 指定搜索目录 (默认: 当前目录)"
+    echo "  -s, --since DATE              指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
+    echo "  -u, --until DATE              指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
+    echo "  -a, --author NAME             只显示指定作者的提交"
+    echo "  -j, --json                    以JSON格式输出结果"
+    echo "  -m, --md                      以Markdown格式输出结果"
+    echo "  --html                        生成HTML可视化文件"
+    echo ""
+    echo -e "${GREEN}新功能 (自动使用 Node.js 版本):${NC}"
+    echo "  --message-pattern PATTERN     过滤符合模式的提交信息 (支持正则表达式)"
+    echo "  --conventional                启用传统提交规范解析和统计"
+    echo "  --time-range RANGE            使用预设时间范围 (today, yesterday, this-week, last-week, this-month, last-month)"
     echo ""
     echo -e "${YELLOW}示例:${NC}"
     echo "  $0 --dir ~/projects --since 2023-01-01 --until 2023-01-31"
     echo "  $0 --author '张三' --since 2023-01-01"
     echo "  $0 --json --since 2023-01-01"
+    echo "  $0 --time-range this-week --conventional"
+    echo "  $0 --message-pattern \"feat|fix\" --json"
     exit 0
 }
 
@@ -157,6 +164,23 @@ while [[ $# -gt 0 ]]; do
         --html)
             HTML_OUTPUT=true
             shift
+            ;;
+        --message-pattern|--conventional|--time-range)
+            # 新功能参数，委托给 Node.js 版本处理
+            echo -e "${YELLOW}检测到新功能参数，使用 Node.js 版本处理...${NC}"
+            
+            # 检查 Node.js 版本是否存在
+            SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+            NODE_SCRIPT="$SCRIPT_DIR/weekly-git-summary.js"
+            
+            if [ -f "$NODE_SCRIPT" ]; then
+                # 将所有参数传递给 Node.js 版本
+                exec node "$NODE_SCRIPT" "$@"
+            else
+                echo -e "${RED}错误: 找不到 Node.js 版本 ($NODE_SCRIPT)${NC}"
+                echo -e "${YELLOW}提示: 请运行 'bun run build.ts' 来构建 Node.js 版本${NC}"
+                exit 1
+            fi
             ;;
         *)
             echo -e "${RED}错误: 未知参数 $1${NC}"
