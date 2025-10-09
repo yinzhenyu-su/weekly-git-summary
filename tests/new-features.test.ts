@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 
 const testDir = join(process.cwd(), 'test-new-features-repo')
 const buildDir = join(process.cwd(), 'build')
+const todayDate = new Date().toISOString().split('T')[0]
 
 describe('New Features Tests', () => {
   beforeAll(() => {
@@ -202,13 +203,14 @@ describe('New Features Tests', () => {
     })
 
     it('should show enhanced statistics in text output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s 2025-08-25 -u 2025-08-25 --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
 
-      expect(JSON.parse(result)).toHaveProperty('statistics')
-      const statistics = JSON.parse(result).statistics
+      const parsedResult = JSON.parse(result)
+      expect(parsedResult).toHaveProperty('statistics')
+      const statistics = parsedResult.statistics
       expect(statistics).toBeDefined()
       expect(statistics.totalCommits).toBe(5)
       expect(statistics.participantCount).toBe(1)
@@ -216,7 +218,7 @@ describe('New Features Tests', () => {
     })
 
     it('should show enhanced statistics in markdown output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s 2025-08-25 -u 2025-08-25 --conventional --md`, {
+      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --md`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
