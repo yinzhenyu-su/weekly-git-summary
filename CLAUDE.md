@@ -9,7 +9,7 @@
 ### 主要特性
 
 - **多维度过滤**: 支持多作者过滤、消息模式匹配（正则表达式）
-- **传统提交规范**: 支持 Conventional Commits 解析和统计分析  
+- **传统提交规范**: 支持 Conventional Commits 解析和统计分析
 - **时间范围预设**: 支持预设时间范围（today, this-week, last-month 等）
 - **统计分析**: 提供提交统计、参与者分析、类型分布等
 - **国际化文档**: 完整的中英文文档支持
@@ -112,7 +112,7 @@ node build/cli.js -a "Dr\ John\ Doe" -a "Mary\ Jane\ Watson"  # 多个作者反�
 ### 输出格式参数
 
 - `-j, --json`: 以 JSON 格式输出
-- `--html`: 以 HTML 格式输出  
+- `--html`: 以 HTML 格式输出
 - `-m, --md`: 以 Markdown 格式输出
 
 ### 使用示例
@@ -228,12 +228,13 @@ CLI 包装器包含全面的错误处理：
 ### 双语文档结构
 
 - **README**: `README.md` (英文) / `README.zh.md` (中文)
-- **FAQ**: `docs/FAQ.md` (英文) / `docs/FAQ.zh.md` (中文)  
+- **FAQ**: `docs/FAQ.md` (英文) / `docs/FAQ.zh.md` (中文)
 - **发布指南**: `docs/RELEASE.md` (英文) / `docs/RELEASE.zh.md` (中文)
 
 ### 语言切换机制
 
 每个文档文件顶部都包含语言切换链接：
+
 - 英文版：`**Language**: [English](FILE.md) | [中文](FILE.zh.md)`
 - 中文版：`**语言**: [English](FILE.md) | [中文](FILE.zh.md)`
 
@@ -250,7 +251,8 @@ CLI 包装器包含全面的错误处理：
 - 更新时确保两个版本同步更新
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

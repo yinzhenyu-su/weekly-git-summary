@@ -14,6 +14,9 @@ convert_to_url() {
         local host_path=$(echo "$remote_url" | sed 's/git@//; s/:/\//; s/\.git$//')
         # 将主机名和路径组合成 URL 格式
         remote_url="$host_path"
+    # 如果 URL 以 http:// 或 https:// 开头，去除协议前缀和 .git 后缀
+    elif [[ "$remote_url" == http://* ]] || [[ "$remote_url" == https://* ]]; then
+        remote_url=$(echo "$remote_url" | sed 's|^https\?://||; s/\.git$//')
     fi
     
     # 输出转换后的结果

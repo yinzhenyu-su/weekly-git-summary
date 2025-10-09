@@ -183,6 +183,12 @@ function convertGitRemoteToUrl(remoteInfo: string): string {
       .replace(/\.git$/, '')
     remoteUrl = hostPath
   }
+  // 如果 URL 以 http:// 或 https:// 开头，去除协议前缀和 .git 后缀
+  else if (remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://')) {
+    remoteUrl = remoteUrl
+      .replace(/^https?:\/\//, '')
+      .replace(/\.git$/, '')
+  }
 
   return remoteUrl
 }

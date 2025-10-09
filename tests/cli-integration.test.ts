@@ -26,7 +26,7 @@ describe('CLI Integration Tests', () => {
     const lines = result.split('\n')
     const jsonLine = lines.find(line => line.trim().startsWith('{'))
     const jsonStr = lines.slice(lines.indexOf(jsonLine)).join('\n').trim()
-    
+
     const jsonResult = JSON.parse(jsonStr)
     expect(jsonResult).toHaveProperty('conventional')
     expect(jsonResult.conventional).toBe(true)
