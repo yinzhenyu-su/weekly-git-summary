@@ -83,26 +83,26 @@ weekly-git-summary --help
 
 ## 📋 命令行参数
 
-| 参数              | 简写 | 描述                          | 默认值   |
-| ----------------- | ---- | ----------------------------- | -------- |
-| `--dir`           | `-d` | 指定要扫描的目录              | 当前目录 |
-| `--since`         | `-s` | 开始日期 (YYYY-MM-DD)         | 本周一   |
-| `--until`         | `-u` | 结束日期 (YYYY-MM-DD)         | 今天     |
-| `--author`        | `-a` | 按作者过滤提交（可多次使用）  | 所有作者 |
-| `--message-pattern` |    | 过滤符合模式的提交信息（正则）| 无       |
-| `--conventional`  |      | 启用传统提交规范解析和统计    | false    |
-| `--time-range`    |      | 预设时间范围                  | 无       |
-| `--json`          | `-j` | 以 JSON 格式输出              | false    |
-| `--md`            | `-m` | 以 Markdown 格式输出          | false    |
-| `--html`          |      | 以 HTML 格式输出              | false    |
-| `--help`          | `-h` | 显示帮助信息                  | -        |
+| 参数                | 简写 | 描述                           | 默认值   |
+| ------------------- | ---- | ------------------------------ | -------- |
+| `--dir`             | `-d` | 指定要扫描的目录               | 当前目录 |
+| `--since`           | `-s` | 开始日期 (YYYY-MM-DD)          | 本周一   |
+| `--until`           | `-u` | 结束日期 (YYYY-MM-DD)          | 今天     |
+| `--author`          | `-a` | 按作者过滤提交（可多次使用）   | 所有作者 |
+| `--message-pattern` |      | 过滤符合模式的提交信息（正则） | 无       |
+| `--conventional`    |      | 启用传统提交规范解析和统计     | false    |
+| `--time-range`      |      | 预设时间范围                   | 无       |
+| `--json`            | `-j` | 以 JSON 格式输出               | false    |
+| `--md`              | `-m` | 以 Markdown 格式输出           | false    |
+| `--html`            |      | 以 HTML 格式输出               | false    |
+| `--help`            | `-h` | 显示帮助信息                   | -        |
 
 ### 时间范围预设
 
 `--time-range` 参数支持以下预设值：
 
 - `today` - 今天
-- `yesterday` - 昨天  
+- `yesterday` - 昨天
 - `this-week` - 本周（周一到周日）
 - `last-week` - 上周
 - `this-month` - 本月
@@ -211,7 +211,7 @@ weekly-git-summary --help
 ### 提交类型分布
 
 - **功能**: 8 次
-- **修复**: 4 次  
+- **修复**: 4 次
 - **文档**: 2 次
 - **样式**: 1 次
 ```
@@ -230,7 +230,7 @@ weekly-git-summary --conventional --time-range this-week
 **支持的提交类型：**
 
 - `feat`: 新功能
-- `fix`: 修复 bug  
+- `fix`: 修复 bug
 - `docs`: 文档更新
 - `style`: 代码格式调整
 - `refactor`: 重构
@@ -242,6 +242,7 @@ weekly-git-summary --conventional --time-range this-week
 - `revert`: 回滚更改
 
 **输出效果：**
+
 ```
 📅 2023-07-02
   • [功能] 添加用户认证功能 (作者: 张三, hash: abc123)

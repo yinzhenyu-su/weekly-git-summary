@@ -18,6 +18,10 @@ function Convert-GitRemoteToUrl {
         # 将主机名和路径组合成 URL 格式
         $remoteUrl = $hostPath
     }
+    # 如果 URL 以 http:// 或 https:// 开头，去除协议前缀和 .git 后缀
+    elseif ($remoteUrl -match '^https?://') {
+        $remoteUrl = $remoteUrl -replace '^https?://', '' -replace '\.git$', ''
+    }
     
     # 输出转换后的结果
     return $remoteUrl

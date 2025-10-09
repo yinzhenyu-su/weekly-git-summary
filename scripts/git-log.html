@@ -341,7 +341,8 @@
       // 构建雷达图指标和数据 - 只包含有数据的提交类型
       Object.keys(commitTypeLabels).forEach((type) => {
         const count = types[type] || 0
-        if (count > 0) { // 只添加有数据的提交类型
+        if (count > 0) {
+          // 只添加有数据的提交类型
           radarData.push({
             name: commitTypeLabels[type],
             max: Math.max(10, Math.max(...Object.values(types)) * 1.2), // 动态设置最大值
@@ -431,8 +432,8 @@
               text: '暂无提交类型数据',
               fontSize: 16,
               fill: isDark ? '#9ca3af' : '#6b7280',
-            }
-          }
+            },
+          },
         })
       }
 
@@ -494,7 +495,7 @@
         const message = commit.message
         const typeInfo = getCommitTypeInfo(message)
         const type = typeInfo.type
-        
+
         types[type] = (types[type] || 0) + 1
       })
 
@@ -625,7 +626,14 @@
     function createCommitCard(commit, repoUrl) {
       const card = document.createElement('a')
       const isGitHub = repoUrl && repoUrl.includes('github.com')
-      card.href = !!repoUrl ? `http://${repoUrl}/${isGitHub ? '' : '-/'}commit/${commit.hash}` : ''
+      // 检查 repoUrl 是否已经包含协议，如果没有则添加 http://
+      const urlWithProtocol =
+        repoUrl && (repoUrl.startsWith('http://') || repoUrl.startsWith('https://'))
+          ? repoUrl
+          : repoUrl
+            ? `http://${repoUrl}`
+            : ''
+      card.href = urlWithProtocol ? `${urlWithProtocol}/${isGitHub ? '' : '-/'}commit/${commit.hash}` : ''
       card.target = '_blank'
       card.className = 'commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block'
 
@@ -671,93 +679,93 @@
       // 支持带范围的提交格式，如 feat(scope): 或 feat!:
       const conventionalPattern = /^([a-z]+)(\([^)]*\))?(!)?:\s*(.+)/i
       const match = message.match(conventionalPattern)
-      
+
       const type = match ? match[1].toLowerCase() : 'other'
       const isBreaking = match ? !!match[3] : false
-      
+
       const typeConfig = {
         feat: {
           icon: 'fas fa-plus',
           bgColor: 'green',
           textColor: 'green',
-          label: '功能'
+          label: '功能',
         },
         fix: {
           icon: 'fas fa-bug',
           bgColor: 'red',
           textColor: 'red',
-          label: '修复'
+          label: '修复',
         },
         docs: {
           icon: 'fas fa-file-alt',
           bgColor: 'blue',
           textColor: 'blue',
-          label: '文档'
+          label: '文档',
         },
         style: {
           icon: 'fas fa-paint-brush',
           bgColor: 'pink',
           textColor: 'pink',
-          label: '样式'
+          label: '样式',
         },
         refactor: {
           icon: 'fas fa-sync-alt',
           bgColor: 'purple',
           textColor: 'purple',
-          label: '重构'
+          label: '重构',
         },
         perf: {
           icon: 'fas fa-tachometer-alt',
           bgColor: 'orange',
           textColor: 'orange',
-          label: '性能'
+          label: '性能',
         },
         test: {
           icon: 'fas fa-vial',
           bgColor: 'yellow',
           textColor: 'yellow',
-          label: '测试'
+          label: '测试',
         },
         build: {
           icon: 'fas fa-hammer',
           bgColor: 'indigo',
           textColor: 'indigo',
-          label: '构建'
+          label: '构建',
         },
         ci: {
           icon: 'fas fa-server',
           bgColor: 'teal',
           textColor: 'teal',
-          label: 'CI'
+          label: 'CI',
         },
         chore: {
           icon: 'fas fa-cog',
           bgColor: 'gray',
           textColor: 'gray',
-          label: '维护'
+          label: '维护',
         },
         revert: {
           icon: 'fas fa-undo',
           bgColor: 'red',
           textColor: 'red',
-          label: '回滚'
-        }
+          label: '回滚',
+        },
       }
-      
+
       const config = typeConfig[type] || {
         icon: 'fas fa-code',
         bgColor: 'gray',
         textColor: 'gray',
-        label: '其他'
+        label: '其他',
       }
-      
+
       return {
         type: type,
         icon: config.icon,
         bgColor: config.bgColor,
         textColor: config.textColor,
         label: config.label,
-        isBreaking: isBreaking
+        isBreaking: isBreaking,
       }
     }
 
