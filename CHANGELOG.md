@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.2.0](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.1.0...v1.2.0) (2025-10-09)
+
+### ✨ Features
+
+* 使用当前日期替换硬编码日期以增强统计输出 ([32e13de](https://github.com/yinzhenyu-su/weekly-git-summary/commit/32e13de24707e93a9ac553bb9b97c6df7c569c4f))
+* 添加多语言支持(--lang参数) ([bb6f0ab](https://github.com/yinzhenyu-su/weekly-git-summary/commit/bb6f0ab5603cf13923b235c74e33b309e76ef188))
+
+### 🐛 Bug Fixes
+
+* handle repoUrl protocol prefixes ([2c559a8](https://github.com/yinzhenyu-su/weekly-git-summary/commit/2c559a8b1ef7fa42eda4adbf1ff622dec184b7e4))
+
 ## [1.1.0](https://github.com/yinzhenyu-su/weekly-git-summary/compare/v1.0.5...v1.1.0) (2025-08-25)
 
 ### ✨ Features
