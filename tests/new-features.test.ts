@@ -56,7 +56,7 @@ describe('New Features Tests', () => {
 
   describe('Time Range Presets', () => {
     it('should handle today preset', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --time-range today --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --time-range today --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -67,7 +67,7 @@ describe('New Features Tests', () => {
     })
 
     it('should handle this-week preset', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --time-range this-week --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --time-range this-week --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -81,7 +81,7 @@ describe('New Features Tests', () => {
 
     it('should handle invalid time range preset', () => {
       try {
-        execSync(`node build/weekly-git-summary.js --dir ${testDir} --time-range invalid-range --json`, {
+        execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --time-range invalid-range --json`, {
           encoding: 'utf8',
           cwd: process.cwd(),
           stdio: 'pipe',
@@ -97,7 +97,7 @@ describe('New Features Tests', () => {
 
   describe('Message Pattern Filtering', () => {
     it('should filter commits by exact string match', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --message-pattern "feat" --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --message-pattern "feat" --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -114,7 +114,7 @@ describe('New Features Tests', () => {
     })
 
     it('should filter commits by regex pattern', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --message-pattern "^(feat|fix)" --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --message-pattern "^(feat|fix)" --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -130,7 +130,7 @@ describe('New Features Tests', () => {
     })
 
     it('should handle invalid regex gracefully', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --message-pattern "[invalid" --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --message-pattern "[invalid" --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -144,7 +144,7 @@ describe('New Features Tests', () => {
 
   describe('Conventional Commits Support', () => {
     it('should parse conventional commits and add type information', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -174,7 +174,7 @@ describe('New Features Tests', () => {
     })
 
     it('should generate type distribution statistics', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -190,7 +190,7 @@ describe('New Features Tests', () => {
 
   describe('Enhanced Statistics', () => {
     it('should provide comprehensive statistics', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -203,7 +203,7 @@ describe('New Features Tests', () => {
     })
 
     it('should show enhanced statistics in text output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -218,7 +218,7 @@ describe('New Features Tests', () => {
     })
 
     it('should show enhanced statistics in markdown output', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --md`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} -s ${todayDate} -u ${todayDate} --conventional --md`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -232,7 +232,7 @@ describe('New Features Tests', () => {
 
   describe('Composable Features', () => {
     it('should combine message pattern filtering with conventional commits', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --message-pattern "fix" --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --message-pattern "fix" --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -249,7 +249,7 @@ describe('New Features Tests', () => {
     })
 
     it('should combine time range presets with other filters', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --time-range today --message-pattern "feat" --conventional --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --time-range today --message-pattern "feat" --conventional --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -261,7 +261,7 @@ describe('New Features Tests', () => {
     })
 
     it('should combine author filtering with new features', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --author "Test User" --conventional --message-pattern "docs" --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --author "Test User" --conventional --message-pattern "docs" --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -280,7 +280,7 @@ describe('New Features Tests', () => {
 
   describe('Backward Compatibility', () => {
     it('should maintain existing behavior without new flags', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -302,7 +302,7 @@ describe('New Features Tests', () => {
     })
 
     it('should maintain existing CLI interface', () => {
-      const result = execSync(`node build/weekly-git-summary.js --dir ${testDir} --since 2023-01-01 --until 2023-12-31 --author "Test User" --json`, {
+      const result = execSync(`node build/weekly-git-summary.js -b main --dir ${testDir} --since 2023-01-01 --until 2023-12-31 --author "Test User" --json`, {
         encoding: 'utf8',
         cwd: process.cwd(),
       })
@@ -325,7 +325,7 @@ describe('New Features Tests', () => {
         }
         mkdirSync(emptyTestDir, { recursive: true })
 
-        const result = execSync(`node build/weekly-git-summary.js --dir ${emptyTestDir} --conventional --json`, {
+        const result = execSync(`node build/weekly-git-summary.js -b main --dir ${emptyTestDir} --conventional --json`, {
           encoding: 'utf8',
           cwd: process.cwd(),
         })
@@ -344,7 +344,7 @@ describe('New Features Tests', () => {
 
     it('should handle non-existent directory', () => {
       try {
-        execSync(`node build/weekly-git-summary.js --dir /non/existent/dir --json`, {
+        execSync(`node build/weekly-git-summary.js -b main --dir /non/existent/dir --json`, {
           encoding: 'utf8',
           cwd: process.cwd(),
           stdio: 'pipe',

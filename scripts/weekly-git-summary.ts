@@ -111,7 +111,7 @@ function t(key: keyof typeof i18n.zh, lang: string = 'zh'): string {
 
 // 类型定义
 export interface Options {
-  searchDir: string
+  searchDirs: string[]
   since: string
   until: string
   authors: string[]
@@ -122,6 +122,7 @@ export interface Options {
   conventional: boolean
   timeRange?: string
   lang: string
+  branches: string[]
 }
 
 export interface CommitData {
@@ -157,11 +158,13 @@ interface RepoData {
 }
 
 interface JsonOutput {
+  version: string
+  generatedAt: string
   timeRange: {
     since: string
     until: string
   }
-  searchDir: string
+  searchDirs: string[]
   author?: string
   messagePattern?: string
   conventional?: boolean
@@ -245,11 +248,13 @@ function generateHtmlOutput(options: Options): void {
 // 生成 JSON 数据的独立函数
 function generateJsonOutput(options: Options): JsonOutput {
   const jsonOutput: JsonOutput = {
+    version: '2.0.0',
+    generatedAt: new Date().toISOString(),
     timeRange: {
       since: options.since,
       until: options.until,
     },
-    searchDir: options.searchDir,
+    searchDirs: options.searchDirs,
     repositories: [],
   }
 
@@ -266,7 +271,7 @@ function generateJsonOutput(options: Options): JsonOutput {
   }
 
   // 查找所有Git仓库
-  const gitRepos = findGitRepositories(options.searchDir)
+  const gitRepos = findGitRepositories(options.searchDirs)
 
   for (const repoPath of gitRepos) {
     const repoName = basename(repoPath)
@@ -278,6 +283,7 @@ function generateJsonOutput(options: Options): JsonOutput {
       options.since,
       options.until,
       options.authors,
+      options.branches,
       options.messagePattern,
     )
 
@@ -536,7 +542,7 @@ function parseTimeRange(timeRange: string): { since: string, until: string } {
 
 // 查找所有Git仓库
 function findGitRepositories(
-  searchDir: string,
+  searchDirs: string[],
   maxDepth: number = 2,
 ): string[] {
   const repos: string[] = []
@@ -573,8 +579,12 @@ function findGitRepositories(
     }
   }
 
-  searchRecursive(searchDir, 0)
-  return repos
+  for (const dir of searchDirs) {
+    searchRecursive(dir, 0)
+  }
+
+  // 去重
+  return Array.from(new Set(repos))
 }
 
 // 清理参数值，去掉多余的引号并处理反斜杠转义
@@ -598,10 +608,24 @@ function cleanArgValue(value: string): string {
   return result
 }
 
+// 获取当前分支名称
+function getCurrentBranch(): string {
+  try {
+    return execSync('git rev-parse --abbrev-ref HEAD', {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  }
+  catch (e) {
+    return ''
+  }
+}
+
 // 解析命令行参数
 function parseArgs(args: string[]): Options {
   const options: Options = {
-    searchDir: '.',
+    searchDirs: ['.'],
     since: getMondayDate(),
     until: getTodayDate(),
     authors: [],
@@ -610,6 +634,7 @@ function parseArgs(args: string[]): Options {
     htmlOutput: false,
     conventional: false,
     lang: 'zh',
+    branches: [],
   }
 
   for (let i = 0; i < args.length; i++) {
@@ -630,7 +655,18 @@ function parseArgs(args: string[]): Options {
         break
       case '-d':
       case '--dir':
-        options.searchDir = cleanArgValue(args[++i] || '.')
+        // 如果是默认值 '.'，则先清空
+        if (options.searchDirs.length === 1 && options.searchDirs[0] === '.') {
+          options.searchDirs = []
+        }
+        options.searchDirs.push(cleanArgValue(args[++i] || '.'))
+        break
+      case '-b':
+      case '--branch':
+        const branch = cleanArgValue(args[++i] || '')
+        if (branch) {
+          options.branches.push(branch)
+        }
         break
       case '-s':
       case '--since':
@@ -702,6 +738,14 @@ function parseArgs(args: string[]): Options {
     }
   }
 
+  // 如果没有指定分支，尝试使用当前分支
+  if (options.branches.length === 0) {
+    const currentBranch = getCurrentBranch()
+    if (currentBranch) {
+      options.branches.push(currentBranch)
+    }
+  }
+
   return options
 }
 
@@ -742,10 +786,33 @@ function getGitCommits(
   since: string,
   until: string,
   authors: string[],
+  branches: string[] = [],
   messagePattern?: string,
 ): string[] {
   try {
-    let gitLogCmd = `git log --since="${since} 00:00:00" --until="${until} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short`
+    let gitLogCmd = ''
+
+    // 如果指定了分支，检查分支是否存在
+    if (branches.length > 0) {
+      const validBranches: string[] = []
+      for (const branch of branches) {
+        try {
+          execSync(`git rev-parse --verify ${branch}`, { cwd: repoPath, stdio: 'ignore' })
+          validBranches.push(branch)
+        } catch (e) {
+          // 分支不存在，忽略
+        }
+      }
+
+      if (validBranches.length === 0) {
+        return [] // 该仓库没有指定的分支，跳过
+      }
+
+      gitLogCmd = `git log ${validBranches.join(' ')} --since="${since} 00:00:00" --until="${until} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short`
+    } else {
+      // 默认 HEAD
+      gitLogCmd = `git log --since="${since} 00:00:00" --until="${until} 23:59:59" --pretty=format:"%ad|%an|%s|%h" --date=short`
+    }
 
     // 为每个作者添加 --author 参数（OR 关系）
     for (const author of authors) {
@@ -782,11 +849,12 @@ export function main(): void {
   const args = process.argv.slice(2)
   const options = parseArgs(args)
 
-  // 检查搜索目录是否存在
-  if (!existsSync(options.searchDir)) {
+  // 检查搜索目录是否存在 (至少一个)
+  const validDirs = options.searchDirs.filter(dir => existsSync(dir))
+  if (validDirs.length === 0) {
     const errorMsg = options.lang === 'en'
-      ? `Error: Directory '${options.searchDir}' does not exist`
-      : `错误: 目录 '${options.searchDir}' 不存在`
+      ? `Error: None of the specified directories exist: ${options.searchDirs.join(', ')}`
+      : `错误: 指定的目录都不存在: ${options.searchDirs.join(', ')}`
     console.error(`${colors.red}${errorMsg}${colors.reset}`)
     process.exit(1)
   }
@@ -810,7 +878,7 @@ export function main(): void {
       const timeRangePreset = options.lang === 'en' ? 'Time Range Preset' : '时间范围预设'
       console.log(`- **${timeRangePreset}**: ${options.timeRange}`)
     }
-    console.log(`- **${t('searchDirLabel', options.lang)}**: ${options.searchDir}`)
+    console.log(`- **${t('searchDirLabel', options.lang)}**: ${options.searchDirs.join(', ')}`)
     if (options.authors.length > 0) {
       const authorFilter = options.lang === 'en' ? 'Author Filter' : '作者过滤'
       console.log(`- **${authorFilter}**: ${options.authors.join(', ')}`)
@@ -841,7 +909,7 @@ export function main(): void {
       const timeRangePreset = options.lang === 'en' ? 'Time Range Preset' : '时间范围预设'
       console.log(`${colors.green}${timeRangePreset}: ${colors.reset}${options.timeRange}`)
     }
-    console.log(`${colors.green}${t('searchDirLabel', options.lang)}: ${colors.reset}${options.searchDir}`)
+    console.log(`${colors.green}${t('searchDirLabel', options.lang)}: ${colors.reset}${options.searchDirs.join(', ')}`)
     if (options.authors.length > 0) {
       const authorFilter = options.lang === 'en' ? 'Author Filter' : '作者过滤'
       console.log(`${colors.green}${authorFilter}: ${colors.reset}${options.authors.join(', ')}`)
@@ -859,7 +927,7 @@ export function main(): void {
   }
 
   // 查找所有Git仓库
-  const gitRepos = findGitRepositories(options.searchDir)
+  const gitRepos = findGitRepositories(options.searchDirs)
 
   // 收集统计信息
   const allRepositories: RepoData[] = []
@@ -873,6 +941,7 @@ export function main(): void {
       options.since,
       options.until,
       options.authors,
+      options.branches,
       options.messagePattern,
     )
 

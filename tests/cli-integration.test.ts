@@ -25,6 +25,9 @@ describe('CLI Integration Tests', () => {
     // Extract JSON from output (filter out non-JSON lines)
     const lines = result.split('\n')
     const jsonLine = lines.find(line => line.trim().startsWith('{'))
+    if (!jsonLine) {
+      throw new Error('Could not find JSON output in command result')
+    }
     const jsonStr = lines.slice(lines.indexOf(jsonLine)).join('\n').trim()
 
     const jsonResult = JSON.parse(jsonStr)
@@ -92,6 +95,9 @@ describe('CLI Integration Tests', () => {
     // Extract JSON from output (filter out non-JSON lines)
     const lines = result.split('\n')
     const jsonLine = lines.find(line => line.trim().startsWith('{'))
+    if (!jsonLine) {
+      throw new Error('Could not find JSON output in command result')
+    }
     const jsonStr = lines.slice(lines.indexOf(jsonLine)).join('\n').trim()
 
     const jsonResult = JSON.parse(jsonStr)
