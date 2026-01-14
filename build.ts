@@ -39,6 +39,7 @@ async function buildCli() {
       const shScriptPath = join(scriptsDir, 'weekly-git-summary.sh')
       const ps1ScriptPath = join(scriptsDir, 'weekly-git-summary.ps1')
       const htmlTemplatePath = join(scriptsDir, 'git-log.html')
+      const htmlTemplateEnPath = join(scriptsDir, 'git-log.en.html')
 
       if (existsSync(shScriptPath)) {
         copyFileSync(shScriptPath, join(buildDir, 'weekly-git-summary.sh'))
@@ -53,6 +54,11 @@ async function buildCli() {
       if (existsSync(htmlTemplatePath)) {
         copyFileSync(htmlTemplatePath, join(buildDir, 'git-log.html'))
         console.log('📄 复制 HTML 模板文件')
+      }
+
+      if (existsSync(htmlTemplateEnPath)) {
+        copyFileSync(htmlTemplateEnPath, join(buildDir, 'git-log.en.html'))
+        console.log('📄 复制英文版 HTML 模板文件')
       }
 
       console.log('✅ CLI 工具构建成功')

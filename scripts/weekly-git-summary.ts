@@ -210,7 +210,10 @@ function getGitRemoteUrl(repoPath: string): string {
 
 // 生成 HTML 输出函数
 function generateHtmlOutput(options: Options): void {
-  const templateFile = join(__dirname, 'git-log.html')
+  // 根据语言参数选择模板文件
+  const templateFile = options.lang === 'en'
+    ? join(__dirname, 'git-log.en.html')
+    : join(__dirname, 'git-log.html')
 
   // 检查模板文件是否存在
   if (!existsSync(templateFile)) {

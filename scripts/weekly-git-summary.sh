@@ -121,9 +121,14 @@ translate() {
 # 生成 HTML 输出函数
 generate_html_output() {
     local script_dir="$(dirname "$0")"
-    local template_file="$script_dir/git-log.html"
+    # 根据语言参数选择模板文件
+    if [ "$LANG_OUTPUT" = "en" ]; then
+        local template_file="$script_dir/git-log.en.html"
+    else
+        local template_file="$script_dir/git-log.html"
+    fi
     local output_file="git-log-$(date +%Y%m%d-%H%M%S).html"
-    
+
     # 检查模板文件是否存在
     if [ ! -f "$template_file" ]; then
         echo -e "${RED}错误: 找不到 HTML 模板文件 $template_file${NC}"

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Language Toggle: [English](git-log.en.html) | [中文](git-log.html) -->
-    <title>工作内容Git提交记录汇总</title>
+    <title>Git Commit Summary Report</title>
     <!-- echarts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 
@@ -108,27 +108,27 @@
         <div class="text-center fade-in">
           <h1 class="text-4xl md:text-6xl font-bold mb-4">
             <i class="fab fa-git-alt mr-4"></i>
-            工作内容提交记录
+            Git Commit Records
           </h1>
-          <p class="text-xl md:text-2xl text-white/90 mb-8">项目开发进度可视化看板</p>
+          <p class="text-xl md:text-2xl text-white/90 mb-8">Project Development Progress Dashboard</p>
 
           <!-- Stats Cards -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-1">
               <div class="text-3xl font-bold" id="total-commits">--</div>
-              <div class="text-white/80">总提交数</div>
+              <div class="text-white/80">Total Commits</div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-2">
               <div class="text-3xl font-bold" id="active-days">--</div>
-              <div class="text-white/80">活跃天数</div>
+              <div class="text-white/80">Active Days</div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-3">
               <div class="text-3xl font-bold" class="repo-name">--</div>
-              <div class="text-white/80">项目名称</div>
+              <div class="text-white/80">Project Name</div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in">
               <div class="text-3xl font-bold" id="dev-month">--</div>
-              <div class="text-white/80">开发月份</div>
+              <div class="text-white/80">Development Month</div>
             </div>
           </div>
         </div>
@@ -147,14 +147,14 @@
               <i class="fas fa-code text-white text-2xl"></i>
             </div>
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">项目: <span class="repo-name">--</span></h2>
-              <p class="text-gray-600 dark:text-gray-400">开发者: <span id="developer-name">--</span></p>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Project: <span class="repo-name">--</span></h2>
+              <p class="text-gray-600 dark:text-gray-400">Developers: <span id="developer-name">--</span></p>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-sm text-gray-500 dark:text-gray-400">统计时间范围</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Statistics Time Range</div>
             <div class="text-lg font-semibold text-gray-900 dark:text-white">
-              <span id="startDate"></span> 至 <span id="endDate"></span>
+              <span id="startDate"></span> to <span id="endDate"></span>
             </div>
           </div>
         </div>
@@ -165,35 +165,35 @@
         <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6 text-center fade-in">
           <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="feat-count">--</div>
           <div class="text-green-800 dark:text-green-300 font-medium">feat</div>
-          <div class="text-xs text-green-600 dark:text-green-400">新功能</div>
+          <div class="text-xs text-green-600 dark:text-green-400">Features</div>
         </div>
         <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 text-center fade-in stagger-1">
           <div class="text-3xl font-bold text-red-600 dark:text-red-400" id="fix-count">--</div>
           <div class="text-red-800 dark:text-red-300 font-medium">fix</div>
-          <div class="text-xs text-red-600 dark:text-red-400">问题修复</div>
+          <div class="text-xs text-red-600 dark:text-red-400">Bug Fixes</div>
         </div>
         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 text-center fade-in stagger-2">
           <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="docs-count">--</div>
           <div class="text-blue-800 dark:text-blue-300 font-medium">docs</div>
-          <div class="text-xs text-blue-600 dark:text-blue-400">文档更新</div>
+          <div class="text-xs text-blue-600 dark:text-blue-400">Documentation</div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 text-center fade-in stagger-3">
           <div class="text-3xl font-bold text-gray-600 dark:text-gray-400" id="chore-count">--</div>
           <div class="text-gray-800 dark:text-gray-300 font-medium">chore</div>
-          <div class="text-xs text-gray-600 dark:text-gray-400">构建维护</div>
+          <div class="text-xs text-gray-600 dark:text-gray-400">Maintenance</div>
         </div>
         <div class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6 text-center fade-in">
           <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" id="refactor-count">--</div>
           <div class="text-purple-800 dark:text-purple-300 font-medium">refactor</div>
-          <div class="text-xs text-purple-600 dark:text-purple-400">重构代码</div>
+          <div class="text-xs text-purple-600 dark:text-purple-400">Refactoring</div>
         </div>
       </div>
-      <!-- 雷达图展示的 提交类型分布 -->
+      <!-- Commit Type Distribution Radar Chart -->
       <div class="mb-12">
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 fade-in">
           <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             <i class="fas fa-chart-radar mr-2"></i>
-            提交类型分布
+            Commit Type Distribution
           </h3>
           <div id="commit-type-chart" style="width: 100%; height: 400px"></div>
         </div>
@@ -201,7 +201,7 @@
 
       <!-- Timeline -->
       <div class="space-y-8">
-        <!-- 提交时间线将通过JavaScript动态渲染 -->
+        <!-- Commit timeline will be dynamically rendered by JavaScript -->
       </div>
     </main>
 
@@ -224,7 +224,7 @@
               class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <i class="fab fa-weibo text-xl"></i>
-              <span>微博</span>
+              <span>Weibo</span>
             </a>
             <a
               href="https://linkedin.com/in/yinzhenyu-su"
@@ -249,7 +249,7 @@
       return Array.from(authorSet)
     }
     document.addEventListener('DOMContentLoaded', async () => {
-      // 切换主题功能
+      // Theme toggle functionality
       const themeToggle = document.getElementById('theme-toggle')
       if (themeToggle) {
         themeToggle.addEventListener('click', () => {
@@ -257,7 +257,7 @@
         })
       }
 
-      // 检查系统主题偏好
+      // Check system theme preference
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark')
       }
@@ -266,22 +266,22 @@
       if (!!STATIC_DATA) {
         return renderCommitData(STATIC_DATA)
       }
-      // 加载JSON数据
+      // Load JSON data
       try {
-        // 从 query 中获取 jsonFileName
+        // Get jsonFileName from query
         const jsonFileName = new URLSearchParams(window.location.search).get('jsonFileName')
-        // 如果没有提供 jsonFileName，则使用默认的 git-log.json
+        // If no jsonFileName provided, use default git-log.json
         const response = await fetch(`./${jsonFileName || 'git-log.json'}`)
         const data = await response.json()
         renderCommitData(data)
       } catch (error) {
-        console.error('加载或解析数据时出错:', error)
+        console.error('Error loading or parsing data:', error)
       }
     })
 
     function renderCommitData(data) {
       const names = getAuthorNames(data)
-      document.title = `工作内容Git提交记录汇总 - ${names.join(', ')}`
+      document.title = `Git Commit Summary Report - ${names.join(', ')}`
       document.getElementById('developer-name').textContent = names.join(', ')
       const { repositories, timeRange, author } = data
       document.getElementById('startDate').textContent = timeRange.since
@@ -289,64 +289,64 @@
       document.querySelectorAll('.repo-name').forEach((el) => (el.textContent = repositories[0]?.name || '--'))
       if (!repositories || repositories.length === 0) return
 
-      // 获取提交数据
-      const repo = repositories[0] // 假设只渲染第一个仓库
+      // Get commit data
+      const repo = repositories[0] // Assume only rendering first repo
       const allCommits = repo.commits.flatMap((day) => day.commits)
       const activeDays = repo.commits.length
 
-      // 更新统计卡片
+      // Update statistics cards
       updateStatCards(allCommits.length, activeDays, repo.name)
 
-      // 获取开发月份
+      // Get development month
       updateDevMonth(repo.commits)
 
-      // 统计不同类型的提交
+      // Count different types of commits
       const commitTypes = countCommitTypes(allCommits)
       updateCommitTypeStats(commitTypes)
 
-      // 渲染雷达图
+      // Render radar chart
       renderCommitTypeChart(commitTypes)
 
-      // 渲染时间线
+      // Render timeline
       renderTimeline(repo.commits, repo.url)
     }
 
     function renderCommitTypeChart(types) {
-      // 使用 echarts 渲染雷达图
+      // Use echarts to render radar chart
       const chartDom = document.getElementById('commit-type-chart')
       if (!chartDom) return
 
       const myChart = echarts.init(chartDom)
 
-      // 检查是否为暗色主题
+      // Check if dark theme
       const isDark = document.documentElement.classList.contains('dark')
 
-      // 准备雷达图数据
+      // Prepare radar chart data
       const commitTypeLabels = {
-        feat: '新功能',
-        fix: '问题修复',
-        docs: '文档更新',
-        style: '样式调整',
-        refactor: '重构代码',
-        perf: '性能优化',
-        test: '测试相关',
-        build: '构建系统',
-        ci: 'CI配置',
-        chore: '构建维护',
-        revert: '回滚更改',
+        feat: 'Features',
+        fix: 'Bug Fixes',
+        docs: 'Documentation',
+        style: 'Styling',
+        refactor: 'Refactoring',
+        perf: 'Performance',
+        test: 'Testing',
+        build: 'Build System',
+        ci: 'CI Configuration',
+        chore: 'Maintenance',
+        revert: 'Revert Changes',
       }
 
       const radarData = []
       const chartData = []
 
-      // 构建雷达图指标和数据 - 只包含有数据的提交类型
+      // Build radar chart indicators and data - only include commit types with data
       Object.keys(commitTypeLabels).forEach((type) => {
         const count = types[type] || 0
         if (count > 0) {
-          // 只添加有数据的提交类型
+          // Only add commit types with data
           radarData.push({
             name: commitTypeLabels[type],
-            max: Math.max(10, Math.max(...Object.values(types)) * 1.2), // 动态设置最大值
+            max: Math.max(10, Math.max(...Object.values(types)) * 1.2), // Dynamically set max value
           })
           chartData.push(count)
         }
@@ -362,13 +362,13 @@
             color: isDark ? '#f9fafb' : '#111827',
           },
           formatter: function (params) {
-            return `<strong>${params.name}</strong><br/>提交数: ${params.value}`
+            return `<strong>${params.name}</strong><br/>Commits: ${params.value}`
           },
         },
         radar: {
           indicator: radarData,
           center: ['50%', '50%'],
-          radius: radarData.length > 0 ? '60%' : '0%', // 如果没有数据则隐藏雷达图
+          radius: radarData.length > 0 ? '60%' : '0%', // Hide radar chart if no data
           axisName: {
             color: isDark ? '#9ca3af' : '#6b7280',
             fontSize: 14,
@@ -394,12 +394,12 @@
         },
         series: [
           {
-            name: '提交类型分布',
+            name: 'Commit Type Distribution',
             type: 'radar',
             data: [
               {
                 value: chartData,
-                name: '提交数量',
+                name: 'Commit Count',
                 areaStyle: {
                   color: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
                 },
@@ -418,11 +418,11 @@
         ],
       }
 
-      // 只有当有数据时才设置图表选项
+      // Only set chart options when there is data
       if (radarData.length > 0) {
         myChart.setOption(option)
       } else {
-        // 如果没有数据，显示空状态信息
+        // If no data, show empty state message
         myChart.setOption({
           backgroundColor: 'transparent',
           graphic: {
@@ -430,7 +430,7 @@
             left: 'center',
             top: 'middle',
             style: {
-              text: '暂无提交类型数据',
+              text: 'No commit type data',
               fontSize: 16,
               fill: isDark ? '#9ca3af' : '#6b7280',
             },
@@ -438,18 +438,18 @@
         })
       }
 
-      // 响应式调整
+      // Responsive adjustment
       window.addEventListener('resize', function () {
         myChart.resize()
       })
 
-      // 主题切换时重新渲染图表
+      // Re-render chart when theme changes
       const themeToggle = document.getElementById('theme-toggle')
       if (themeToggle) {
         const originalClickHandler = themeToggle.onclick
         themeToggle.onclick = function () {
           if (originalClickHandler) originalClickHandler.call(this)
-          // 延迟重新渲染以确保主题切换完成
+          // Delay re-render to ensure theme switch completes
           setTimeout(() => {
             renderCommitTypeChart(types)
           }, 100)
@@ -458,34 +458,34 @@
     }
 
     function updateStatCards(totalCommits, activeDays, repoName) {
-      // 更新总提交数
+      // Update total commits
       const totalCommitsEl = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(1) .text-3xl')
       if (totalCommitsEl) totalCommitsEl.textContent = totalCommits
 
-      // 更新活跃天数
+      // Update active days
       const activeDaysEl = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(2) .text-3xl')
       if (activeDaysEl) activeDaysEl.textContent = activeDays
 
-      // 更新项目名称
+      // Update project name
       const repoNameEl = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4 > div:nth-child(3) .text-3xl')
       if (repoNameEl) repoNameEl.textContent = repoName
     }
 
-    // 添加新函数来更新开发月份
+    // Add new function to update development month
     function updateDevMonth(commits) {
-      // 如果没有提交记录，返回
+      // If no commit records, return
       if (!commits || commits.length === 0) return
 
-      // 获取第一个提交的日期
+      // Get the date of the first commit
       const firstCommitDate = new Date(commits[0].date)
 
-      // 获取月份（0-11，需要+1）
+      // Get month (0-11, need +1)
       const month = firstCommitDate.getMonth() + 1
 
-      // 更新显示
+      // Update display
       const devMonthEl = document.getElementById('dev-month')
       if (devMonthEl) {
-        devMonthEl.textContent = `${month}月`
+        devMonthEl.textContent = `Month ${month}`
       }
     }
 
@@ -504,7 +504,7 @@
     }
 
     function updateCommitTypeStats(types) {
-      // 更新各类型提交数量
+      // Update commit count for each type
       const featCountEl = document.querySelector('.grid.md\\:grid-cols-5 > div:nth-child(1) .text-3xl')
       if (featCountEl) featCountEl.textContent = types.feat || 0
 
@@ -524,18 +524,18 @@
     function renderTimeline(dayCommits, repoUrl) {
       const timelineContainer = document.querySelector('.space-y-8')
 
-      // 清空现有内容
+      // Clear existing content
       timelineContainer.innerHTML = ''
 
-      // 按日期渲染
+      // Render by date
       dayCommits.forEach((day, index) => {
         const { date, commits } = day
 
-        // 创建日期区块
+        // Create date section
         const daySection = document.createElement('div')
         daySection.className = `fade-in ${index > 0 ? `stagger-${(index % 3) + 1}` : ''}`
 
-        // 日期头部
+        // Date header
         const dateHeader = document.createElement('div')
         dateHeader.className = 'flex items-center mb-6'
         dateHeader.innerHTML = `
@@ -553,20 +553,20 @@
             >${commits.length} commits</span>
         `
 
-        // 提交列表容器
+        // Commit list container
         const commitsContainer = document.createElement('div')
         commitsContainer.className = 'ml-8 space-y-4'
 
-        // 是否需要折叠
+        // Whether to collapse
         const needCollapse = commits.length > 3
         const visibleCommits = needCollapse ? commits.slice(0, 3) : commits
 
-        // 渲染可见的提交
+        // Render visible commits
         visibleCommits.forEach((commit) => {
           commitsContainer.appendChild(createCommitCard(commit, repoUrl))
         })
 
-        // 如果需要折叠，添加"显示更多"按钮和隐藏的提交
+        // If need to collapse, add "Show More" button and hidden commits
         if (needCollapse) {
           const toggleButton = document.createElement('div')
           toggleButton.className = 'text-center'
@@ -576,7 +576,7 @@
               data-date="${date}"
             >
               <i class="fas fa-chevron-down mr-1"></i>
-              显示更多提交 (${commits.length - 3}个)
+              Show More Commits (${commits.length - 3})
             </button>
           `
 
@@ -584,7 +584,7 @@
           hiddenCommits.id = `more-commits-${date}`
           hiddenCommits.className = 'hidden space-y-4'
 
-          // 渲染隐藏的提交
+          // Render hidden commits
           commits.slice(3).forEach((commit) => {
             hiddenCommits.appendChild(createCommitCard(commit, repoUrl))
           })
@@ -593,15 +593,15 @@
           commitsContainer.appendChild(hiddenCommits)
         }
 
-        // 组装日期区块
+        // Assemble date section
         daySection.appendChild(dateHeader)
         daySection.appendChild(commitsContainer)
 
-        // 添加到时间线
+        // Add to timeline
         timelineContainer.appendChild(daySection)
       })
 
-      // 添加事件监听器
+      // Add event listeners
       document.querySelectorAll('.toggle-more-commits').forEach((button) => {
         button.addEventListener('click', function () {
           const date = this.getAttribute('data-date')
@@ -613,11 +613,11 @@
             if (hiddenCommits.classList.contains('hidden')) {
               icon.classList.remove('fa-chevron-up')
               icon.classList.add('fa-chevron-down')
-              this.innerHTML = this.innerHTML.replace('隐藏提交', `显示更多提交 (${hiddenCommits.children.length}个)`)
+              this.innerHTML = this.innerHTML.replace('Hide Commits', `Show More Commits (${hiddenCommits.children.length})`)
             } else {
               icon.classList.remove('fa-chevron-down')
               icon.classList.add('fa-chevron-up')
-              this.innerHTML = this.innerHTML.replace(/显示更多提交 \(\d+个\)/, '隐藏提交')
+              this.innerHTML = this.innerHTML.replace(/Show More Commits \(\d+\)/, 'Hide Commits')
             }
           }
         })
@@ -627,7 +627,7 @@
     function createCommitCard(commit, repoUrl) {
       const card = document.createElement('a')
       const isGitHub = repoUrl && repoUrl.includes('github.com')
-      // 检查 repoUrl 是否已经包含协议，如果没有则添加 http://
+      // Check if repoUrl already includes protocol, if not add http://
       const urlWithProtocol =
         repoUrl && (repoUrl.startsWith('http://') || repoUrl.startsWith('https://'))
           ? repoUrl
@@ -638,10 +638,10 @@
       card.target = '_blank'
       card.className = 'commit-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md block'
 
-      // 获取提交类型和图标
+      // Get commit type and icon
       const { type, icon, bgColor, textColor, label, isBreaking } = getCommitTypeInfo(commit.message)
 
-      // 获取提交描述
+      // Get commit description
       const description = getCommitDescription(commit.message)
 
       card.innerHTML = `
@@ -677,7 +677,7 @@
     }
 
     function getCommitTypeInfo(message) {
-      // 支持带范围的提交格式，如 feat(scope): 或 feat!:
+      // Support commit formats with scope, like feat(scope): or feat!:
       const conventionalPattern = /^([a-z]+)(\([^)]*\))?(!)?:\s*(.+)/i
       const match = message.match(conventionalPattern)
 
@@ -689,49 +689,49 @@
           icon: 'fas fa-plus',
           bgColor: 'green',
           textColor: 'green',
-          label: '功能',
+          label: 'Feature',
         },
         fix: {
           icon: 'fas fa-bug',
           bgColor: 'red',
           textColor: 'red',
-          label: '修复',
+          label: 'Fix',
         },
         docs: {
           icon: 'fas fa-file-alt',
           bgColor: 'blue',
           textColor: 'blue',
-          label: '文档',
+          label: 'Docs',
         },
         style: {
           icon: 'fas fa-paint-brush',
           bgColor: 'pink',
           textColor: 'pink',
-          label: '样式',
+          label: 'Style',
         },
         refactor: {
           icon: 'fas fa-sync-alt',
           bgColor: 'purple',
           textColor: 'purple',
-          label: '重构',
+          label: 'Refactor',
         },
         perf: {
           icon: 'fas fa-tachometer-alt',
           bgColor: 'orange',
           textColor: 'orange',
-          label: '性能',
+          label: 'Performance',
         },
         test: {
           icon: 'fas fa-vial',
           bgColor: 'yellow',
           textColor: 'yellow',
-          label: '测试',
+          label: 'Test',
         },
         build: {
           icon: 'fas fa-hammer',
           bgColor: 'indigo',
           textColor: 'indigo',
-          label: '构建',
+          label: 'Build',
         },
         ci: {
           icon: 'fas fa-server',
@@ -743,13 +743,13 @@
           icon: 'fas fa-cog',
           bgColor: 'gray',
           textColor: 'gray',
-          label: '维护',
+          label: 'Chore',
         },
         revert: {
           icon: 'fas fa-undo',
           bgColor: 'red',
           textColor: 'red',
-          label: '回滚',
+          label: 'Revert',
         },
       }
 
@@ -757,7 +757,7 @@
         icon: 'fas fa-code',
         bgColor: 'gray',
         textColor: 'gray',
-        label: '其他',
+        label: 'Other',
       }
 
       return {
@@ -771,51 +771,53 @@
     }
 
     function getCommitDescription(message) {
-      // 移除类型前缀，支持带范围的格式
+      // Remove type prefix, support formats with scope
       return message.replace(/^([a-z]+)(\([^)]*\))?(!)?:\s*/, '').trim()
     }
 
     function getCommitSummary(type, description) {
-      // 根据提交类型生成简短总结
+      // Generate brief summary based on commit type
       switch (type) {
         case 'feat':
-          return description.includes('添加') ? '新增了系统功能或组件' : '增强了系统功能或用户体验'
+          return description.includes('add') || description.includes(' Add') ? 'Added new system features or components' : 'Enhanced system functionality or user experience'
         case 'fix':
-          return '修复了系统问题或错误'
+          return 'Fixed system issues or errors'
         case 'docs':
-          return '更新了文档或注释'
+          return 'Updated documentation or comments'
         case 'style':
-          return '调整了代码格式或样式'
+          return 'Adjusted code formatting or styling'
         case 'refactor':
-          return '优化了代码结构或性能'
+          return 'Optimized code structure or performance'
         case 'perf':
-          return '提升了系统性能或响应速度'
+          return 'Improved system performance or response speed'
         case 'test':
-          return '完善了测试用例或测试覆盖'
+          return 'Improved test cases or test coverage'
         case 'build':
-          return '更新了构建系统或依赖配置'
+          return 'Updated build system or dependency configuration'
         case 'ci':
-          return '调整了CI/CD流程或配置'
+          return 'Adjusted CI/CD workflow or configuration'
         case 'chore':
-          return '完成了维护任务或杂项工作'
+          return 'Completed maintenance tasks or miscellaneous work'
         case 'revert':
-          return '回滚了之前的代码更改'
+          return 'Reverted previous code changes'
         default:
-          return '完成了代码更改'
+          return 'Completed code changes'
       }
     }
 
     function formatDate(dateStr) {
-      // 将 2025-04-29 格式转换为 2025年4月29日
+      // Convert 2025-04-29 format to April 29, 2025
       const parts = dateStr.split('-')
       if (parts.length === 3) {
-        return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        const month = monthNames[parseInt(parts[1]) - 1]
+        return `${month} ${parseInt(parts[2])}, ${parts[0]}`
       }
       return dateStr
     }
 
     function getRandomColor(seed) {
-      // 根据日期生成固定的颜色
+      // Generate fixed color based on date
       const colors = ['blue', 'green', 'orange', 'purple', 'indigo', 'pink', 'teal']
       const seedNum = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0)
       return colors[seedNum % colors.length]

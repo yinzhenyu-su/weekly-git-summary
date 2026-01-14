@@ -1,4 +1,6 @@
-# tools
+# CLI Tools and Scripts
+
+**Language**: [English](README.en.md) | [中文](README.md)
 
 工作用脚本和工具
 
