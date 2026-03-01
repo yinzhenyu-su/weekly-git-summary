@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>工作内容Git提交记录汇总</title>
+    <title data-i18n="workContentTitle"></title>
     <!-- echarts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 
@@ -90,6 +90,8 @@
     </style>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- i18n Language Selector -->
+    <div id="i18n-lang" data-lang="zh" style="display:none"></div>
     <!-- Theme Toggle -->
     <div class="fixed top-4 right-4 z-50">
       <button
@@ -107,27 +109,27 @@
         <div class="text-center fade-in">
           <h1 class="text-4xl md:text-6xl font-bold mb-4">
             <i class="fab fa-git-alt mr-4"></i>
-            工作内容提交记录
+            <span data-i18n="workContentTitle"></span>
           </h1>
-          <p class="text-xl md:text-2xl text-white/90 mb-8">项目开发进度可视化看板</p>
+          <p class="text-xl md:text-2xl text-white/90 mb-8" data-i18n="projectDashboard"></p>
 
           <!-- Stats Cards -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-1">
               <div class="text-3xl font-bold" id="total-commits">--</div>
-              <div class="text-white/80">总提交数</div>
+              <div class="text-white/80" data-i18n="totalCommits"></div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-2">
               <div class="text-3xl font-bold" id="active-days">--</div>
-              <div class="text-white/80">活跃天数</div>
+              <div class="text-white/80" data-i18n="activeDays"></div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in stagger-3">
               <div class="text-3xl font-bold" class="repo-name">--</div>
-              <div class="text-white/80">项目名称</div>
+              <div class="text-white/80" data-i18n="projectName"></div>
             </div>
             <div class="bg-white/10 glass-effect rounded-2xl p-6 fade-in">
               <div class="text-3xl font-bold" id="dev-month">--</div>
-              <div class="text-white/80">开发月份</div>
+              <div class="text-white/80" data-i18n="devMonth"></div>
             </div>
           </div>
         </div>
@@ -146,14 +148,14 @@
               <i class="fas fa-code text-white text-2xl"></i>
             </div>
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">项目: <span class="repo-name">--</span></h2>
-              <p class="text-gray-600 dark:text-gray-400">开发者: <span id="developer-name">--</span></p>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white"><span data-i18n="project"></span>: <span class="repo-name">--</span></h2>
+              <p class="text-gray-600 dark:text-gray-400"><span data-i18n="developer"></span>: <span id="developer-name">--</span></p>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-sm text-gray-500 dark:text-gray-400">统计时间范围</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400"><span data-i18n="timeRange"></span></div>
             <div class="text-lg font-semibold text-gray-900 dark:text-white">
-              <span id="startDate"></span> 至 <span id="endDate"></span>
+              <span id="startDate"></span> <span data-i18n="to"></span> <span id="endDate"></span>
             </div>
           </div>
         </div>
@@ -164,27 +166,27 @@
         <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6 text-center fade-in">
           <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="feat-count">--</div>
           <div class="text-green-800 dark:text-green-300 font-medium">feat</div>
-          <div class="text-xs text-green-600 dark:text-green-400">新功能</div>
+          <div class="text-xs text-green-600 dark:text-green-400"><span data-i18n="featDesc"></span></div>
         </div>
         <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 text-center fade-in stagger-1">
           <div class="text-3xl font-bold text-red-600 dark:text-red-400" id="fix-count">--</div>
           <div class="text-red-800 dark:text-red-300 font-medium">fix</div>
-          <div class="text-xs text-red-600 dark:text-red-400">问题修复</div>
+          <div class="text-xs text-red-600 dark:text-red-400"><span data-i18n="fixDesc"></span></div>
         </div>
         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 text-center fade-in stagger-2">
           <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="docs-count">--</div>
           <div class="text-blue-800 dark:text-blue-300 font-medium">docs</div>
-          <div class="text-xs text-blue-600 dark:text-blue-400">文档更新</div>
+          <div class="text-xs text-blue-600 dark:text-blue-400"><span data-i18n="docsDesc"></span></div>
         </div>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 text-center fade-in stagger-3">
           <div class="text-3xl font-bold text-gray-600 dark:text-gray-400" id="chore-count">--</div>
           <div class="text-gray-800 dark:text-gray-300 font-medium">chore</div>
-          <div class="text-xs text-gray-600 dark:text-gray-400">构建维护</div>
+          <div class="text-xs text-gray-600 dark:text-gray-400"><span data-i18n="choreDesc"></span></div>
         </div>
         <div class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6 text-center fade-in">
           <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" id="refactor-count">--</div>
           <div class="text-purple-800 dark:text-purple-300 font-medium">refactor</div>
-          <div class="text-xs text-purple-600 dark:text-purple-400">重构代码</div>
+          <div class="text-xs text-purple-600 dark:text-purple-400"><span data-i18n="refactorDesc"></span></div>
         </div>
       </div>
       <!-- 雷达图展示的 提交类型分布 -->
@@ -192,7 +194,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 fade-in">
           <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             <i class="fas fa-chart-radar mr-2"></i>
-            提交类型分布
+            <span data-i18n="commitTypeDist"></span>
           </h3>
           <div id="commit-type-chart" style="width: 100%; height: 400px"></div>
         </div>
@@ -236,6 +238,123 @@
     </footer>
   </body>
   <script>
+    const i18n = {
+      zh: {
+        workContentTitle: '工作内容提交记录',
+        projectDashboard: '项目开发进度可视化看板',
+        totalCommits: '总提交数',
+        activeDays: '活跃天数',
+        projectName: '项目名称',
+        devMonth: '开发月份',
+        project: '项目',
+        developer: '开发者',
+        timeRange: '统计时间范围',
+        to: '至',
+        featDesc: '新功能',
+        fixDesc: '问题修复',
+        docsDesc: '文档更新',
+        choreDesc: '构建维护',
+        refactorDesc: '重构代码',
+        commitTypeDist: '提交类型分布',
+        commits: 'commits',
+        showMore: '显示更多提交 ({count}个)',
+        hide: '隐藏提交',
+        noData: '暂无提交类型数据',
+        monthSuffix: '月',
+        // type labels
+        feat: '功能',
+        fix: '修复',
+        docs: '文档',
+        style: '样式',
+        refactor: '重构',
+        perf: '性能',
+        test: '测试',
+        build: '构建',
+        ci: 'CI',
+        chore: '维护',
+        revert: '回滚',
+        other: '其他',
+        // summaries
+        featSummary: '新增了系统功能或组件',
+        fixSummary: '修复了系统问题或错误',
+        docsSummary: '更新了文档或注释',
+        styleSummary: '调整了代码格式或样式',
+        refactorSummary: '优化了代码结构或性能',
+        perfSummary: '提升了系统性能或响应速度',
+        testSummary: '完善了测试用例或测试覆盖',
+        buildSummary: '更新了构建系统或依赖配置',
+        ciSummary: '调整了CI/CD流程或配置',
+        choreSummary: '完成了维护任务或杂项工作',
+        revertSummary: '回滚了之前的代码更改',
+        otherSummary: '完成了代码更改',
+      },
+      en: {
+        workContentTitle: 'Work Content Commits',
+        projectDashboard: 'Project Development Dashboard',
+        totalCommits: 'Total Commits',
+        activeDays: 'Active Days',
+        projectName: 'Project Name',
+        devMonth: 'Dev Month',
+        project: 'Project',
+        developer: 'Developer',
+        timeRange: 'Time Range',
+        to: 'to',
+        featDesc: 'Features',
+        fixDesc: 'Fixes',
+        docsDesc: 'Documentation',
+        choreDesc: 'Maintenance',
+        refactorDesc: 'Refactoring',
+        commitTypeDist: 'Commit Type Distribution',
+        commits: 'commits',
+        showMore: 'Show more ({count})',
+        hide: 'Hide',
+        noData: 'No commit type data',
+        monthSuffix: '',
+        // type labels
+        feat: 'feat',
+        fix: 'fix',
+        docs: 'docs',
+        style: 'style',
+        refactor: 'refactor',
+        perf: 'perf',
+        test: 'test',
+        build: 'build',
+        ci: 'CI',
+        chore: 'chore',
+        revert: 'revert',
+        other: 'other',
+        // summaries
+        featSummary: 'Added new functionality',
+        fixSummary: 'Fixed system issues',
+        docsSummary: 'Updated documentation',
+        styleSummary: 'Adjusted code style',
+        refactorSummary: 'Optimized code structure',
+        perfSummary: 'Improved performance',
+        testSummary: 'Enhanced test coverage',
+        buildSummary: 'Updated build configuration',
+        ciSummary: 'Adjusted CI/CD pipeline',
+        choreSummary: 'Completed maintenance tasks',
+        revertSummary: 'Reverted previous changes',
+        otherSummary: 'Made code changes',
+      },
+    };
+
+    function t(key) {
+      const lang = document.getElementById('i18n-lang')?.dataset?.lang || 'zh';
+      const value = i18n[lang]?.[key];
+      if (value !== undefined) return value;
+      const fallbackValue = i18n['zh']?.[key];
+      if (fallbackValue !== undefined) return fallbackValue;
+      return key;
+    }
+
+    function applyI18n() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (key) el.textContent = t(key);
+      });
+    }
+
     function getAuthorNames(data) {
       const authorSet = new Set()
       data.repositories.forEach((repo) => {
@@ -261,7 +380,7 @@
         document.documentElement.classList.add('dark')
       }
 
-      const STATIC_DATA = ``
+      const STATIC_DATA = null;
       if (!!STATIC_DATA) {
         return renderCommitData(STATIC_DATA)
       }
@@ -280,7 +399,8 @@
 
     function renderCommitData(data) {
       const names = getAuthorNames(data)
-      document.title = `工作内容Git提交记录汇总 - ${names.join(', ')}`
+      applyI18n()
+      document.title = `${t('workContentTitle')} - ${names.join(', ')}`
       document.getElementById('developer-name').textContent = names.join(', ')
       const { repositories, timeRange, author } = data
       document.getElementById('startDate').textContent = timeRange.since
@@ -322,17 +442,17 @@
 
       // 准备雷达图数据
       const commitTypeLabels = {
-        feat: '新功能',
-        fix: '问题修复',
-        docs: '文档更新',
-        style: '样式调整',
-        refactor: '重构代码',
-        perf: '性能优化',
-        test: '测试相关',
-        build: '构建系统',
-        ci: 'CI配置',
-        chore: '构建维护',
-        revert: '回滚更改',
+        feat: t('feat'),
+        fix: t('fix'),
+        docs: t('docs'),
+        style: t('style'),
+        refactor: t('refactor'),
+        perf: t('perf'),
+        test: t('test'),
+        build: t('build'),
+        ci: t('ci'),
+        chore: t('chore'),
+        revert: t('revert'),
       }
 
       const radarData = []
@@ -393,12 +513,12 @@
         },
         series: [
           {
-            name: '提交类型分布',
+            name: t('commitTypeDist'),
             type: 'radar',
             data: [
               {
                 value: chartData,
-                name: '提交数量',
+                name: t('totalCommits'),
                 areaStyle: {
                   color: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
                 },
@@ -429,7 +549,7 @@
             left: 'center',
             top: 'middle',
             style: {
-              text: '暂无提交类型数据',
+              text: t('noData'),
               fontSize: 16,
               fill: isDark ? '#9ca3af' : '#6b7280',
             },
@@ -484,7 +604,7 @@
       // 更新显示
       const devMonthEl = document.getElementById('dev-month')
       if (devMonthEl) {
-        devMonthEl.textContent = `${month}月`
+        devMonthEl.textContent = `${month}${t('monthSuffix')}`
       }
     }
 
@@ -549,7 +669,7 @@
             )}-900/30 text-${getRandomColor(date)}-800 dark:text-${getRandomColor(
               date,
             )}-300 px-3 py-1 rounded-full text-sm font-medium"
-            >${commits.length} commits</span>
+            >${commits.length} ${t("commits")}</span>
         `
 
         // 提交列表容器
@@ -575,7 +695,7 @@
               data-date="${date}"
             >
               <i class="fas fa-chevron-down mr-1"></i>
-              显示更多提交 (${commits.length - 3}个)
+              ${t('showMore').replace('{count}', commits.length - 3)}
             </button>
           `
 
@@ -612,11 +732,11 @@
             if (hiddenCommits.classList.contains('hidden')) {
               icon.classList.remove('fa-chevron-up')
               icon.classList.add('fa-chevron-down')
-              this.innerHTML = this.innerHTML.replace('隐藏提交', `显示更多提交 (${hiddenCommits.children.length}个)`)
+              this.innerHTML = this.innerHTML.replace(t('hide'), t('showMore').replace('{count}', hiddenCommits.children.length))
             } else {
               icon.classList.remove('fa-chevron-down')
               icon.classList.add('fa-chevron-up')
-              this.innerHTML = this.innerHTML.replace(/显示更多提交 \(\d+个\)/, '隐藏提交')
+              this.innerHTML = this.innerHTML.replace(t('showMore').replace('{count}', hiddenCommits.children.length), t('hide'))
             }
           }
         })
@@ -688,67 +808,67 @@
           icon: 'fas fa-plus',
           bgColor: 'green',
           textColor: 'green',
-          label: '功能',
+          label: t('feat'),
         },
         fix: {
           icon: 'fas fa-bug',
           bgColor: 'red',
           textColor: 'red',
-          label: '修复',
+          label: t('fix'),
         },
         docs: {
           icon: 'fas fa-file-alt',
           bgColor: 'blue',
           textColor: 'blue',
-          label: '文档',
+          label: t('docs'),
         },
         style: {
           icon: 'fas fa-paint-brush',
           bgColor: 'pink',
           textColor: 'pink',
-          label: '样式',
+          label: t('style'),
         },
         refactor: {
           icon: 'fas fa-sync-alt',
           bgColor: 'purple',
           textColor: 'purple',
-          label: '重构',
+          label: t('refactor'),
         },
         perf: {
           icon: 'fas fa-tachometer-alt',
           bgColor: 'orange',
           textColor: 'orange',
-          label: '性能',
+          label: t('perf'),
         },
         test: {
           icon: 'fas fa-vial',
           bgColor: 'yellow',
           textColor: 'yellow',
-          label: '测试',
+          label: t('test'),
         },
         build: {
           icon: 'fas fa-hammer',
           bgColor: 'indigo',
           textColor: 'indigo',
-          label: '构建',
+          label: t('build'),
         },
         ci: {
           icon: 'fas fa-server',
           bgColor: 'teal',
           textColor: 'teal',
-          label: 'CI',
+          label: t('ci'),
         },
         chore: {
           icon: 'fas fa-cog',
           bgColor: 'gray',
           textColor: 'gray',
-          label: '维护',
+          label: t('chore'),
         },
         revert: {
           icon: 'fas fa-undo',
           bgColor: 'red',
           textColor: 'red',
-          label: '回滚',
+          label: t('revert'),
         },
       }
 
@@ -756,7 +876,7 @@
         icon: 'fas fa-code',
         bgColor: 'gray',
         textColor: 'gray',
-        label: '其他',
+        label: t('other'),
       }
 
       return {
@@ -778,29 +898,29 @@
       // 根据提交类型生成简短总结
       switch (type) {
         case 'feat':
-          return description.includes('添加') ? '新增了系统功能或组件' : '增强了系统功能或用户体验'
+          return t('featSummary')
         case 'fix':
-          return '修复了系统问题或错误'
+          return t('fixSummary')
         case 'docs':
-          return '更新了文档或注释'
+          return t('docsSummary')
         case 'style':
-          return '调整了代码格式或样式'
+          return t('styleSummary')
         case 'refactor':
-          return '优化了代码结构或性能'
+          return t('refactorSummary')
         case 'perf':
-          return '提升了系统性能或响应速度'
+          return t('perfSummary')
         case 'test':
-          return '完善了测试用例或测试覆盖'
+          return t('testSummary')
         case 'build':
-          return '更新了构建系统或依赖配置'
+          return t('buildSummary')
         case 'ci':
-          return '调整了CI/CD流程或配置'
+          return t('ciSummary')
         case 'chore':
-          return '完成了维护任务或杂项工作'
+          return t('choreSummary')
         case 'revert':
-          return '回滚了之前的代码更改'
+          return t('revertSummary')
         default:
-          return '完成了代码更改'
+          return t('otherSummary')
       }
     }
 
@@ -808,7 +928,14 @@
       // 将 2025-04-29 格式转换为 2025年4月29日
       const parts = dateStr.split('-')
       if (parts.length === 3) {
-        return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`
+        const year = parts[0]
+        const month = parseInt(parts[1])
+        const day = parseInt(parts[2])
+        if (t('monthSuffix')) {
+          return `${year}年${month}月${day}日`
+        } else {
+          return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+        }
       }
       return dateStr
     }

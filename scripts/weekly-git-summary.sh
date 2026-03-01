@@ -157,14 +157,17 @@ generate_html_output() {
     done
     
     # 转义`字符
-    local json_data=$(eval "$0 $args --json" | sed 's/`/\\`/g')
+    local json_data=$(eval "$0 $args --lang $LANG_OUTPUT --json" | sed 's/`/\\`/g')
+    
+    local json_with_lang=$(echo "$json_data" | sed "0,/{/{s/{/{\\n  \"lang\": \"$LANG_OUTPUT\",/}")
     
     # 读取模板文件内容
     local template_content=$(cat "$template_file")
-    
-    # 替换模板中的 STATIC_DATA
-    local modified_content="${template_content//const STATIC_DATA = \`\`;/const STATIC_DATA = $json_data;}"
-    
+
+    # 替换模板中的 STATIC_DATA 和 lang 属性
+    local modified_content="${template_content//const STATIC_DATA = null;/const STATIC_DATA = $json_with_lang;}"
+    modified_content="${modified_content//data-lang=\"zh\"/data-lang=\"$LANG_OUTPUT\"}"
+
     echo "$modified_content"
     # 写入输出文件
     # echo "$modified_content" > "$output_file"
@@ -277,7 +280,7 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 2
             ;;
-        --message-pattern|--conventional|--time-range)
+        --html|--message-pattern|--conventional|--time-range)
             # 新功能参数，委托给 Node.js 版本处理
             
             # 检查 Node.js 版本是否存在

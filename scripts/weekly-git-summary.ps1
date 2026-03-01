@@ -63,16 +63,23 @@ function New-HtmlOutput {
             $scriptArgs += "--author", "`"$author`""
         }
     }
+    $scriptArgs += "--lang", $script:LANG
     $scriptArgs += "--json"
     
     $jsonData = & $MyInvocation.ScriptName @scriptArgs
     
+    $jsonObject = $jsonData | ConvertFrom-Json
+    $jsonObject | Add-Member -Name "lang" -Value $script:LANG -MemberType NoteProperty -Force
+    $jsonDataWithLang = $jsonObject | ConvertTo-Json -Depth 10
+    
     # 读取模板文件内容
     $templateContent = Get-Content $templateFile -Raw
-    
-    # 替换模板中的 STATIC_DATA
-    $modifiedContent = $templateContent -replace 'const STATIC_DATA = ``;', "const STATIC_DATA = $jsonData;"
-    
+
+    # 替换模板中的 STATIC_DATA 和 lang 属性
+    $modifiedContent = $templateContent `
+        -replace 'const STATIC_DATA = null;', "const STATIC_DATA = $jsonDataWithLang;" `
+        -replace 'data-lang="zh"', "data-lang=`"$script:LANG`""
+
     $modifiedContent
     # 写入输出文件
     # $modifiedContent | Out-File -FilePath $outputFile -Encoding UTF8

@@ -220,13 +220,14 @@ function generateHtmlOutput(options: Options): void {
 
   // 检查模板文件是否存在
   if (!existsSync(templateFile)) {
-    console.error(
-      `${colors.red}错误: 找不到 HTML 模板文件 ${templateFile}${colors.reset}`,
-    )
+    const errorMsg = options.lang === 'en' 
+      ? `Error: HTML template file not found ${templateFile}`
+      : `错误: 找不到 HTML 模板文件 ${templateFile}`
+    console.error(`${colors.red}${errorMsg}${colors.reset}`)
     process.exit(1)
   }
 
-  // 直接生成 JSON 数据而不是递归调用
+  // 生成 JSON 数据
   const tempOptions: Options = {
     ...options,
     jsonOutput: true,
@@ -234,16 +235,25 @@ function generateHtmlOutput(options: Options): void {
   }
 
   const jsonOutput = generateJsonOutput(tempOptions)
-  const jsonData = JSON.stringify(jsonOutput, null, 2)
+  const dataWithLang = {
+    ...jsonOutput,
+    lang: options.lang,
+  }
+  const jsonData = JSON.stringify(dataWithLang, null, 2)
 
   // 读取模板文件内容
   const templateContent = readFileSync(templateFile, 'utf8')
 
-  // 替换模板中的 STATIC_DATA
-  const modifiedContent = templateContent.replace(
-    'const STATIC_DATA = ``',
-    `const STATIC_DATA = ${jsonData};`,
-  )
+  // 替换模板中的 STATIC_DATA 和 lang 属性
+  const modifiedContent = templateContent
+    .replace(
+      'const STATIC_DATA = null;',
+      `const STATIC_DATA = ${jsonData};`,
+    )
+    .replace(
+      'data-lang="zh"',
+      `data-lang="${options.lang}"`,
+    )
 
   console.log(modifiedContent)
 }
