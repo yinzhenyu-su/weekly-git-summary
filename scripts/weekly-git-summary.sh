@@ -89,6 +89,8 @@ translate() {
                 "summary_completed") echo "Summary Completed" ;;
                 "to") echo "to" ;;
                 "author_text") echo "author" ;;
+                "project") echo "Project" ;;
+                "hash") echo "hash" ;;
                 *) echo "$key" ;;
             esac
             ;;
@@ -117,6 +119,8 @@ translate() {
                 "summary_completed") echo "工作内容汇总完成" ;;
                 "to") echo "到" ;;
                 "author_text") echo "作者" ;;
+                "project") echo "项目" ;;
+                "hash") echo "hash" ;;
                 *) echo "$key" ;;
             esac
             ;;
@@ -451,11 +455,11 @@ while read gitdir; do
                     echo "### $date"
                     CURRENT_DATE="$date"
                 fi
-                echo "- $message (作者: $author, hash: $hash)"
+                  echo "- $message ($(translate "author_text" "$LANG_OUTPUT"): $author, $(translate "hash" "$LANG_OUTPUT"): $hash)"
             done
             echo ""
         elif [ "$HTML_OUTPUT" = false ]; then
-            echo -e "${YELLOW}项目: $REPO_NAME${NC}"
+            echo -e "${YELLOW}$(translate "project" "$LANG_OUTPUT"): $REPO_NAME${NC}"
             echo ""
             
             # 按日期分组显示提交
@@ -465,7 +469,7 @@ while read gitdir; do
                     echo -e "${GREEN}$date${NC}"
                     CURRENT_DATE="$date"
                 fi
-                echo "  • $message (作者: $author, hash: $hash)"
+                echo "  • $message ($(translate "author_text" "$LANG_OUTPUT"): $author, $(translate "hash" "$LANG_OUTPUT"): $hash)"
             done
             
             echo ""

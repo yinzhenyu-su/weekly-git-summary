@@ -59,6 +59,9 @@ const i18n = {
     revert: '回滚更改',
     other: '其他类型',
     breaking: '破坏性',
+    project: '项目',
+    hash: 'hash',
+    authorLabel: '作者',
   },
   en: {
     usage: 'Usage:',
@@ -100,6 +103,9 @@ const i18n = {
     revert: 'Reverts',
     other: 'Others',
     breaking: 'BREAKING',
+    project: 'Project',
+    hash: 'hash',
+    authorLabel: 'author',
   },
 } as const
 
@@ -954,27 +960,28 @@ export function main(): void {
         }
 
         // 显示传统提交信息
-        const authorText = options.lang === 'en' ? 'author' : '作者'
+        const authorText = t('authorLabel', options.lang)
+        const hashText = t('hash', options.lang)
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
             const breakingTag = conventionalInfo.breaking ? ` **[${t('breaking', options.lang)}]**` : ''
-            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
           else {
             const otherText = t('other', options.lang)
-            console.log(`- **[${otherText}]** ${message} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`- **[${otherText}]** ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
         }
         else {
-          console.log(`- ${message} (${authorText}: ${author}, hash: ${hash})`)
+          console.log(`- ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
         }
       }
       console.log('')
     }
     else {
-      console.log(`${colors.yellow}项目: ${repoName}${colors.reset}`)
+      console.log(`${colors.yellow}${t('project', options.lang)}: ${repoName}${colors.reset}`)
       console.log('')
 
       // 按日期分组显示提交
@@ -992,21 +999,22 @@ export function main(): void {
         }
 
         // 显示传统提交信息
-        const authorText = options.lang === 'en' ? 'author' : '作者'
+        const authorText = t('authorLabel', options.lang)
+        const hashText = t('hash', options.lang)
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
             const breakingTag = conventionalInfo.breaking ? ` ${colors.red}[${t('breaking', options.lang)}]${colors.reset}` : ''
-            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
           else {
             const otherText = t('other', options.lang)
-            console.log(`  • ${colors.blue}[${otherText}]${colors.reset} ${message} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`  • ${colors.blue}[${otherText}]${colors.reset} ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
         }
         else {
-          console.log(`  • ${message} (${authorText}: ${author}, hash: ${hash})`)
+          console.log(`  • ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
         }
       }
       console.log('')
