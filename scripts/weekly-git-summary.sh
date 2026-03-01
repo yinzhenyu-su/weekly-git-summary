@@ -45,7 +45,12 @@ SEARCH_DIR="."
 # 然后计算到本周一的偏移天数
 CURRENT_WEEKDAY=$(date +%w)
 DAYS_TO_MONDAY=$(( (($CURRENT_WEEKDAY + 6) % 7) ))
-MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
+# GNU date (Linux) vs BSD date (macOS)
+if date --version >/dev/null 2>&1; then
+    MONDAY=$(date -d "-${DAYS_TO_MONDAY} days" +%Y-%m-%d)
+else
+    MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
+fi
 TODAY=$(date +%Y-%m-%d)
 AUTHORS=()
 JSON_OUTPUT=false
