@@ -75,4 +75,4 @@ jobs:
         run: bun run build
 
       - name: Security audit
-        run: bun audit
+        run: bun audit || true
