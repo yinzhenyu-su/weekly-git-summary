@@ -17,7 +17,7 @@ describe('CLI Integration Tests', () => {
       execSync('bun run build.ts', { cwd: process.cwd() })
     }
 
-    const result = execSync('bash build/weekly-git-summary.sh --conventional --time-range today --json 2>/dev/null', {
+    const result = execSync('bash build/weekly-git-summary.sh --conventional --time-range today --json ', {
       encoding: 'utf8',
       cwd: process.cwd(),
     })
@@ -84,7 +84,7 @@ describe('CLI Integration Tests', () => {
       execSync('bun run build.ts', { cwd: process.cwd() })
     }
 
-    const result = execSync('node build/cli.js --conventional --time-range today --json 2>/dev/null', {
+    const result = execSync('node build/cli.js --conventional --time-range today --json ', {
       encoding: 'utf8',
       cwd: process.cwd(),
     })
