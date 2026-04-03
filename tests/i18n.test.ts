@@ -129,6 +129,24 @@ describe('i18n Internationalization Tests', () => {
       expect(result).toContain('Git Commit Summary')
       expect(result).toContain('author:')
     })
+
+    it('should use translated labels in HTML output (English)', () => {
+      const result = execSync(`node build/cli.js --dir ${testDir} --lang en --html`, {
+        encoding: 'utf8',
+        cwd: process.cwd(),
+      })
+
+      expect(result).toContain('data-lang="en"')
+    })
+
+    it('should use translated labels in HTML output (Chinese)', () => {
+      const result = execSync(`node build/cli.js --dir ${testDir} --lang zh --html`, {
+        encoding: 'utf8',
+        cwd: process.cwd(),
+      })
+
+      expect(result).toContain('data-lang="zh"')
+    })
   })
 
   describe('Bash Implementation', () => {

@@ -158,8 +158,9 @@ generate_html_output() {
     
     # 转义`字符
     local json_data=$(eval "$0 $args --lang $LANG_OUTPUT --json" | sed 's/`/\\`/g')
-    
-    local json_with_lang=$(echo "$json_data" | sed "0,/{/{s/{/{\\n  \"lang\": \"$LANG_OUTPUT\",/}")
+
+    # 使用 awk 替代 GNU sed 的 0,/{/ 语法（macOS 兼容）
+    local json_with_lang=$(echo "$json_data" | awk 'NR==1 && /^{/ { sub(/^{/, "{\\n  \"lang\": \"" $LANG_OUTPUT "\","); print; next } { print }')
     
     # 读取模板文件内容
     local template_content=$(cat "$template_file")
@@ -312,6 +313,7 @@ fi
 # 如果是JSON输出，开始输出JSON数组
 if [ "$JSON_OUTPUT" = true ]; then
     echo '{'
+    echo "  \"lang\": \"$LANG_OUTPUT\","
     echo '  "timeRange": {'
     echo "    \"since\": \"$MONDAY\","
     echo "    \"until\": \"$TODAY\""
