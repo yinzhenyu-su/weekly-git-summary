@@ -59,6 +59,9 @@ const i18n = {
     revert: '回滚更改',
     other: '其他类型',
     breaking: '破坏性',
+    project: '项目',
+    hash: 'hash',
+    authorLabel: '作者',
   },
   en: {
     usage: 'Usage:',
@@ -100,6 +103,9 @@ const i18n = {
     revert: 'Reverts',
     other: 'Others',
     breaking: 'BREAKING',
+    project: 'Project',
+    hash: 'hash',
+    authorLabel: 'author',
   },
 } as const
 
@@ -214,13 +220,14 @@ function generateHtmlOutput(options: Options): void {
 
   // 检查模板文件是否存在
   if (!existsSync(templateFile)) {
-    console.error(
-      `${colors.red}错误: 找不到 HTML 模板文件 ${templateFile}${colors.reset}`,
-    )
+    const errorMsg = options.lang === 'en' 
+      ? `Error: HTML template file not found ${templateFile}`
+      : `错误: 找不到 HTML 模板文件 ${templateFile}`
+    console.error(`${colors.red}${errorMsg}${colors.reset}`)
     process.exit(1)
   }
 
-  // 直接生成 JSON 数据而不是递归调用
+  // 生成 JSON 数据
   const tempOptions: Options = {
     ...options,
     jsonOutput: true,
@@ -228,16 +235,25 @@ function generateHtmlOutput(options: Options): void {
   }
 
   const jsonOutput = generateJsonOutput(tempOptions)
-  const jsonData = JSON.stringify(jsonOutput, null, 2)
+  const dataWithLang = {
+    ...jsonOutput,
+    lang: options.lang,
+  }
+  const jsonData = JSON.stringify(dataWithLang, null, 2)
 
   // 读取模板文件内容
   const templateContent = readFileSync(templateFile, 'utf8')
 
-  // 替换模板中的 STATIC_DATA
-  const modifiedContent = templateContent.replace(
-    'const STATIC_DATA = ``',
-    `const STATIC_DATA = ${jsonData};`,
-  )
+  // 替换模板中的 STATIC_DATA 和 lang 属性
+  const modifiedContent = templateContent
+    .replace(
+      'const STATIC_DATA = null;',
+      `const STATIC_DATA = ${jsonData};`,
+    )
+    .replace(
+      'data-lang="zh"',
+      `data-lang="${options.lang}"`,
+    )
 
   console.log(modifiedContent)
 }
@@ -954,27 +970,28 @@ export function main(): void {
         }
 
         // 显示传统提交信息
-        const authorText = options.lang === 'en' ? 'author' : '作者'
+        const authorText = t('authorLabel', options.lang)
+        const hashText = t('hash', options.lang)
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
             const breakingTag = conventionalInfo.breaking ? ` **[${t('breaking', options.lang)}]**` : ''
-            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`- **[${typeDisplay}]** ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
           else {
             const otherText = t('other', options.lang)
-            console.log(`- **[${otherText}]** ${message} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`- **[${otherText}]** ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
         }
         else {
-          console.log(`- ${message} (${authorText}: ${author}, hash: ${hash})`)
+          console.log(`- ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
         }
       }
       console.log('')
     }
     else {
-      console.log(`${colors.yellow}项目: ${repoName}${colors.reset}`)
+      console.log(`${colors.yellow}${t('project', options.lang)}: ${repoName}${colors.reset}`)
       console.log('')
 
       // 按日期分组显示提交
@@ -992,21 +1009,22 @@ export function main(): void {
         }
 
         // 显示传统提交信息
-        const authorText = options.lang === 'en' ? 'author' : '作者'
+        const authorText = t('authorLabel', options.lang)
+        const hashText = t('hash', options.lang)
         if (options.conventional) {
           const conventionalInfo = parseConventionalCommit(message)
           if (conventionalInfo) {
             const typeDisplay = getCommitTypeDisplayName(conventionalInfo.type, options.lang)
             const breakingTag = conventionalInfo.breaking ? ` ${colors.red}[${t('breaking', options.lang)}]${colors.reset}` : ''
-            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`  • ${colors.blue}[${typeDisplay}]${colors.reset} ${conventionalInfo.description}${breakingTag} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
           else {
             const otherText = t('other', options.lang)
-            console.log(`  • ${colors.blue}[${otherText}]${colors.reset} ${message} (${authorText}: ${author}, hash: ${hash})`)
+            console.log(`  • ${colors.blue}[${otherText}]${colors.reset} ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
           }
         }
         else {
-          console.log(`  • ${message} (${authorText}: ${author}, hash: ${hash})`)
+          console.log(`  • ${message} (${authorText}: ${author}, ${hashText}: ${hash})`)
         }
       }
       console.log('')

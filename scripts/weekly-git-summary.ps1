@@ -63,16 +63,23 @@ function New-HtmlOutput {
             $scriptArgs += "--author", "`"$author`""
         }
     }
+    $scriptArgs += "--lang", $script:LANG
     $scriptArgs += "--json"
     
     $jsonData = & $MyInvocation.ScriptName @scriptArgs
     
+    $jsonObject = $jsonData | ConvertFrom-Json
+    $jsonObject | Add-Member -Name "lang" -Value $script:LANG -MemberType NoteProperty -Force
+    $jsonDataWithLang = $jsonObject | ConvertTo-Json -Depth 10
+    
     # 读取模板文件内容
     $templateContent = Get-Content $templateFile -Raw
-    
-    # 替换模板中的 STATIC_DATA
-    $modifiedContent = $templateContent -replace 'const STATIC_DATA = ``;', "const STATIC_DATA = $jsonData;"
-    
+
+    # 替换模板中的 STATIC_DATA 和 lang 属性
+    $modifiedContent = $templateContent `
+        -replace 'const STATIC_DATA = null;', "const STATIC_DATA = $jsonDataWithLang;" `
+        -replace 'data-lang="zh"', "data-lang=`"$script:LANG`""
+
     $modifiedContent
     # 写入输出文件
     # $modifiedContent | Out-File -FilePath $outputFile -Encoding UTF8
@@ -86,6 +93,76 @@ $BLUE = [System.ConsoleColor]::Blue
 $GREEN = [System.ConsoleColor]::Green
 $YELLOW = [System.ConsoleColor]::Yellow
 $RED = [System.ConsoleColor]::Red
+
+$script:LANG = "zh"
+
+for ($i = 0; $i -lt $args.Count; $i++) {
+    if ($args[$i] -eq "--lang" -and ($i + 1) -lt $args.Count) {
+        if ($args[$i + 1] -eq "en") {
+            $script:LANG = "en"
+        }
+        break
+    }
+}
+
+function Get-Message {
+    param(
+        [string]$key
+    )
+    
+    if ($script:LANG -eq "en") {
+        switch ($key) {
+            "usage" { return "Usage:" }
+            "options" { return "Options:" }
+            "examples" { return "Examples:" }
+            "help" { return "Show this help message" }
+            "dir" { return "Specify search directory (default: current directory)" }
+            "since" { return "Specify start date (format: YYYY-MM-DD, default: this Monday)" }
+            "until" { return "Specify end date (format: YYYY-MM-DD, default: today)" }
+            "author" { return "Show commits by specified author only" }
+            "json" { return "Output result in JSON format" }
+            "markdown" { return "Output result in Markdown format" }
+            "html" { return "Generate HTML visualization file" }
+            "lang" { return "Set output language (zh|en, default: zh)" }
+            "author_text" { return "author" }
+            "hash" { return "hash" }
+            "project" { return "Project" }
+            "time_range_label" { return "Time Range" }
+            "search_dir_label" { return "Search Directory" }
+            "author_filter" { return "Author Filter" }
+            "git_commit_summary" { return "Git Commit Summary" }
+            "error_unknown_param" { return "Error: Unknown parameter" }
+            "error_dir_not_exist" { return "Error: Directory does not exist" }
+            default { return $key }
+        }
+    }
+    else {
+        switch ($key) {
+            "usage" { return "使用方法:" }
+            "options" { return "选项:" }
+            "examples" { return "示例:" }
+            "help" { return "显示此帮助信息" }
+            "dir" { return "指定搜索目录 (默认: 当前目录)" }
+            "since" { return "指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)" }
+            "until" { return "指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)" }
+            "author" { return "只显示指定作者的提交" }
+            "json" { return "以JSON格式输出结果" }
+            "markdown" { return "以Markdown格式输出结果" }
+            "html" { return "生成HTML可视化文件" }
+            "lang" { return "设置输出语言 (zh|en, 默认: zh)" }
+            "author_text" { return "作者" }
+            "hash" { return "hash" }
+            "project" { return "项目" }
+            "time_range_label" { return "统计时间范围" }
+            "search_dir_label" { return "搜索目录" }
+            "author_filter" { return "作者过滤" }
+            "git_commit_summary" { return "工作内容Git提交记录汇总" }
+            "error_unknown_param" { return "错误: 未知参数" }
+            "error_dir_not_exist" { return "错误: 目录不存在" }
+            default { return $key }
+        }
+    }
+}
 
 # 默认值
 $SEARCH_DIR = "."
@@ -103,23 +180,32 @@ $HTML_OUTPUT = $false
 
 # 显示帮助信息
 function Show-Help {
-    Write-Host "使用方法:" -ForegroundColor $BLUE
-    Write-Host "  .\weekly-git-summary.ps1 [选项]"
+    Write-Host "$(Get-Message "usage")" -ForegroundColor $BLUE
+    Write-Host "  .\weekly-git-summary.ps1 [options]"
     Write-Host ""
-    Write-Host "选项:" -ForegroundColor $GREEN
-    Write-Host "  -h, --help         显示此帮助信息"
-    Write-Host "  -d, --dir DIR      指定搜索目录 (默认: 当前目录)"
-    Write-Host "  -s, --since DATE   指定开始日期 (格式: YYYY-MM-DD, 默认: 本周一)"
-    Write-Host "  -u, --until DATE   指定结束日期 (格式: YYYY-MM-DD, 默认: 今天)"
-    Write-Host "  -a, --author NAME  只显示指定作者的提交"
-    Write-Host "  -j, --json         以JSON格式输出结果"
-    Write-Host "  -m, --md           以Markdown格式输出结果"
-    Write-Host "  --html             生成HTML可视化文件"
+    Write-Host "$(Get-Message "options")" -ForegroundColor $GREEN
+    Write-Host "  -h, --help         $(Get-Message "help")"
+    Write-Host "  -d, --dir DIR      $(Get-Message "dir")"
+    Write-Host "  -s, --since DATE   $(Get-Message "since")"
+    Write-Host "  -u, --until DATE   $(Get-Message "until")"
+    Write-Host "  -a, --author NAME  $(Get-Message "author")"
+    Write-Host "  -j, --json         $(Get-Message "json")"
+    Write-Host "  -m, --md           $(Get-Message "markdown")"
+    Write-Host "  --html             $(Get-Message "html")"
+    Write-Host "  --lang LANG        $(Get-Message "lang")"
     Write-Host ""
-    Write-Host "示例:" -ForegroundColor $YELLOW
-    Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
-    Write-Host "  .\weekly-git-summary.ps1 -author '张三' -since 2023-01-01"
-    Write-Host "  .\weekly-git-summary.ps1 -json -since 2023-01-01"
+    Write-Host "$(Get-Message "examples")" -ForegroundColor $YELLOW
+    if ($script:LANG -eq "en") {
+        Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
+        Write-Host "  .\weekly-git-summary.ps1 -author 'John Doe' -since 2023-01-01"
+        Write-Host "  .\weekly-git-summary.ps1 -json -since 2023-01-01"
+        Write-Host "  .\weekly-git-summary.ps1 -json -lang en"
+    }
+    else {
+        Write-Host "  .\weekly-git-summary.ps1 -dir C:\projects -since 2023-01-01 -until 2023-01-31"
+        Write-Host "  .\weekly-git-summary.ps1 -author '张三' -since 2023-01-01"
+        Write-Host "  .\weekly-git-summary.ps1 -json -since 2023-01-01"
+    }
     exit
 }
 
@@ -173,8 +259,18 @@ while ($i -lt $args.Count) {
             $i += 1
             continue
         }
+        "--lang" {
+            if ($args[$i + 1] -eq "en") {
+                $script:LANG = "en"
+            }
+            else {
+                $script:LANG = "zh"
+            }
+            $i += 2
+            continue
+        }
         default {
-            Write-Host "错误: 未知参数 $($args[$i])" -ForegroundColor $RED
+            Write-Host "$(Get-Message "error_unknown_param"): $($args[$i])" -ForegroundColor $RED
             Show-Help
             exit 1
         }
@@ -183,7 +279,7 @@ while ($i -lt $args.Count) {
 
 # 检查搜索目录是否存在
 if (-not (Test-Path $SEARCH_DIR -PathType Container)) {
-    Write-Host "错误: 目录 '$SEARCH_DIR' 不存在" -ForegroundColor $RED
+    Write-Host "$(Get-Message "error_dir_not_exist"): '$SEARCH_DIR'" -ForegroundColor $RED
     exit 1
 }
 
@@ -219,14 +315,19 @@ elseif ($HTML_OUTPUT) {
     # 这里不需要输出任何内容，HTML 输出会在 New-HtmlOutput 函数中处理
 }
 else {
-    Write-Host "===== 工作内容Git提交记录汇总 =====" -ForegroundColor $BLUE
-    Write-Host "统计时间范围: " -NoNewline -ForegroundColor $GREEN
-    Write-Host "$MONDAY 到 $TODAY"
-    Write-Host "搜索目录: " -NoNewline -ForegroundColor $GREEN
+    Write-Host "===== $(Get-Message "git_commit_summary") =====" -ForegroundColor $BLUE
+    Write-Host "$(Get-Message "time_range_label"): " -NoNewline -ForegroundColor $GREEN
+    if ($script:LANG -eq "en") {
+        Write-Host "$MONDAY to $TODAY"
+    }
+    else {
+        Write-Host "$MONDAY 到 $TODAY"
+    }
+    Write-Host "$(Get-Message "search_dir_label"): " -NoNewline -ForegroundColor $GREEN
     Write-Host "$SEARCH_DIR"
     if ($AUTHORS.Count -gt 0) {
         $authorsStr = $AUTHORS -join ", "
-        Write-Host "作者过滤: " -NoNewline -ForegroundColor $GREEN
+        Write-Host "$(Get-Message "author_filter"): " -NoNewline -ForegroundColor $GREEN
         Write-Host "$authorsStr"
     }
     Write-Host ""
@@ -325,7 +426,7 @@ foreach ($gitDir in $gitDirs) {
                     "### $date"
                     $CURRENT_DATE = $date
                 }
-                "- $message (作者: $author, hash: $hash)"
+                "- $message ($(Get-Message "author_text"): $author, $(Get-Message "hash"): $hash)"
             }
             ""
         }
@@ -333,7 +434,7 @@ foreach ($gitDir in $gitDirs) {
             # do nothing, HTML output will be generated later
         }
         else {
-            Write-Host "项目: $REPO_NAME" -ForegroundColor $YELLOW
+            Write-Host "$(Get-Message "project"): $REPO_NAME" -ForegroundColor $YELLOW
             Write-Host ""
             
             # 按日期分组显示提交
@@ -349,7 +450,7 @@ foreach ($gitDir in $gitDirs) {
                     Write-Host "$date" -ForegroundColor $GREEN
                     $CURRENT_DATE = $date
                 }
-                Write-Host "  • $message (作者: $author, hash: $hash)"
+                Write-Host "  • $message ($(Get-Message "author_text"): $author, $(Get-Message "hash"): $hash)"
             }
             Write-Host ""
             Write-Host "-----------------------------------------"

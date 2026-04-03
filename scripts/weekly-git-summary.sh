@@ -45,7 +45,12 @@ SEARCH_DIR="."
 # 然后计算到本周一的偏移天数
 CURRENT_WEEKDAY=$(date +%w)
 DAYS_TO_MONDAY=$(( (($CURRENT_WEEKDAY + 6) % 7) ))
-MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
+# GNU date (Linux) vs BSD date (macOS)
+if date --version >/dev/null 2>&1; then
+    MONDAY=$(date -d "-${DAYS_TO_MONDAY} days" +%Y-%m-%d)
+else
+    MONDAY=$(date -v-${DAYS_TO_MONDAY}d +%Y-%m-%d)
+fi
 TODAY=$(date +%Y-%m-%d)
 AUTHORS=()
 JSON_OUTPUT=false
@@ -84,6 +89,8 @@ translate() {
                 "summary_completed") echo "Summary Completed" ;;
                 "to") echo "to" ;;
                 "author_text") echo "author" ;;
+                "project") echo "Project" ;;
+                "hash") echo "hash" ;;
                 *) echo "$key" ;;
             esac
             ;;
@@ -112,6 +119,8 @@ translate() {
                 "summary_completed") echo "工作内容汇总完成" ;;
                 "to") echo "到" ;;
                 "author_text") echo "作者" ;;
+                "project") echo "项目" ;;
+                "hash") echo "hash" ;;
                 *) echo "$key" ;;
             esac
             ;;
@@ -148,14 +157,17 @@ generate_html_output() {
     done
     
     # 转义`字符
-    local json_data=$(eval "$0 $args --json" | sed 's/`/\\`/g')
+    local json_data=$(eval "$0 $args --lang $LANG_OUTPUT --json" | sed 's/`/\\`/g')
+    
+    local json_with_lang=$(echo "$json_data" | sed "0,/{/{s/{/{\\n  \"lang\": \"$LANG_OUTPUT\",/}")
     
     # 读取模板文件内容
     local template_content=$(cat "$template_file")
-    
-    # 替换模板中的 STATIC_DATA
-    local modified_content="${template_content//const STATIC_DATA = \`\`;/const STATIC_DATA = $json_data;}"
-    
+
+    # 替换模板中的 STATIC_DATA 和 lang 属性
+    local modified_content="${template_content//const STATIC_DATA = null;/const STATIC_DATA = $json_with_lang;}"
+    modified_content="${modified_content//data-lang=\"zh\"/data-lang=\"$LANG_OUTPUT\"}"
+
     echo "$modified_content"
     # 写入输出文件
     # echo "$modified_content" > "$output_file"
@@ -268,7 +280,7 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 2
             ;;
-        --message-pattern|--conventional|--time-range)
+        --html|--message-pattern|--conventional|--time-range)
             # 新功能参数，委托给 Node.js 版本处理
             
             # 检查 Node.js 版本是否存在
@@ -446,11 +458,11 @@ while read gitdir; do
                     echo "### $date"
                     CURRENT_DATE="$date"
                 fi
-                echo "- $message (作者: $author, hash: $hash)"
+                  echo "- $message ($(translate "author_text" "$LANG_OUTPUT"): $author, $(translate "hash" "$LANG_OUTPUT"): $hash)"
             done
             echo ""
         elif [ "$HTML_OUTPUT" = false ]; then
-            echo -e "${YELLOW}项目: $REPO_NAME${NC}"
+            echo -e "${YELLOW}$(translate "project" "$LANG_OUTPUT"): $REPO_NAME${NC}"
             echo ""
             
             # 按日期分组显示提交
@@ -460,7 +472,7 @@ while read gitdir; do
                     echo -e "${GREEN}$date${NC}"
                     CURRENT_DATE="$date"
                 fi
-                echo "  • $message (作者: $author, hash: $hash)"
+                echo "  • $message ($(translate "author_text" "$LANG_OUTPUT"): $author, $(translate "hash" "$LANG_OUTPUT"): $hash)"
             done
             
             echo ""
